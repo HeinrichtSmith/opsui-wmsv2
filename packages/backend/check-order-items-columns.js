@@ -5,10 +5,11 @@ const client = new Client({
   port: 5432,
   database: 'wms_db',
   user: 'wms_user',
-  password: 'wms_password'
+  password: 'wms_password',
 });
 
-client.connect()
+client
+  .connect()
   .then(async () => {
     const result = await client.query(
       `SELECT column_name, data_type 
@@ -16,12 +17,12 @@ client.connect()
        WHERE table_name = 'order_items' 
        ORDER BY ordinal_position`
     );
-    
+
     console.log('order_items columns:');
     result.rows.forEach(r => {
       console.log(`  ${r.column_name}: ${r.data_type}`);
     });
-    
+
     client.end();
   })
   .catch(err => {

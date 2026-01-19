@@ -11,7 +11,7 @@ const pool = new Pool({
 async function addSKUs() {
   try {
     console.log('Adding SKUs to database...');
-    
+
     const skus = [
       { sku: 'WMS-001', name: 'Widget A', barcode: '1234567890123', price: 19.99, quantity: 100 },
       { sku: 'WMS-002', name: 'Widget B', barcode: '2345678901234', price: 29.99, quantity: 75 },
@@ -20,10 +20,7 @@ async function addSKUs() {
 
     for (const item of skus) {
       // Check if SKU exists
-      const exists = await pool.query(
-        'SELECT sku FROM skus WHERE sku = $1',
-        [item.sku]
-      );
+      const exists = await pool.query('SELECT sku FROM skus WHERE sku = $1', [item.sku]);
 
       if (exists.rows.length === 0) {
         // Insert new SKU

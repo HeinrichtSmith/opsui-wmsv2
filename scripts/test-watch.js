@@ -87,7 +87,7 @@ class TestWatcher {
       stdio: 'pipe',
     });
 
-    backend.stdout.on('data', (data) => {
+    backend.stdout.on('data', data => {
       const output = data.toString();
       if (output.includes('PASS') || output.includes('FAIL')) {
         // Highlight test results
@@ -97,15 +97,15 @@ class TestWatcher {
       }
     });
 
-    backend.stderr.on('data', (data) => {
+    backend.stderr.on('data', data => {
       process.stderr.write(colors.yellow + data.toString() + colors.reset);
     });
 
-    backend.on('error', (err) => {
+    backend.on('error', err => {
       log(`Backend watcher error: ${err.message}`, 'red');
     });
 
-    backend.on('exit', (code) => {
+    backend.on('exit', code => {
       log(`Backend watcher exited (code: ${code})`, 'yellow');
     });
 
@@ -121,7 +121,7 @@ class TestWatcher {
       stdio: 'pipe',
     });
 
-    frontend.stdout.on('data', (data) => {
+    frontend.stdout.on('data', data => {
       const output = data.toString();
       if (output.includes('PASS') || output.includes('FAIL')) {
         // Highlight test results
@@ -131,15 +131,15 @@ class TestWatcher {
       }
     });
 
-    frontend.stderr.on('data', (data) => {
+    frontend.stderr.on('data', data => {
       process.stderr.write(colors.yellow + data.toString() + colors.reset);
     });
 
-    frontend.on('error', (err) => {
+    frontend.on('error', err => {
       log(`Frontend watcher error: ${err.message}`, 'red');
     });
 
-    frontend.on('exit', (code) => {
+    frontend.on('exit', code => {
       log(`Frontend watcher exited (code: ${code})`, 'yellow');
     });
 

@@ -71,8 +71,16 @@ router.post(
     } = req.body;
 
     // Validate required fields
-    if (!orderId || !carrierId || !serviceType || !shippingMethod ||
-        !shipFromAddress || !shipToAddress || !totalWeight || !totalPackages) {
+    if (
+      !orderId ||
+      !carrierId ||
+      !serviceType ||
+      !shippingMethod ||
+      !shipFromAddress ||
+      !shipToAddress ||
+      !totalWeight ||
+      !totalPackages
+    ) {
       return res.status(400).json({
         error: 'Missing required fields',
         code: 'MISSING_FIELDS',

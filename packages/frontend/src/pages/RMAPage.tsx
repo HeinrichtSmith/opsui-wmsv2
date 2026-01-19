@@ -15,7 +15,7 @@ import {
   PlusIcon,
   TruckIcon,
   CubeIcon,
-  } from '@heroicons/react/24/outline';
+} from '@heroicons/react/24/outline';
 
 // ============================================================================
 // TYPES
@@ -30,8 +30,22 @@ interface RMARequest {
   sku: string;
   productName: string;
   quantity: number;
-  reason: 'DEFECTIVE' | 'DAMAGED_SHIPPING' | 'WRONG_ITEM' | 'NO_LONGER_NEEDED' | 'WARRANTY' | 'OTHER';
-  status: 'PENDING' | 'APPROVED' | 'RECEIVED' | 'INSPECTING' | 'REFUNDED' | 'REPLACED' | 'REJECTED' | 'CLOSED';
+  reason:
+    | 'DEFECTIVE'
+    | 'DAMAGED_SHIPPING'
+    | 'WRONG_ITEM'
+    | 'NO_LONGER_NEEDED'
+    | 'WARRANTY'
+    | 'OTHER';
+  status:
+    | 'PENDING'
+    | 'APPROVED'
+    | 'RECEIVED'
+    | 'INSPECTING'
+    | 'REFUNDED'
+    | 'REPLACED'
+    | 'REJECTED'
+    | 'CLOSED';
   priority: 'LOW' | 'NORMAL' | 'HIGH' | 'URGENT';
   createdAt: string;
   resolvedAt?: string;
@@ -66,19 +80,17 @@ function ReturnsPipelineStage({
       }`}
     >
       {/* Step number circle */}
-      <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg ${
-        isActive ? 'bg-primary-500 text-white' : 'bg-gray-700 text-gray-400'
-      }`}>
+      <div
+        className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg ${
+          isActive ? 'bg-primary-500 text-white' : 'bg-gray-700 text-gray-400'
+        }`}
+      >
         {step}
       </div>
 
       {/* Content */}
       <div className="flex-1 text-left">
-        <p className={`font-semibold ${
-          isActive ? 'text-white' : 'text-gray-300'
-        }`}>
-          {label}
-        </p>
+        <p className={`font-semibold ${isActive ? 'text-white' : 'text-gray-300'}`}>{label}</p>
         <p className={`text-sm ${isActive ? 'text-primary-400' : 'text-gray-500'}`}>
           {count} {count === 1 ? 'item' : 'items'}
         </p>
@@ -118,7 +130,9 @@ function StatusBadge({ status }: { status: string }) {
   };
 
   return (
-    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${styles[status] || styles.PENDING}`}>
+    <span
+      className={`px-3 py-1 rounded-full text-xs font-semibold ${styles[status] || styles.PENDING}`}
+    >
       {labels[status] || status}
     </span>
   );
@@ -153,44 +167,76 @@ function ReasonBadge({ reason }: { reason: string }) {
 function RMARequestCard({ request }: { request: RMARequest }) {
   const resolutionActions: Record<string, JSX.Element[]> = {
     PENDING: [
-      <Button variant="secondary" size="sm" className="flex-1" key="details">View Details</Button>,
-      <Button variant="success" size="sm" className="flex-1" key="approve">Approve</Button>,
-      <Button variant="danger" size="sm" className="flex-1" key="reject">Reject</Button>,
+      <Button variant="secondary" size="sm" className="flex-1" key="details">
+        View Details
+      </Button>,
+      <Button variant="success" size="sm" className="flex-1" key="approve">
+        Approve
+      </Button>,
+      <Button variant="danger" size="sm" className="flex-1" key="reject">
+        Reject
+      </Button>,
     ],
     APPROVED: [
-      <Button variant="primary" size="sm" className="flex-1" key="receive">Mark Received</Button>,
+      <Button variant="primary" size="sm" className="flex-1" key="receive">
+        Mark Received
+      </Button>,
     ],
     RECEIVED: [
-      <Button variant="primary" size="sm" className="flex-1" key="inspect">Start Inspection</Button>,
+      <Button variant="primary" size="sm" className="flex-1" key="inspect">
+        Start Inspection
+      </Button>,
     ],
     INSPECTING: [
-      <Button variant="secondary" size="sm" className="flex-1" key="refund">Issue Refund</Button>,
-      <Button variant="secondary" size="sm" className="flex-1" key="replace">Send Replacement</Button>,
+      <Button variant="secondary" size="sm" className="flex-1" key="refund">
+        Issue Refund
+      </Button>,
+      <Button variant="secondary" size="sm" className="flex-1" key="replace">
+        Send Replacement
+      </Button>,
     ],
     REFUNDED: [
-      <Button variant="secondary" size="sm" className="w-full" key="details">View Details</Button>,
+      <Button variant="secondary" size="sm" className="w-full" key="details">
+        View Details
+      </Button>,
     ],
     REPLACED: [
-      <Button variant="secondary" size="sm" className="w-full" key="details">View Details</Button>,
+      <Button variant="secondary" size="sm" className="w-full" key="details">
+        View Details
+      </Button>,
     ],
     REJECTED: [
-      <Button variant="secondary" size="sm" className="w-full" key="details">View Details</Button>,
+      <Button variant="secondary" size="sm" className="w-full" key="details">
+        View Details
+      </Button>,
     ],
     CLOSED: [
-      <Button variant="secondary" size="sm" className="w-full" key="details">View Details</Button>,
+      <Button variant="secondary" size="sm" className="w-full" key="details">
+        View Details
+      </Button>,
     ],
   };
 
   return (
     <Card variant="glass" className="card-hover overflow-hidden">
       {/* Top status bar */}
-      <div className={`h-1 ${
-        request.status === 'REFUNDED' || request.status === 'REPLACED' || request.status === 'CLOSED' ? 'bg-success-500' :
-        request.status === 'PENDING' ? 'bg-gray-500' :
-        request.status === 'APPROVED' || request.status === 'RECEIVED' ? 'bg-blue-500' :
-        request.status === 'INSPECTING' ? 'bg-yellow-500' :
-        request.status === 'REJECTED' ? 'bg-red-500' : 'bg-gray-500'
-      }`} />
+      <div
+        className={`h-1 ${
+          request.status === 'REFUNDED' ||
+          request.status === 'REPLACED' ||
+          request.status === 'CLOSED'
+            ? 'bg-success-500'
+            : request.status === 'PENDING'
+              ? 'bg-gray-500'
+              : request.status === 'APPROVED' || request.status === 'RECEIVED'
+                ? 'bg-blue-500'
+                : request.status === 'INSPECTING'
+                  ? 'bg-yellow-500'
+                  : request.status === 'REJECTED'
+                    ? 'bg-red-500'
+                    : 'bg-gray-500'
+        }`}
+      />
 
       <CardContent className="p-5">
         <div className="flex items-start justify-between mb-4">
@@ -201,7 +247,9 @@ function RMARequestCard({ request }: { request: RMARequest }) {
               <ReasonBadge reason={request.reason} />
             </div>
             <p className="text-gray-300 font-medium">{request.productName}</p>
-            <p className="text-sm text-gray-400 mt-1">SKU: {request.sku} | Qty: {request.quantity}</p>
+            <p className="text-sm text-gray-400 mt-1">
+              SKU: {request.sku} | Qty: {request.quantity}
+            </p>
           </div>
         </div>
 
@@ -226,7 +274,9 @@ function RMARequestCard({ request }: { request: RMARequest }) {
           {request.resolvedAt && (
             <div className="bg-white/5 p-2 rounded-lg">
               <p className="text-gray-400 text-xs">Resolved</p>
-              <p className="text-success-400">{new Date(request.resolvedAt).toLocaleDateString()}</p>
+              <p className="text-success-400">
+                {new Date(request.resolvedAt).toLocaleDateString()}
+              </p>
             </div>
           )}
         </div>
@@ -332,7 +382,9 @@ function RMAPage() {
               <ArrowPathIcon className="h-8 w-8 text-primary-400" />
               Returns & RMA
             </h1>
-            <p className="mt-2 text-gray-400">Customer returns, warranty claims, and refurbishments</p>
+            <p className="mt-2 text-gray-400">
+              Customer returns, warranty claims, and refurbishments
+            </p>
           </div>
           <Button variant="primary" className="flex items-center gap-2">
             <PlusIcon className="h-5 w-5" />
@@ -345,7 +397,7 @@ function RMAPage() {
           <div className="space-y-8">
             {/* Returns Pipeline */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              {pipelineStages.map((stage) => (
+              {pipelineStages.map(stage => (
                 <div key={stage.step} className="relative">
                   <ReturnsPipelineStage
                     step={stage.step}
@@ -364,7 +416,9 @@ function RMAPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-400">Pending Review</p>
-                    <p className="mt-2 text-3xl font-bold text-white">{dashboard.pendingRequests}</p>
+                    <p className="mt-2 text-3xl font-bold text-white">
+                      {dashboard.pendingRequests}
+                    </p>
                   </div>
                   <ClockIcon className="h-8 w-8 text-warning-400" />
                 </div>
@@ -443,7 +497,9 @@ function RMAPage() {
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-2xl font-bold text-white">RMA Requests</h2>
-                <p className="text-gray-400 text-sm mt-1">Pending return requests awaiting review</p>
+                <p className="text-gray-400 text-sm mt-1">
+                  Pending return requests awaiting review
+                </p>
               </div>
               <Button variant="primary" className="flex items-center gap-2">
                 <PlusIcon className="h-5 w-5" />
@@ -452,9 +508,11 @@ function RMAPage() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {requests.filter(r => r.status === 'PENDING').map((request) => (
-                <RMARequestCard key={request.rmaId} request={request} />
-              ))}
+              {requests
+                .filter(r => r.status === 'PENDING')
+                .map(request => (
+                  <RMARequestCard key={request.rmaId} request={request} />
+                ))}
             </div>
           </div>
         )}
@@ -464,12 +522,16 @@ function RMAPage() {
           <div className="space-y-6">
             <div>
               <h2 className="text-2xl font-bold text-white">Returns Processing</h2>
-              <p className="text-gray-400 text-sm mt-1">Approved returns being inspected and processed</p>
+              <p className="text-gray-400 text-sm mt-1">
+                Approved returns being inspected and processed
+              </p>
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {requests.filter(r => ['APPROVED', 'RECEIVED', 'INSPECTING'].includes(r.status)).map((request) => (
-                <RMARequestCard key={request.rmaId} request={request} />
-              ))}
+              {requests
+                .filter(r => ['APPROVED', 'RECEIVED', 'INSPECTING'].includes(r.status))
+                .map(request => (
+                  <RMARequestCard key={request.rmaId} request={request} />
+                ))}
             </div>
           </div>
         )}
@@ -482,9 +544,11 @@ function RMAPage() {
               <p className="text-gray-400 text-sm mt-1">History of all resolved RMA requests</p>
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {requests.filter(r => ['REFUNDED', 'REPLACED', 'REJECTED', 'CLOSED'].includes(r.status)).map((request) => (
-                <RMARequestCard key={request.rmaId} request={request} />
-              ))}
+              {requests
+                .filter(r => ['REFUNDED', 'REPLACED', 'REJECTED', 'CLOSED'].includes(r.status))
+                .map(request => (
+                  <RMARequestCard key={request.rmaId} request={request} />
+                ))}
             </div>
           </div>
         )}

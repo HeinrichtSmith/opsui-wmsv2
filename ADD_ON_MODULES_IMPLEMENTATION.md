@@ -18,6 +18,7 @@ Basic implementations of the three add-on modules have been created as comprehen
 ### Features Implemented
 
 #### ✅ Bill of Materials (BOM)
+
 - Define product recipes with components
 - Version control for BOMs
 - Substitute SKUs for components
@@ -25,6 +26,7 @@ Basic implementations of the three add-on modules have been created as comprehen
 - Effective/expiry date management
 
 #### ✅ Production Orders
+
 - Create and track manufacturing jobs
 - Status workflow: DRAFT → PLANNED → RELEASED → IN_PROGRESS → COMPLETED
 - Priority levels (LOW, MEDIUM, HIGH, URGENT)
@@ -33,17 +35,20 @@ Basic implementations of the three add-on modules have been created as comprehen
 - Material reservation tracking
 
 #### ✅ Production Output
+
 - Record completed production quantities
 - Track rejected quantities
 - Lot number tracking
 - Bin location assignment
 
 #### ✅ Production Journal
+
 - Time tracking for production jobs
 - Progress notes
 - Material issue tracking
 
 ### Key Types
+
 - `BillOfMaterial` - Product recipe definition
 - `ProductionOrder` - Manufacturing job
 - `ProductionOutput` - Completed production tracking
@@ -52,6 +57,7 @@ Basic implementations of the three add-on modules have been created as comprehen
 - `ProductionOrderComponent` - Material usage tracking
 
 ### API Endpoints Needed (Future)
+
 - POST /api/production/orders - Create production order
 - GET /api/production/orders - List production orders
 - GET /api/production/orders/:id - Get order details
@@ -70,6 +76,7 @@ Basic implementations of the three add-on modules have been created as comprehen
 ### Features Implemented
 
 #### ✅ Customer Management
+
 - Customer records with billing/shipping addresses
 - Customer status tracking (PROSPECT, ACTIVE, INACTIVE, BLOCKED)
 - Credit limit tracking
@@ -77,6 +84,7 @@ Basic implementations of the three add-on modules have been created as comprehen
 - Tax ID and payment terms
 
 #### ✅ Lead Management
+
 - Lead capture and tracking
 - Lead status workflow: NEW → CONTACTED → QUALIFIED → PROPOSAL → NEGOTIATION → WON/LOST
 - Priority levels
@@ -84,6 +92,7 @@ Basic implementations of the three add-on modules have been created as comprehen
 - Expected close date
 
 #### ✅ Opportunity Pipeline
+
 - Sales opportunity tracking
 - Stage-based pipeline (PROSPECTING → QUALIFICATION → PROPOSAL → NEGOTIATION → CLOSED)
 - Probability tracking
@@ -91,6 +100,7 @@ Basic implementations of the three add-on modules have been created as comprehen
 - Competitor tracking
 
 #### ✅ Quote Management
+
 - Create and send quotes
 - Quote status: DRAFT → SENT → ACCEPTED/REJECTED/EXPIRED
 - Line items with pricing
@@ -99,11 +109,13 @@ Basic implementations of the three add-on modules have been created as comprehen
 - Convert to order functionality
 
 #### ✅ Customer Interactions
+
 - Interaction logging (CALL, EMAIL, MEETING, NOTE)
 - Activity history
 - Next follow-up tracking
 
 ### Key Types
+
 - `Customer` - Customer record
 - `Lead` - Sales lead
 - `Opportunity` - Sales opportunity
@@ -113,6 +125,7 @@ Basic implementations of the three add-on modules have been created as comprehen
 - `Address` - Address type
 
 ### API Endpoints Needed (Future)
+
 - POST /api/sales/customers - Create customer
 - GET /api/sales/customers - List customers
 - POST /api/sales/leads - Create lead
@@ -134,6 +147,7 @@ Basic implementations of the three add-on modules have been created as comprehen
 ### Features Implemented
 
 #### ✅ Asset Management
+
 - Asset registry with comprehensive details
 - Asset types: MACHINERY, VEHICLE, EQUIPMENT, FACILITY, TOOL
 - Status tracking: OPERATIONAL, IN_MAINTENANCE, OUT_OF_SERVICE, RETIRED
@@ -144,6 +158,7 @@ Basic implementations of the three add-on modules have been created as comprehen
 - Expected lifespan tracking
 
 #### ✅ Maintenance Scheduling
+
 - Preventive maintenance schedules
 - Multiple frequency options (DAILY, WEEKLY, MONTHLY, QUARTERLY, YEARLY, CUSTOM)
 - Priority levels (LOW, MEDIUM, HIGH, EMERGENCY)
@@ -153,6 +168,7 @@ Basic implementations of the three add-on modules have been created as comprehen
 - Next due date calculation
 
 #### ✅ Work Orders
+
 - Create and manage maintenance work orders
 - Work order status: SCHEDULED → IN_PROGRESS → COMPLETED
 - Maintenance types: PREVENTIVE, CORRECTIVE, EMERGENCY, PREDICTIVE
@@ -161,6 +177,7 @@ Basic implementations of the three add-on modules have been created as comprehen
 - Work performed documentation
 
 #### ✅ Service History
+
 - Complete service log for each asset
 - Service type and description
 - Cost tracking
@@ -168,11 +185,13 @@ Basic implementations of the three add-on modules have been created as comprehen
 - Attachments support
 
 #### ✅ Meter Readings
+
 - Predictive maintenance support
 - Multiple meter types (hours, miles, cycles)
 - Unit-based tracking
 
 ### Key Types
+
 - `Asset` - Asset record
 - `MaintenanceSchedule` - Maintenance schedule
 - `MaintenanceWorkOrder` - Work order
@@ -181,6 +200,7 @@ Basic implementations of the three add-on modules have been created as comprehen
 - `MeterReading` - Meter reading for predictive maintenance
 
 ### API Endpoints Needed (Future)
+
 - POST /api/maintenance/assets - Create asset
 - GET /api/maintenance/assets - List assets
 - PUT /api/maintenance/assets/:id - Update asset
@@ -197,6 +217,7 @@ Basic implementations of the three add-on modules have been created as comprehen
 ## Implementation Status
 
 ### ✅ Completed
+
 - All type definitions for all three modules
 - Enums for status types and categories
 - DTOs for API requests
@@ -204,9 +225,11 @@ Basic implementations of the three add-on modules have been created as comprehen
 - Exported in main types index
 
 ### 🔄 In Progress
+
 - None
 
 ### ❌ Not Implemented (Future Work)
+
 - Database migrations/tables
 - Repository layer
 - Service layer
@@ -221,6 +244,7 @@ Basic implementations of the three add-on modules have been created as comprehen
 To fully implement these modules, the following database tables will need to be created:
 
 ### Production Module
+
 - `bill_of_materials`
 - `bom_components`
 - `production_orders`
@@ -229,6 +253,7 @@ To fully implement these modules, the following database tables will need to be 
 - `production_journals`
 
 ### Sales & CRM Module
+
 - `customers`
 - `leads`
 - `opportunities`
@@ -237,6 +262,7 @@ To fully implement these modules, the following database tables will need to be 
 - `customer_interactions`
 
 ### Maintenance & Assets Module
+
 - `assets`
 - `maintenance_schedules`
 - `maintenance_work_orders`
@@ -249,6 +275,7 @@ To fully implement these modules, the following database tables will need to be 
 ## Pricing Notes
 
 According to the marketing specification, these modules should be priced as:
+
 - **Production Management:** $80/month
 - **Sales & CRM:** $60/month
 - **Maintenance & Assets:** $50/month

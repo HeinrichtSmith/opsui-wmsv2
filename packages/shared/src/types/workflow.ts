@@ -27,26 +27,26 @@ import { OrderStatus } from './index';
  */
 export const VALID_ORDER_TRANSITIONS: Readonly<Record<OrderStatus, readonly OrderStatus[]>> = {
   [OrderStatus.PENDING]: [
-    OrderStatus.PICKING,    // Normal flow
-    OrderStatus.CANCELLED,  // Customer cancellation
-    OrderStatus.BACKORDER   // Insufficient inventory
+    OrderStatus.PICKING, // Normal flow
+    OrderStatus.CANCELLED, // Customer cancellation
+    OrderStatus.BACKORDER, // Insufficient inventory
   ] as const,
 
   [OrderStatus.PICKING]: [
-    OrderStatus.PICKED,     // All items picked
-    OrderStatus.CANCELLED   // Emergency cancellation
+    OrderStatus.PICKED, // All items picked
+    OrderStatus.CANCELLED, // Emergency cancellation
   ] as const,
 
   [OrderStatus.PICKED]: [
-    OrderStatus.PACKING     // Ready for packing
+    OrderStatus.PACKING, // Ready for packing
   ] as const,
 
   [OrderStatus.PACKING]: [
-    OrderStatus.PACKED      // All items packed
+    OrderStatus.PACKED, // All items packed
   ] as const,
 
   [OrderStatus.PACKED]: [
-    OrderStatus.SHIPPED     // Shipment confirmed
+    OrderStatus.SHIPPED, // Shipment confirmed
   ] as const,
 
   [OrderStatus.SHIPPED]: [
@@ -58,8 +58,8 @@ export const VALID_ORDER_TRANSITIONS: Readonly<Record<OrderStatus, readonly Orde
   ] as const,
 
   [OrderStatus.BACKORDER]: [
-    OrderStatus.PENDING     // Inventory replenished, retry order
-  ] as const
+    OrderStatus.PENDING, // Inventory replenished, retry order
+  ] as const,
 } as const;
 
 /**
@@ -67,7 +67,7 @@ export const VALID_ORDER_TRANSITIONS: Readonly<Record<OrderStatus, readonly Orde
  */
 export const TERMINAL_ORDER_STATES: ReadonlySet<OrderStatus> = new Set([
   OrderStatus.SHIPPED,
-  OrderStatus.CANCELLED
+  OrderStatus.CANCELLED,
 ]) as ReadonlySet<OrderStatus>;
 
 /**
@@ -75,7 +75,7 @@ export const TERMINAL_ORDER_STATES: ReadonlySet<OrderStatus> = new Set([
  */
 export const CANCELLABLE_ORDER_STATES: ReadonlySet<OrderStatus> = new Set([
   OrderStatus.PENDING,
-  OrderStatus.PICKING
+  OrderStatus.PICKING,
 ]) as ReadonlySet<OrderStatus>;
 
 /**
@@ -83,7 +83,7 @@ export const CANCELLABLE_ORDER_STATES: ReadonlySet<OrderStatus> = new Set([
  */
 export const PICKER_REQUIRED_STATES: ReadonlySet<OrderStatus> = new Set([
   OrderStatus.PICKING,
-  OrderStatus.PICKED
+  OrderStatus.PICKED,
 ]) as ReadonlySet<OrderStatus>;
 
 /**
@@ -91,7 +91,7 @@ export const PICKER_REQUIRED_STATES: ReadonlySet<OrderStatus> = new Set([
  */
 export const PACKER_REQUIRED_STATES: ReadonlySet<OrderStatus> = new Set([
   OrderStatus.PACKING,
-  OrderStatus.PACKED
+  OrderStatus.PACKED,
 ]) as ReadonlySet<OrderStatus>;
 
 /**
@@ -105,10 +105,7 @@ export const PACKER_REQUIRED_STATES: ReadonlySet<OrderStatus> = new Set([
  * isValidTransition(OrderStatus.PENDING, OrderStatus.PICKING); // true
  * isValidTransition(OrderStatus.PICKING, OrderStatus.SHIPPED); // false
  */
-export function isValidTransition(
-  fromStatus: OrderStatus,
-  toStatus: OrderStatus
-): boolean {
+export function isValidTransition(fromStatus: OrderStatus, toStatus: OrderStatus): boolean {
   const allowedTransitions = VALID_ORDER_TRANSITIONS[fromStatus];
   return allowedTransitions.includes(toStatus);
 }
@@ -194,16 +191,14 @@ export const TRANSITION_PREREQUISITES = {
       if (!picker.active) {
         throw new Error(`Picker ${context.pickerId} is not active`);
       }
-    }
+    },
   },
 
   [OrderStatus.PICKED]: {
     // Before: PICKING → PICKED
     check: async (context: TransitionContext) => {
       // 1. All items must be fully picked
-      const unpickedItems = context.orderItems.filter(
-        item => item.pickedQuantity < item.quantity
-      );
+      const unpickedItems = context.orderItems.filter(item => item.pickedQuantity < item.quantity);
       if (unpickedItems.length > 0) {
         throw new Error(`${unpickedItems.length} items not fully picked`);
       }
@@ -213,7 +208,7 @@ export const TRANSITION_PREREQUISITES = {
       if (incompleteTasks.length > 0) {
         throw new Error(`${incompleteTasks.length} pick tasks not completed`);
       }
-    }
+    },
   },
 
   [OrderStatus.PACKING]: {
@@ -229,7 +224,7 @@ export const TRANSITION_PREREQUISITES = {
       if (!packer.active) {
         throw new Error(`Packer ${context.packerId} is not active`);
       }
-    }
+    },
   },
 
   [OrderStatus.PACKED]: {
@@ -237,7 +232,7 @@ export const TRANSITION_PREREQUISITES = {
     check: async (context: TransitionContext) => {
       // 1. All items must be packed
       // (Implementation depends on packing workflow)
-    }
+    },
   },
 
   [OrderStatus.SHIPPED]: {
@@ -252,7 +247,7 @@ export const TRANSITION_PREREQUISITES = {
       if (!context.carrier) {
         throw new Error('Carrier must be assigned');
       }
-    }
+    },
   },
 
   [OrderStatus.CANCELLED]: {
@@ -261,7 +256,7 @@ export const TRANSITION_PREREQUISITES = {
       // 1. Must be in cancellable state (validated before calling this)
       // 2. Reserved inventory must be released
       await context.releaseReservedInventory(context.orderId);
-    }
+    },
   },
 
   [OrderStatus.BACKORDER]: {
@@ -271,8 +266,8 @@ export const TRANSITION_PREREQUISITES = {
       if (!context.backorderReason) {
         throw new Error('Backorder reason must be provided');
       }
-    }
-  }
+    },
+  },
 } as const;
 
 /**
@@ -336,7 +331,7 @@ export async function validateTransition(
   if (!isValidTransition(fromStatus, toStatus)) {
     throw new Error(
       `Invalid state transition: ${fromStatus} → ${toStatus}. ` +
-      `Valid transitions from ${fromStatus}: ${getNextStates(fromStatus).join(', ')}`
+        `Valid transitions from ${fromStatus}: ${getNextStates(fromStatus).join(', ')}`
     );
   }
 
@@ -350,67 +345,72 @@ export async function validateTransition(
 /**
  * State transition metadata for UI display and logging.
  */
-export const STATE_METADATA: Readonly<Record<OrderStatus, {
-  label: string;
-  description: string;
-  color: string;
-  requiresPicker: boolean;
-  requiresPacker: boolean;
-}>> = {
+export const STATE_METADATA: Readonly<
+  Record<
+    OrderStatus,
+    {
+      label: string;
+      description: string;
+      color: string;
+      requiresPicker: boolean;
+      requiresPacker: boolean;
+    }
+  >
+> = {
   [OrderStatus.PENDING]: {
     label: 'Pending',
     description: 'Order created, waiting to be picked',
     color: 'gray',
     requiresPicker: false,
-    requiresPacker: false
+    requiresPacker: false,
   },
   [OrderStatus.PICKING]: {
     label: 'Picking',
     description: 'Picker is actively gathering items',
     color: 'blue',
     requiresPicker: true,
-    requiresPacker: false
+    requiresPacker: false,
   },
   [OrderStatus.PICKED]: {
     label: 'Picked',
     description: 'All items gathered, ready for packing',
     color: 'indigo',
     requiresPicker: true,
-    requiresPacker: false
+    requiresPacker: false,
   },
   [OrderStatus.PACKING]: {
     label: 'Packing',
     description: 'Packer is preparing shipment',
     color: 'purple',
     requiresPicker: true,
-    requiresPacker: true
+    requiresPacker: true,
   },
   [OrderStatus.PACKED]: {
     label: 'Packed',
     description: 'Shipment prepared, awaiting carrier',
     color: 'orange',
     requiresPicker: true,
-    requiresPacker: true
+    requiresPacker: true,
   },
   [OrderStatus.SHIPPED]: {
     label: 'Shipped',
     description: 'Order has been shipped to customer',
     color: 'green',
     requiresPicker: true,
-    requiresPacker: true
+    requiresPacker: true,
   },
   [OrderStatus.CANCELLED]: {
     label: 'Cancelled',
     description: 'Order has been cancelled',
     color: 'red',
     requiresPicker: false,
-    requiresPacker: false
+    requiresPacker: false,
   },
   [OrderStatus.BACKORDER]: {
     label: 'Backorder',
     description: 'Order delayed due to insufficient inventory',
     color: 'yellow',
     requiresPicker: false,
-    requiresPacker: false
-  }
+    requiresPacker: false,
+  },
 } as const;

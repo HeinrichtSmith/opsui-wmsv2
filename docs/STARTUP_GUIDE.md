@@ -15,6 +15,7 @@ npm run dev
 ```
 
 **This command will**:
+
 1. ✅ Check prerequisites (Node.js, PostgreSQL)
 2. ✅ Kill any existing processes on ports 3001 and 5173
 3. ✅ Verify database connection
@@ -31,26 +32,26 @@ npm run dev
 
 ### Starting Servers
 
-| Command | What It Does | When to Use |
-|---------|--------------|-------------|
-| `npm run dev` | **Start everything** (recommended) | Everyday development |
-| `npm run dev:start` | Same as `npm run dev` | Alternative syntax |
-| `npm run dev:restart` | Kill all + start fresh | When things are broken |
-| `npm run dev:smart` | Advanced monitoring | For advanced users |
-| `npm run dev:safe` | Safe mode with checks | When having issues |
+| Command               | What It Does                       | When to Use            |
+| --------------------- | ---------------------------------- | ---------------------- |
+| `npm run dev`         | **Start everything** (recommended) | Everyday development   |
+| `npm run dev:start`   | Same as `npm run dev`              | Alternative syntax     |
+| `npm run dev:restart` | Kill all + start fresh             | When things are broken |
+| `npm run dev:smart`   | Advanced monitoring                | For advanced users     |
+| `npm run dev:safe`    | Safe mode with checks              | When having issues     |
 
 ### Stopping Servers
 
-| Command | What It Does | When to Use |
-|---------|--------------|-------------|
-| `npm run dev:stop` | **Stop all servers** (recommended) | Normal shutdown |
-| Ctrl+C | Stop all servers | When servers are running in terminal |
+| Command            | What It Does                       | When to Use                          |
+| ------------------ | ---------------------------------- | ------------------------------------ |
+| `npm run dev:stop` | **Stop all servers** (recommended) | Normal shutdown                      |
+| Ctrl+C             | Stop all servers                   | When servers are running in terminal |
 
 ### Individual Servers
 
-| Command | What It Does | When to Use |
-|---------|--------------|-------------|
-| `npm run dev:backend` | Start backend only | Backend-only work |
+| Command                | What It Does        | When to Use        |
+| ---------------------- | ------------------- | ------------------ |
+| `npm run dev:backend`  | Start backend only  | Backend-only work  |
 | `npm run dev:frontend` | Start frontend only | Frontend-only work |
 
 ---
@@ -66,6 +67,7 @@ npm run dev
 ```
 
 **If this fails**:
+
 - **Node.js too old**: Install Node.js 20+ from nodejs.org
 - **PostgreSQL not running**:
   - Windows: Start PostgreSQL service from Services
@@ -80,6 +82,7 @@ Checking port 5173...
 ```
 
 **If ports are in use**:
+
 - Script automatically kills processes on ports 3001 and 5173
 - Waits 2 seconds for ports to be released
 - **No manual intervention needed**
@@ -92,6 +95,7 @@ Checking port 5173...
 ```
 
 **If this fails**:
+
 - Check PostgreSQL is running
 - Check `packages/backend/.env` has correct credentials:
   ```env
@@ -117,6 +121,7 @@ Checking port 5173...
 ```
 
 **What happens**:
+
 - Runs `npm run dev` in `packages/backend/`
 - Watches for file changes
 - Auto-restarts on changes
@@ -131,6 +136,7 @@ Checking port 5173...
 ```
 
 **What happens**:
+
 - Runs `npm run dev` in `packages/frontend/`
 - Hot Module Replacement (HMR) enabled
 - Auto-refreshes on changes
@@ -187,6 +193,7 @@ taskkill /F /PID <PID_FROM_ABOVE>
 **Solutions**:
 
 1. **Check PostgreSQL is running**:
+
    ```bash
    # Windows: Check Services
    # Look for "postgresql-x64-15" or similar
@@ -196,6 +203,7 @@ taskkill /F /PID <PID_FROM_ABOVE>
    ```
 
 2. **Check database exists**:
+
    ```bash
    psql -U postgres
    \l  # list databases
@@ -205,6 +213,7 @@ taskkill /F /PID <PID_FROM_ABOVE>
    ```
 
 3. **Check user exists**:
+
    ```bash
    \du  # list users
 
@@ -214,6 +223,7 @@ taskkill /F /PID <PID_FROM_ABOVE>
    ```
 
 4. **Check .env file**:
+
    ```bash
    # View current settings
    cat packages/backend/.env
@@ -250,6 +260,7 @@ npm run db:seed
 **Solutions**:
 
 1. **Check backend is actually running**:
+
    ```bash
    curl http://localhost:3001/health
    ```
@@ -270,12 +281,14 @@ npm run db:seed
 **Solutions**:
 
 1. **Check for syntax errors**:
+
    ```bash
    npm run build
    # Fix any TypeScript errors
    ```
 
 2. **Check for missing dependencies**:
+
    ```bash
    npm install
    cd packages/backend && npm install
@@ -387,11 +400,13 @@ npm run db:refresh
 If you need to use different ports:
 
 **Backend** (`packages/backend/.env`):
+
 ```env
 PORT=4001  # Change backend port
 ```
 
 **Frontend** (`packages/frontend/vite.config.ts`):
+
 ```typescript
 export default defineConfig({
   server: {
@@ -443,6 +458,7 @@ npm run dev
 ```
 
 **Do NOT**:
+
 - ❌ Run `npm run dev:backend` and `npm run dev:frontend` separately
 - ❌ Use `concurrently` directly
 - ❌ Start servers in background without user consent

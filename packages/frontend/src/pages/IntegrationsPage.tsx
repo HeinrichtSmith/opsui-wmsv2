@@ -17,7 +17,7 @@ import {
   ArrowPathIcon,
   ServerIcon,
   ShoppingBagIcon,
-  TruckIcon
+  TruckIcon,
 } from '@heroicons/react/24/outline';
 import {
   Integration,
@@ -26,7 +26,7 @@ import {
   IntegrationProvider,
   SyncJob,
   SyncJobStatus,
-  CarrierAccount
+  CarrierAccount,
 } from '@opsui/shared';
 import { Header } from '@/components/shared';
 
@@ -56,7 +56,9 @@ interface IntegrationFormData {
 // ============================================================================
 
 export function IntegrationsPage() {
-  const [activeTab, setActiveTab] = useState<'integrations' | 'sync-jobs' | 'webhooks'>('integrations');
+  const [activeTab, setActiveTab] = useState<'integrations' | 'sync-jobs' | 'webhooks'>(
+    'integrations'
+  );
   const [integrations, setIntegrations] = useState<Integration[]>([]);
   const [syncJobs, setSyncJobs] = useState<SyncJob[]>([]);
   const [selectedIntegration, setSelectedIntegration] = useState<Integration | undefined>();
@@ -73,32 +75,32 @@ export function IntegrationsPage() {
       status: IntegrationStatus.ACTIVE,
       configuration: {
         shopDomain: 'mystore.myshopify.com',
-        accessToken: 'shpat_xxxxx'
+        accessToken: 'shpat_xxxxx',
       },
       syncSettings: {
         autoSync: true,
         syncInterval: 300,
-        syncOnEvent: true
+        syncOnEvent: true,
       },
       webhookSettings: {
         url: 'https://api.wms.com/webhooks/shopify',
         secret: 'webhook_secret',
-        events: ['orders/create', 'orders/updated', 'products/update']
+        events: ['orders/create', 'orders/updated', 'products/update'],
       },
       lastSyncAt: new Date(Date.now() - 1000 * 60 * 15),
       lastSyncStatus: 'SUCCESS',
       createdAt: new Date('2024-01-15'),
       updatedAt: new Date('2024-01-20'),
-      carrierAccounts: []
-    }
+      carrierAccounts: [],
+    },
   ];
 
   React.useEffect(() => {
     setIntegrations(mockIntegrations);
   }, []);
 
-  const filteredIntegrations = integrations.filter(integration =>
-    filter === 'ALL' || integration.status === filter
+  const filteredIntegrations = integrations.filter(
+    integration => filter === 'ALL' || integration.status === filter
   );
 
   return (
@@ -113,90 +115,89 @@ export function IntegrationsPage() {
           </p>
         </div>
 
-      {/* Tabs */}
-      <div className="mb-6 border-b border-gray-800">
-        <nav className="flex space-x-8">
-          <button
-            onClick={() => setActiveTab('integrations')}
-            className={`py-4 px-1 border-b-2 font-medium text-sm ${
-              activeTab === 'integrations'
-                ? 'border-blue-500 text-blue-400'
-                : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-700'
-            }`}
-          >
-            Integrations
-          </button>
-          <button
-            onClick={() => setActiveTab('sync-jobs')}
-            className={`py-4 px-1 border-b-2 font-medium text-sm ${
-              activeTab === 'sync-jobs'
-                ? 'border-blue-500 text-blue-400'
-                : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-700'
-            }`}
-          >
-            Sync Jobs
-          </button>
-          <button
-            onClick={() => setActiveTab('webhooks')}
-            className={`py-4 px-1 border-b-2 font-medium text-sm ${
-              activeTab === 'webhooks'
-                ? 'border-blue-500 text-blue-400'
-                : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-700'
-            }`}
-          >
-            Webhooks
-          </button>
-        </nav>
-      </div>
+        {/* Tabs */}
+        <div className="mb-6 border-b border-gray-800">
+          <nav className="flex space-x-8">
+            <button
+              onClick={() => setActiveTab('integrations')}
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'integrations'
+                  ? 'border-blue-500 text-blue-400'
+                  : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-700'
+              }`}
+            >
+              Integrations
+            </button>
+            <button
+              onClick={() => setActiveTab('sync-jobs')}
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'sync-jobs'
+                  ? 'border-blue-500 text-blue-400'
+                  : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-700'
+              }`}
+            >
+              Sync Jobs
+            </button>
+            <button
+              onClick={() => setActiveTab('webhooks')}
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'webhooks'
+                  ? 'border-blue-500 text-blue-400'
+                  : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-700'
+              }`}
+            >
+              Webhooks
+            </button>
+          </nav>
+        </div>
 
-      {/* Content */}
-      {activeTab === 'integrations' && (
-        <IntegrationsTab
-          integrations={filteredIntegrations}
-          filter={filter}
-          setFilter={setFilter}
-          onSelectIntegration={(integration) => {
-            setSelectedIntegration(integration);
-            setModalOpen(true);
-          }}
-          onCreateIntegration={() => {
-            setSelectedIntegration(undefined);
-            setModalOpen(true);
-          }}
-          onDeleteIntegration={(integrationId) => {
-            setIntegrations(integrations.filter(i => i.integrationId !== integrationId));
-          }}
-        />
-      )}
+        {/* Content */}
+        {activeTab === 'integrations' && (
+          <IntegrationsTab
+            integrations={filteredIntegrations}
+            filter={filter}
+            setFilter={setFilter}
+            onSelectIntegration={integration => {
+              setSelectedIntegration(integration);
+              setModalOpen(true);
+            }}
+            onCreateIntegration={() => {
+              setSelectedIntegration(undefined);
+              setModalOpen(true);
+            }}
+            onDeleteIntegration={integrationId => {
+              setIntegrations(integrations.filter(i => i.integrationId !== integrationId));
+            }}
+          />
+        )}
 
-      {activeTab === 'sync-jobs' && (
-        <SyncJobsTab syncJobs={syncJobs} />
-      )}
+        {activeTab === 'sync-jobs' && <SyncJobsTab syncJobs={syncJobs} />}
 
-      {activeTab === 'webhooks' && (
-        <WebhooksTab />
-      )}
+        {activeTab === 'webhooks' && <WebhooksTab />}
 
         {/* Integration Modal */}
         {modalOpen && (
           <IntegrationModal
             integration={selectedIntegration}
             onClose={() => setModalOpen(false)}
-            onSave={(data) => {
+            onSave={data => {
               if (selectedIntegration) {
-                setIntegrations(integrations.map(i =>
-                  i.integrationId === selectedIntegration.integrationId
-                    ? { ...i, ...data }
-                    : i
-                ));
+                setIntegrations(
+                  integrations.map(i =>
+                    i.integrationId === selectedIntegration.integrationId ? { ...i, ...data } : i
+                  )
+                );
               } else {
-                setIntegrations([...integrations, {
-                  ...data,
-                  integrationId: `INT-${Date.now()}`,
-                  createdAt: new Date(),
-                  updatedAt: new Date(),
-                  carrierAccounts: []
-                }]);
+                setIntegrations([
+                  ...integrations,
+                  {
+                    ...data,
+                    integrationId: `INT-${Date.now()}`,
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    carrierAccounts: [],
+                  },
+                ]);
               }
               setModalOpen(false);
             }}
@@ -226,10 +227,12 @@ function IntegrationsTab({
   setFilter,
   onSelectIntegration,
   onCreateIntegration,
-  onDeleteIntegration
+  onDeleteIntegration,
 }: IntegrationsTabProps) {
   const [testingConnection, setTestingConnection] = useState<string | null>(null);
-  const [connectionResults, setConnectionResults] = useState<Record<string, { success: boolean; message: string }>>({});
+  const [connectionResults, setConnectionResults] = useState<
+    Record<string, { success: boolean; message: string }>
+  >({});
 
   const handleTestConnection = async (integrationId: string) => {
     setTestingConnection(integrationId);
@@ -237,7 +240,7 @@ function IntegrationsTab({
     await new Promise(resolve => setTimeout(resolve, 1000));
     setConnectionResults({
       ...connectionResults,
-      [integrationId]: { success: true, message: 'Connection successful (234ms)' }
+      [integrationId]: { success: true, message: 'Connection successful (234ms)' },
     });
     setTestingConnection(null);
   };
@@ -303,7 +306,7 @@ function IntegrationsTab({
 
       {/* Integrations Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {integrations.map((integration) => {
+        {integrations.map(integration => {
           const ProviderIcon = getProviderIcon(integration.type);
           const testResult = connectionResults[integration.integrationId];
 
@@ -338,13 +341,15 @@ function IntegrationsTab({
                 {integration.lastSyncStatus && (
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-400">Status:</span>
-                    <span className={`font-medium ${
-                      integration.lastSyncStatus === 'SUCCESS'
-                        ? 'text-green-400'
-                        : integration.lastSyncStatus === 'FAILED'
-                        ? 'text-red-400'
-                        : 'text-yellow-400'
-                    }`}>
+                    <span
+                      className={`font-medium ${
+                        integration.lastSyncStatus === 'SUCCESS'
+                          ? 'text-green-400'
+                          : integration.lastSyncStatus === 'FAILED'
+                            ? 'text-red-400'
+                            : 'text-yellow-400'
+                      }`}
+                    >
                       {integration.lastSyncStatus}
                     </span>
                   </div>
@@ -352,9 +357,13 @@ function IntegrationsTab({
               </div>
 
               {testResult && (
-                <div className={`mb-4 p-2 rounded text-sm ${
-                  testResult.success ? 'bg-green-900/30 text-green-400' : 'bg-red-900/30 text-red-400'
-                }`}>
+                <div
+                  className={`mb-4 p-2 rounded text-sm ${
+                    testResult.success
+                      ? 'bg-green-900/30 text-green-400'
+                      : 'bg-red-900/30 text-red-400'
+                  }`}
+                >
                   {testResult.message}
                 </div>
               )}
@@ -402,10 +411,7 @@ function IntegrationsTab({
         <div className="text-center py-12">
           <ServerIcon className="mx-auto h-12 w-12 text-gray-600" />
           <p className="mt-2 text-gray-400">No integrations configured</p>
-          <button
-            onClick={onCreateIntegration}
-            className="mt-4 text-blue-400 hover:text-blue-300"
-          >
+          <button onClick={onCreateIntegration} className="mt-4 text-blue-400 hover:text-blue-300">
             Add your first integration
           </button>
         </div>
@@ -459,14 +465,14 @@ function StatusBadge({ status }: { status: IntegrationStatus }) {
     [IntegrationStatus.ACTIVE]: 'bg-green-100 text-green-800',
     [IntegrationStatus.INACTIVE]: 'bg-gray-100 text-gray-800',
     [IntegrationStatus.ERROR]: 'bg-red-100 text-red-800',
-    [IntegrationStatus.PENDING]: 'bg-yellow-100 text-yellow-800'
+    [IntegrationStatus.PENDING]: 'bg-yellow-100 text-yellow-800',
   };
 
   const icons: Record<IntegrationStatus, React.ReactNode> = {
     [IntegrationStatus.ACTIVE]: <CheckCircleIcon className="h-4 w-4 inline mr-1" />,
     [IntegrationStatus.INACTIVE]: <XCircleIcon className="h-4 w-4 inline mr-1" />,
     [IntegrationStatus.ERROR]: <XCircleIcon className="h-4 w-4 inline mr-1" />,
-    [IntegrationStatus.PENDING]: <ClockIcon className="h-4 w-4 inline mr-1" />
+    [IntegrationStatus.PENDING]: <ClockIcon className="h-4 w-4 inline mr-1" />,
   };
 
   return (
@@ -484,7 +490,9 @@ function StatusBadge({ status }: { status: IntegrationStatus }) {
 interface IntegrationModalProps {
   integration?: Integration;
   onClose: () => void;
-  onSave: (data: Omit<Integration, 'integrationId' | 'createdAt' | 'updatedAt' | 'carrierAccounts'>) => void;
+  onSave: (
+    data: Omit<Integration, 'integrationId' | 'createdAt' | 'updatedAt' | 'carrierAccounts'>
+  ) => void;
 }
 
 function IntegrationModal({ integration, onClose, onSave }: IntegrationModalProps) {
@@ -498,9 +506,9 @@ function IntegrationModal({ integration, onClose, onSave }: IntegrationModalProp
     syncSettings: integration?.syncSettings || {
       autoSync: true,
       syncInterval: 300,
-      syncOnEvent: true
+      syncOnEvent: true,
     },
-    webhookSettings: integration?.webhookSettings
+    webhookSettings: integration?.webhookSettings,
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -513,9 +521,18 @@ function IntegrationModal({ integration, onClose, onSave }: IntegrationModalProp
       case IntegrationType.ERP:
         return [IntegrationProvider.SAP, IntegrationProvider.ORACLE];
       case IntegrationType.ECOMMERCE:
-        return [IntegrationProvider.SHOPIFY, IntegrationProvider.WOOCOMMERCE, IntegrationProvider.MAGENTO];
+        return [
+          IntegrationProvider.SHOPIFY,
+          IntegrationProvider.WOOCOMMERCE,
+          IntegrationProvider.MAGENTO,
+        ];
       case IntegrationType.CARRIER:
-        return [IntegrationProvider.FEDEX, IntegrationProvider.UPS, IntegrationProvider.DHL, IntegrationProvider.USPS];
+        return [
+          IntegrationProvider.FEDEX,
+          IntegrationProvider.UPS,
+          IntegrationProvider.DHL,
+          IntegrationProvider.USPS,
+        ];
       default:
         return [];
     }
@@ -540,7 +557,7 @@ function IntegrationModal({ integration, onClose, onSave }: IntegrationModalProp
                 <input
                   type="text"
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={e => setFormData({ ...formData, name: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   required
                 />
@@ -548,16 +565,16 @@ function IntegrationModal({ integration, onClose, onSave }: IntegrationModalProp
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Type *
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Type *</label>
                   <select
                     value={formData.type}
-                    onChange={(e) => setFormData({
-                      ...formData,
-                      type: e.target.value as IntegrationType,
-                      provider: getProvidersForType(e.target.value as IntegrationType)[0]
-                    })}
+                    onChange={e =>
+                      setFormData({
+                        ...formData,
+                        type: e.target.value as IntegrationType,
+                        provider: getProvidersForType(e.target.value as IntegrationType)[0],
+                      })
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value={IntegrationType.ERP}>ERP System</option>
@@ -567,16 +584,18 @@ function IntegrationModal({ integration, onClose, onSave }: IntegrationModalProp
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Provider *
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Provider *</label>
                   <select
                     value={formData.provider}
-                    onChange={(e) => setFormData({ ...formData, provider: e.target.value as IntegrationProvider })}
+                    onChange={e =>
+                      setFormData({ ...formData, provider: e.target.value as IntegrationProvider })
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     {availableProviders.map(provider => (
-                      <option key={provider} value={provider}>{provider}</option>
+                      <option key={provider} value={provider}>
+                        {provider}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -589,7 +608,7 @@ function IntegrationModal({ integration, onClose, onSave }: IntegrationModalProp
                 <textarea
                   rows={6}
                   value={JSON.stringify(formData.configuration, null, 2)}
-                  onChange={(e) => {
+                  onChange={e => {
                     try {
                       setFormData({ ...formData, configuration: JSON.parse(e.target.value) });
                     } catch {
@@ -608,7 +627,7 @@ function IntegrationModal({ integration, onClose, onSave }: IntegrationModalProp
                   <textarea
                     rows={4}
                     value={JSON.stringify(formData.webhookSettings || {}, null, 2)}
-                    onChange={(e) => {
+                    onChange={e => {
                       try {
                         setFormData({ ...formData, webhookSettings: JSON.parse(e.target.value) });
                       } catch {

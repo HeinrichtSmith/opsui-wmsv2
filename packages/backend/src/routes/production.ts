@@ -45,7 +45,7 @@ router.get(
     const { productId, status } = req.query;
     const boms = await productionService.getAllBOMs({
       productId: productId as string,
-      status: status as string
+      status: status as string,
     });
     res.json({ boms, count: boms.length });
   })
@@ -96,7 +96,7 @@ router.get(
       status: status as ProductionOrderStatus,
       assignedTo: assignedTo as string,
       limit: limit ? parseInt(limit as string) : undefined,
-      offset: offset ? parseInt(offset as string) : undefined
+      offset: offset ? parseInt(offset as string) : undefined,
     });
     res.json(result);
   })
@@ -126,7 +126,11 @@ router.put(
   authorize(UserRole.ADMIN, UserRole.SUPERVISOR, UserRole.PRODUCTION),
   asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
     const { orderId } = req.params;
-    const order = await productionService.updateProductionOrder(orderId, req.body, req.user!.userId);
+    const order = await productionService.updateProductionOrder(
+      orderId,
+      req.body,
+      req.user!.userId
+    );
     res.json(order);
   })
 );
@@ -171,10 +175,13 @@ router.post(
   authorize(UserRole.ADMIN, UserRole.SUPERVISOR, UserRole.PRODUCTION),
   asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
     const { orderId } = req.params;
-    const output = await productionService.recordProductionOutput({
-      ...req.body,
-      orderId
-    }, req.user!.userId);
+    const output = await productionService.recordProductionOutput(
+      {
+        ...req.body,
+        orderId,
+      },
+      req.user!.userId
+    );
     res.status(201).json(output);
   })
 );

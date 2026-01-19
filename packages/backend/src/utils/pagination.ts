@@ -70,10 +70,7 @@ export function parsePaginationParams(
   defaultLimit: number = 20,
   maxLimit: number = 100
 ): PaginationParams {
-  const page = Math.max(
-    defaultPage,
-    parseInt(query.page || defaultPage.toString(), 10)
-  );
+  const page = Math.max(defaultPage, parseInt(query.page || defaultPage.toString(), 10));
   const limit = Math.min(
     maxLimit,
     Math.max(1, parseInt(query.limit || defaultLimit.toString(), 10))
@@ -92,9 +89,10 @@ export function parsePaginationParams(
 /**
  * Calculate SQL offset and limit from pagination params
  */
-export function calculateSqlOffset(
-  pagination: PaginationParams
-): { offset: number; limit: number } {
+export function calculateSqlOffset(pagination: PaginationParams): {
+  offset: number;
+  limit: number;
+} {
   const offset = (pagination.page - 1) * pagination.limit;
   return {
     offset,
@@ -111,11 +109,7 @@ export function sendPaginatedResponse<T>(
   total: number,
   pagination: PaginationParams
 ): void {
-  const paginationMeta = calculatePaginationMeta(
-    total,
-    pagination.page,
-    pagination.limit
-  );
+  const paginationMeta = calculatePaginationMeta(total, pagination.page, pagination.limit);
 
   res.json({
     data,
@@ -157,10 +151,6 @@ export function addOrderByClause(
 /**
  * Add pagination (LIMIT/OFFSET) to SQL query
  */
-export function addPaginationClause(
-  sql: string,
-  offset: number,
-  limit: number
-): string {
+export function addPaginationClause(sql: string, offset: number, limit: number): string {
   return `${sql} LIMIT $${offset + 1} OFFSET $${offset + 2}`;
 }

@@ -10,6 +10,7 @@
 ## 🚀 Quick Start for GLM 4.7
 
 **Read these files FIRST (in order)**:
+
 1. [`.project-index.json`](../.project-index.json) - Fast project navigation (30 seconds)
 2. [`docs/QUICK_REFERENCE.md`](../docs/QUICK_REFERENCE.md) - Intent recognition patterns (2 minutes)
 3. [`docs/DECISIONS.md`](../docs/DECISIONS.md) - Architectural decisions (5 minutes)
@@ -32,44 +33,46 @@
 
 ## 🎯 Intent Recognition (How to Understand User)
 
-| User Says | Intent | Action |
-|-----------|--------|--------|
+| User Says     | Intent                  | Action                                        |
+| ------------- | ----------------------- | --------------------------------------------- |
 | "add feature" | Implement functionality | Use feature pattern from APPROVED_PATTERNS.md |
-| "fix bug" | Something broken | Debug protocol; check tests |
-| "optimize" | Improve performance | Profile first, then optimize |
-| "refactor" | Improve structure | Maintain behavior, improve code |
-| "test this" | Generate tests | Auto-generate with MCP tool |
-| "explain" | Learn concepts | Layered explanation |
-| "run this" | Start servers | Use `npm run dev:restart` |
-| "reset data" | Fresh database | Use `npm run db reset` |
+| "fix bug"     | Something broken        | Debug protocol; check tests                   |
+| "optimize"    | Improve performance     | Profile first, then optimize                  |
+| "refactor"    | Improve structure       | Maintain behavior, improve code               |
+| "test this"   | Generate tests          | Auto-generate with MCP tool                   |
+| "explain"     | Learn concepts          | Layered explanation                           |
+| "run this"    | Start servers           | Use `npm run dev:restart`                     |
+| "reset data"  | Fresh database          | Use `npm run db reset`                        |
 
 **See [`docs/QUICK_REFERENCE.md`](../docs/QUICK_REFERENCE.md) for complete intent patterns**
 
 ---
 
-
-
 ## 📂 Dynamic Context (Auto-Populated)
 
 **Current Session**:
+
 - **Module**: {MODULE_NAME}
 - **Owner**: {USER_ID}
 - **Branch**: {BRANCH_NAME}
 - **Working Directory**: {CWD}
 
 **Recent Changes** (Auto-detected):
+
 ```
 {RECENT_COMMITS}
 {CHANGED_FILES}
 ```
 
 **Test Status**:
+
 ```
 {TEST_RESULTS}
 {BUILD_STATUS}
 ```
 
 **Owned Paths**:
+
 ```
 {OWNED_PATHS}
 ```
@@ -79,6 +82,7 @@
 ## 🔗 Quick File Reference
 
 **Domain Services** (from `.project-index.json`):
+
 - **Orders**: [`packages/backend/src/services/OrderService.ts`](../packages/backend/src/services/OrderService.ts)
 - **Inventory**: [`packages/backend/src/services/InventoryService.ts`](../packages/backend/src/services/InventoryService.ts)
 - **Auth**: [`packages/backend/src/services/AuthService.ts`](../packages/backend/src/services/AuthService.ts)
@@ -86,6 +90,7 @@
 - **Metrics**: [`packages/backend/src/services/MetricsService.ts`](../packages/backend/src/services/MetricsService.ts)
 
 **Critical Files**:
+
 - **Rules**: [`.clinerules.md`](../.clinerules.md) (2,494 lines of protocols)
 - **Patterns**: [`patterns/APPROVED_PATTERNS.md`](../patterns/APPROVED_PATTERNS.md)
 - **Database**: [`packages/backend/src/db/schema.sql`](../packages/backend/src/db/schema.sql)
@@ -130,6 +135,7 @@ PENDING ──────→ BACKORDER ──→ PENDING
 ```
 
 ### Valid Transitions
+
 - `PENDING → PICKING, CANCELLED, BACKORDER`
 - `PICKING → PICKED, CANCELLED`
 - `PICKED → PACKING`
@@ -144,6 +150,7 @@ PENDING ──────→ BACKORDER ──→ PENDING
 ## Available Imports
 
 ### Core Types
+
 ```typescript
 import { OrderStatus, OrderPriority, OrderItemStatus } from '@wms/shared/types';
 import { UserRole, TaskStatus } from '@wms/shared/types';
@@ -151,17 +158,19 @@ import { Order, PickTask, User, Inventory } from '@wms/shared/types';
 ```
 
 ### Workflow Guardrails
+
 ```typescript
 import {
   validateTransition,
   isValidTransition,
   getNextStates,
   isTerminalState,
-  isCancellable
+  isCancellable,
 } from '@wms/shared/types/workflow';
 ```
 
 ### Invariants
+
 ```typescript
 import {
   invariantInventoryNeverNegative,
@@ -169,11 +178,12 @@ import {
   invariantPickedNeverExceedsOrdered,
   invariantQuantityAlwaysPositive,
   invariantPickerRequiredForPickingStates,
-  invariantAvailableInventorySufficient
+  invariantAvailableInventorySufficient,
 } from '@wms/shared/types/invariants';
 ```
 
 ### Constants
+
 ```typescript
 import {
   PICKER_CONFIG,
@@ -182,7 +192,7 @@ import {
   INVENTORY_CONFIG,
   BIN_LOCATION_CONFIG,
   BACKEND_CONFIG,
-  DATABASE_CONFIG
+  DATABASE_CONFIG,
 } from '@wms/shared/constants/system';
 ```
 
@@ -191,18 +201,21 @@ import {
 ## Business Rules
 
 ### Picking Module
+
 - Picker can claim max `PICKER_CONFIG.MAX_ORDERS_PER_PICKER` (10) orders
 - Pick timeout after `PICKER_CONFIG.PICK_TIMEOUT_MINUTES` (30) minutes
 - Must validate bin location format: `BIN_LOCATION_CONFIG.BIN_ID_PATTERN` (Z-A-S)
 - All items must be fully picked before `PICKING → PICKED` transition
 
 ### Packing Module
+
 - Packer can handle max `PACKER_CONFIG.MAX_ORDERS_PER_PACKER` (5) orders
 - Must have picker assigned before `PICKED → PACKING` transition
 - Must have packer assigned before `PACKING` state
 - Shipping info required before `PACKED → SHIPPED` transition
 
 ### Inventory
+
 - Inventory can never be negative
 - Reserved quantity can never exceed total quantity
 - Available = quantity - reserved (computed column)
@@ -213,8 +226,9 @@ import {
 ## Code Patterns
 
 ### Service Layer Transaction
+
 ```typescript
-return await db.transaction(async (trx) => {
+return await db.transaction(async trx => {
   // All operations here are atomic
   const order = await updateOrderStatus(trx, orderId, newStatus);
   await logStateChange(trx, orderId, oldStatus, newStatus);
@@ -223,33 +237,31 @@ return await db.transaction(async (trx) => {
 ```
 
 ### State Transition
+
 ```typescript
 // Validate before transitioning
-await validateTransition(
-  order.status,
-  OrderStatus.PICKING,
-  {
-    orderId,
-    pickerId: currentUser.id,
-    orderItems: order.items,
-    maxOrdersPerPicker: PICKER_CONFIG.MAX_ORDERS_PER_PICKER,
-    getActiveOrderCount: (id) => orderService.getActiveCount(id),
-    getAvailableInventory: (sku, bin) => inventoryService.getAvailable(sku, bin),
-    // ... other context
-  }
-);
+await validateTransition(order.status, OrderStatus.PICKING, {
+  orderId,
+  pickerId: currentUser.id,
+  orderItems: order.items,
+  maxOrdersPerPicker: PICKER_CONFIG.MAX_ORDERS_PER_PICKER,
+  getActiveOrderCount: id => orderService.getActiveCount(id),
+  getAvailableInventory: (sku, bin) => inventoryService.getAvailable(sku, bin),
+  // ... other context
+});
 
 // Then make the change
 await db.orders.update({ status: OrderStatus.PICKING });
 ```
 
 ### Error Handling
+
 ```typescript
 import {
   InventoryError,
   ValidationError,
   NotFoundError,
-  ConflictError
+  ConflictError,
 } from '@wms/shared/types';
 
 // Check inventory first
@@ -264,6 +276,7 @@ if (available < quantity) {
 ## Team Coordination
 
 ### Before Modifying Shared Code
+
 ```
 Post in team chat:
 "Planning to modify: {file}
@@ -273,12 +286,14 @@ Anyone working on dependent code?"
 ```
 
 ### Coordination Required For
+
 - `packages/shared/src/types/` - All team members
 - `packages/backend/src/db/schema.sql` - All team members
 - `packages/backend/src/services/order.ts` - Picking, Packing, Admin
 - Any API contract changes
 
 ### Module Owners
+
 - **Picking**: @friend1
 - **Packing**: @friend2
 - **Admin**: @you
@@ -288,6 +303,7 @@ Anyone working on dependent code?"
 ## Testing
 
 ### Before Proposing Changes
+
 ```bash
 # Run all tests
 npm test
@@ -301,6 +317,7 @@ npm run build
 ```
 
 ### Test Coverage Target
+
 - Unit tests: > 80%
 - Integration tests: > 70%
 - E2E tests: Critical user flows
@@ -342,11 +359,13 @@ packages/
 ## Quick Reference Commands
 
 ### Ownership Check
+
 ```bash
 npx ts-node scripts/check-ownership.ts {USER_ID} {file_path}
 ```
 
 ### Find Relevant Code
+
 ```bash
 # Search for type definitions
 grep -r "OrderStatus" packages/shared/src/types/
@@ -359,6 +378,7 @@ grep -r "async.*Order" packages/backend/src/services/
 ```
 
 ### Database Schema
+
 ```bash
 # View schema
 cat packages/backend/src/db/schema.sql
@@ -375,6 +395,7 @@ npm run db:seed
 ## Common Mistakes to Avoid
 
 ### ❌ Wrong
+
 ```typescript
 // String literal for enum
 const status = 'PICKING';
@@ -391,13 +412,14 @@ const available = order.quantity - order.reserved;
 ```
 
 ### ✅ Correct
+
 ```typescript
 // Imported enum
 import { OrderStatus } from '@wms/shared/types';
 const status = OrderStatus.PICKING;
 
 // Wrapped in transaction
-return await db.transaction(async (trx) => {
+return await db.transaction(async trx => {
   await updateOrderStatus(trx, id, OrderStatus.PICKING);
   await createPickTask(trx, id);
 });
@@ -418,18 +440,18 @@ const available = inventory.available; // DB computed column
 import { ERROR_CODES } from '@wms/shared/constants/system';
 
 // Inventory
-ERROR_CODES.INSUFFICIENT_INVENTORY
-ERROR_CODES.INVENTORY_RESERVED
-ERROR_CODES.BIN_LOCATION_FULL
+ERROR_CODES.INSUFFICIENT_INVENTORY;
+ERROR_CODES.INVENTORY_RESERVED;
+ERROR_CODES.BIN_LOCATION_FULL;
 
 // Order
-ERROR_CODES.INVALID_ORDER_STATE
-ERROR_CODES.ORDER_ALREADY_CLAIMED
-ERROR_CODES.PICKER_AT_CAPACITY
+ERROR_CODES.INVALID_ORDER_STATE;
+ERROR_CODES.ORDER_ALREADY_CLAIMED;
+ERROR_CODES.PICKER_AT_CAPACITY;
 
 // Validation
-ERROR_CODES.VALIDATION_ERROR
-ERROR_CODES.INVALID_INPUT
+ERROR_CODES.VALIDATION_ERROR;
+ERROR_CODES.INVALID_INPUT;
 ```
 
 ---

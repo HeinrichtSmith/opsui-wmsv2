@@ -23,46 +23,52 @@ router.use(authenticate);
  * GET /api/reports
  * Get all reports with optional filtering
  */
-router.get('/', asyncHandler(async (req: Request, res: Response) => {
-  const { reportType, status, isPublic } = req.query;
-  const userId = (req as any).user?.userId;
+router.get(
+  '/',
+  asyncHandler(async (req: Request, res: Response) => {
+    const { reportType, status, isPublic } = req.query;
+    const userId = (req as any).user?.userId;
 
-  const reports = await reportsRepository.findAll({
-    reportType: reportType as ReportType,
-    status: status as ReportStatus,
-    isPublic: isPublic === 'true' ? true : undefined,
-    createdBy: userId
-  });
+    const reports = await reportsRepository.findAll({
+      reportType: reportType as ReportType,
+      status: status as ReportStatus,
+      isPublic: isPublic === 'true' ? true : undefined,
+      createdBy: userId,
+    });
 
-  res.json({
-    success: true,
-    data: {
-      reports,
-      count: reports.length
-    }
-  });
-}));
+    res.json({
+      success: true,
+      data: {
+        reports,
+        count: reports.length,
+      },
+    });
+  })
+);
 
 /**
  * GET /api/reports/:reportId
  * Get a specific report by ID
  */
-router.get('/:reportId', asyncHandler(async (req: Request, res: Response) => {
-  const { reportId } = req.params;
-  const report = await reportsRepository.findById(reportId);
+router.get(
+  '/:reportId',
+  asyncHandler(async (req: Request, res: Response) => {
+    const { reportId } = req.params;
+    const report = await reportsRepository.findById(reportId);
 
-  if (!report) {
-    return res.status(404).json({
-      success: false,
-      error: 'Report not found'
+    if (!report) {
+      return res.status(404).json({
+        success: false,
+        error: 'Report not found',
+      });
+    }
+
+    res.json({
+      success: true,
+      data: { report },
     });
-  }
-
-  res.json({
-    success: true,
-    data: { report }
-  });
-}));
+  })
+);
 
 /**
  * POST /api/reports
@@ -78,12 +84,12 @@ router.post(
     const report = await reportsRepository.create({
       ...reportData,
       createdBy: userId,
-      createdAt: new Date()
+      createdAt: new Date(),
     });
 
     res.status(201).json({
       success: true,
-      data: { report }
+      data: { report },
     });
   })
 );
@@ -102,19 +108,19 @@ router.put(
 
     const report = await reportsRepository.update(reportId, {
       ...updates,
-      updatedBy: userId
+      updatedBy: userId,
     });
 
     if (!report) {
       return res.status(404).json({
         success: false,
-        error: 'Report not found'
+        error: 'Report not found',
       });
     }
 
     res.json({
       success: true,
-      data: { report }
+      data: { report },
     });
   })
 );
@@ -133,13 +139,13 @@ router.delete(
     if (!deleted) {
       return res.status(404).json({
         success: false,
-        error: 'Report not found'
+        error: 'Report not found',
       });
     }
 
     res.json({
       success: true,
-      message: 'Report deleted successfully'
+      message: 'Report deleted successfully',
     });
   })
 );
@@ -152,52 +158,58 @@ router.delete(
  * POST /api/reports/:reportId/execute
  * Execute a report and return results
  */
-router.post('/:reportId/execute', asyncHandler(async (req: Request, res: Response) => {
-  const { reportId } = req.params;
-  const { format = ReportFormat.JSON, parameters = {} } = req.body;
-  const userId = (req as any).user?.userId;
+router.post(
+  '/:reportId/execute',
+  asyncHandler(async (req: Request, res: Response) => {
+    const { reportId } = req.params;
+    const { format = ReportFormat.JSON, parameters = {} } = req.body;
+    const userId = (req as any).user?.userId;
 
-  try {
-    const result = await reportsService.executeReport(
-      reportId,
-      format as ReportFormat,
-      parameters,
-      userId
-    );
+    try {
+      const result = await reportsService.executeReport(
+        reportId,
+        format as ReportFormat,
+        parameters,
+        userId
+      );
 
-    res.json({
-      success: true,
-      data: {
-        execution: result.execution,
-        results: result.data
-      }
-    });
-  } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      error: error.message
-    });
-  }
-}));
+      res.json({
+        success: true,
+        data: {
+          execution: result.execution,
+          results: result.data,
+        },
+      });
+    } catch (error: any) {
+      res.status(500).json({
+        success: false,
+        error: error.message,
+      });
+    }
+  })
+);
 
 /**
  * GET /api/reports/:reportId/executions
  * Get execution history for a report
  */
-router.get('/:reportId/executions', asyncHandler(async (req: Request, res: Response) => {
-  const { reportId } = req.params;
-  const limit = parseInt(req.query.limit as string) || 50;
+router.get(
+  '/:reportId/executions',
+  asyncHandler(async (req: Request, res: Response) => {
+    const { reportId } = req.params;
+    const limit = parseInt(req.query.limit as string) || 50;
 
-  const executions = await reportsRepository.findExecutionsByReportId(reportId, limit);
+    const executions = await reportsRepository.findExecutionsByReportId(reportId, limit);
 
-  res.json({
-    success: true,
-    data: {
-      executions,
-      count: executions.length
-    }
-  });
-}));
+    res.json({
+      success: true,
+      data: {
+        executions,
+        count: executions.length,
+      },
+    });
+  })
+);
 
 // ============================================================================
 // DASHBOARDS
@@ -207,45 +219,51 @@ router.get('/:reportId/executions', asyncHandler(async (req: Request, res: Respo
  * GET /api/dashboards
  * Get all dashboards
  */
-router.get('/dashboards', asyncHandler(async (req: Request, res: Response) => {
-  const userId = (req as any).user?.userId;
-  const userRole = (req as any).user?.role;
+router.get(
+  '/dashboards',
+  asyncHandler(async (req: Request, res: Response) => {
+    const userId = (req as any).user?.userId;
+    const userRole = (req as any).user?.role;
 
-  // Users can see their own dashboards plus public ones
-  const dashboards = await reportsRepository.findDashboards({
-    owner: userRole === UserRole.ADMIN ? undefined : userId,
-    isPublic: userRole === UserRole.ADMIN ? undefined : true
-  });
+    // Users can see their own dashboards plus public ones
+    const dashboards = await reportsRepository.findDashboards({
+      owner: userRole === UserRole.ADMIN ? undefined : userId,
+      isPublic: userRole === UserRole.ADMIN ? undefined : true,
+    });
 
-  res.json({
-    success: true,
-    data: {
-      dashboards,
-      count: dashboards.length
-    }
-  });
-}));
+    res.json({
+      success: true,
+      data: {
+        dashboards,
+        count: dashboards.length,
+      },
+    });
+  })
+);
 
 /**
  * GET /api/dashboards/:dashboardId
  * Get a specific dashboard
  */
-router.get('/dashboards/:dashboardId', asyncHandler(async (req: Request, res: Response) => {
-  const { dashboardId } = req.params;
-  const dashboard = await reportsRepository.findDashboardById(dashboardId);
+router.get(
+  '/dashboards/:dashboardId',
+  asyncHandler(async (req: Request, res: Response) => {
+    const { dashboardId } = req.params;
+    const dashboard = await reportsRepository.findDashboardById(dashboardId);
 
-  if (!dashboard) {
-    return res.status(404).json({
-      success: false,
-      error: 'Dashboard not found'
+    if (!dashboard) {
+      return res.status(404).json({
+        success: false,
+        error: 'Dashboard not found',
+      });
+    }
+
+    res.json({
+      success: true,
+      data: { dashboard },
     });
-  }
-
-  res.json({
-    success: true,
-    data: { dashboard }
-  });
-}));
+  })
+);
 
 /**
  * POST /api/dashboards
@@ -262,12 +280,12 @@ router.post(
       ...dashboardData,
       owner: userId,
       createdBy: userId,
-      createdAt: new Date()
+      createdAt: new Date(),
     });
 
     res.status(201).json({
       success: true,
-      data: { dashboard }
+      data: { dashboard },
     });
   })
 );
@@ -280,41 +298,47 @@ router.post(
  * POST /api/reports/export
  * Create and start an export job
  */
-router.post('/export', asyncHandler(async (req: Request, res: Response) => {
-  const { entityType, format = ReportFormat.CSV, fields, filters = [] } = req.body;
-  const userId = (req as any).user?.userId;
+router.post(
+  '/export',
+  asyncHandler(async (req: Request, res: Response) => {
+    const { entityType, format = ReportFormat.CSV, fields, filters = [] } = req.body;
+    const userId = (req as any).user?.userId;
 
-  if (!entityType || !fields || !Array.isArray(fields)) {
-    return res.status(400).json({
-      success: false,
-      error: 'Missing required fields: entityType, fields (array)'
+    if (!entityType || !fields || !Array.isArray(fields)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Missing required fields: entityType, fields (array)',
+      });
+    }
+
+    const job = await reportsService.createExportJob(
+      entityType,
+      format as ReportFormat,
+      fields,
+      filters,
+      userId
+    );
+
+    res.status(201).json({
+      success: true,
+      data: { job },
     });
-  }
-
-  const job = await reportsService.createExportJob(
-    entityType,
-    format as ReportFormat,
-    fields,
-    filters,
-    userId
-  );
-
-  res.status(201).json({
-    success: true,
-    data: { job }
-  });
-}));
+  })
+);
 
 /**
  * GET /api/reports/export/:jobId
  * Get export job status
  */
-router.get('/export/:jobId', asyncHandler(async (req: Request, res: Response) => {
-  // TODO: Implement getExportJob in repository
-  res.json({
-    success: true,
-    message: 'Export job status retrieval not yet implemented'
-  });
-}));
+router.get(
+  '/export/:jobId',
+  asyncHandler(async (req: Request, res: Response) => {
+    // TODO: Implement getExportJob in repository
+    res.json({
+      success: true,
+      message: 'Export job status retrieval not yet implemented',
+    });
+  })
+);
 
 export default router;

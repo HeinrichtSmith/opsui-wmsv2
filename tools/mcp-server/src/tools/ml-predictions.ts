@@ -41,8 +41,9 @@ function predictOrderDuration(features: {
 
   // Time of day adjustments
   // Peak hours (9-11, 14-16) are slower due to congestion
-  const isPeakHour = features.hour_of_day >= 9 && features.hour_of_day <= 11 ||
-                      features.hour_of_day >= 14 && features.hour_of_day <= 16;
+  const isPeakHour =
+    (features.hour_of_day >= 9 && features.hour_of_day <= 11) ||
+    (features.hour_of_day >= 14 && features.hour_of_day <= 16);
   if (isPeakHour) {
     duration *= 1.25; // 25% slower during peak
   }
@@ -65,15 +66,15 @@ function predictOrderDuration(features: {
   // High confidence for typical orders, lower for outliers
   let confidence = 0.85;
   if (features.order_item_count > 50 || features.order_item_count < 1) confidence -= 0.15;
-  if (features.zone_diversity > 4) confidence -= 0.10;
+  if (features.zone_diversity > 4) confidence -= 0.1;
   if (features.sku_count > 20) confidence -= 0.05;
 
   // Breakdown of time allocation
   const breakdown = {
     picking: duration * 0.45,
     packing: duration * 0.25,
-    travel: duration * 0.20,
-    overhead: duration * 0.10,
+    travel: duration * 0.2,
+    overhead: duration * 0.1,
   };
 
   return {
@@ -101,7 +102,9 @@ function forecastDemand(historical: number[], forecastDays: number): number[] {
   const ma30 = historical.length >= 30 ? movingAverage(historical, 30) : ma7;
 
   // Detect trend
-  const recentTrend = (ma7[ma7.length - 1] - ma7[Math.max(0, ma7.length - 7)]) / Math.max(1, ma7[Math.max(0, ma7.length - 7)]);
+  const recentTrend =
+    (ma7[ma7.length - 1] - ma7[Math.max(0, ma7.length - 7)]) /
+    Math.max(1, ma7[Math.max(0, ma7.length - 7)]);
 
   // Seasonality patterns (weekly)
   const dayOfWeek = forecastDays % 7;
@@ -111,7 +114,7 @@ function forecastDemand(historical: number[], forecastDays: number): number[] {
     let base = ma7[ma7.length - 1];
 
     // Apply trend
-    base *= (1 + recentTrend * (i + 1));
+    base *= 1 + recentTrend * (i + 1);
 
     // Apply seasonality
     const seasonalDay = (dayOfWeek + i) % 7;
@@ -140,7 +143,10 @@ function movingAverage(data: number[], window: number): number[] {
  * Calculate optimal pick path through warehouse locations
  * Uses zone-based clustering and nearest-neighbor algorithm
  */
-function calculateOptimalPath(locations: string[], startPoint: string): {
+function calculateOptimalPath(
+  locations: string[],
+  startPoint: string
+): {
   path: string[];
   total_distance: number;
   estimated_time: number;
@@ -159,7 +165,7 @@ function calculateOptimalPath(locations: string[], startPoint: string): {
   }
 
   // Parse locations (format: "A-01-01" = Zone-Aisle-Shelf)
-  const parsed = locations.map((loc) => {
+  const parsed = locations.map(loc => {
     const parts = loc.split('-').map(Number);
     return { zone: parts[0], aisle: parts[1], shelf: parts[2], original: loc };
   });
@@ -200,10 +206,10 @@ function calculateOptimalPath(locations: string[], startPoint: string): {
   const pickTime = sorted.length * 30;
   const estimatedTime = walkingTime + pickTime;
 
-  const uniqueZones = new Set(sorted.map((l) => l.zone)).size;
+  const uniqueZones = new Set(sorted.map(l => l.zone)).size;
 
   return {
-    path: sorted.map((l) => l.original),
+    path: sorted.map(l => l.original),
     total_distance: Math.round(totalDistance),
     estimated_time: Math.round(estimatedTime),
     optimization: {
@@ -258,7 +264,14 @@ export const mlPredictionTools: ToolMetadata[] = [
           maximum: 4,
         },
       },
-      required: ['order_item_count', 'hour_of_day', 'day_of_week', 'sku_count', 'zone_diversity', 'priority_level'],
+      required: [
+        'order_item_count',
+        'hour_of_day',
+        'day_of_week',
+        'sku_count',
+        'zone_diversity',
+        'priority_level',
+      ],
     },
     handler: async (args: ToolArgs) => {
       const features = args as {
@@ -466,7 +479,7 @@ export const mlPredictionTools: ToolMetadata[] = [
     handler: async (args: ToolArgs) => {
       const { orders } = args as { orders: Array<any> };
 
-      const predictions = orders.map((order) => {
+      const predictions = orders.map(order => {
         const result = predictOrderDuration(order);
         return {
           order_id: order.order_id || 'unknown',
@@ -486,7 +499,7 @@ export const mlPredictionTools: ToolMetadata[] = [
             average_duration: Math.round(
               predictions.reduce((sum, p) => sum + p.duration_minutes, 0) / predictions.length
             ),
-            high_priority_count: orders.filter((o) => o.priority_level <= 2).length,
+            high_priority_count: orders.filter(o => o.priority_level <= 2).length,
           },
         },
         metadata: {

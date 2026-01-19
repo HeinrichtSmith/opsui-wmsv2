@@ -49,10 +49,7 @@ export class ShippingService {
   async getCarrier(carrierId: string): Promise<Carrier> {
     const client = await getPool();
 
-    const result = await client.query(
-      `SELECT * FROM carriers WHERE carrier_id = $1`,
-      [carrierId]
-    );
+    const result = await client.query(`SELECT * FROM carriers WHERE carrier_id = $1`, [carrierId]);
 
     if (result.rows.length === 0) {
       throw new Error(`Carrier ${carrierId} not found`);
@@ -118,10 +115,9 @@ export class ShippingService {
   async getShipment(shipmentId: string): Promise<Shipment> {
     const client = await getPool();
 
-    const result = await client.query(
-      `SELECT * FROM shipments WHERE shipment_id = $1`,
-      [shipmentId]
-    );
+    const result = await client.query(`SELECT * FROM shipments WHERE shipment_id = $1`, [
+      shipmentId,
+    ]);
 
     if (result.rows.length === 0) {
       throw new Error(`Shipment ${shipmentId} not found`);
@@ -146,10 +142,7 @@ export class ShippingService {
   async getShipmentByOrderId(orderId: string): Promise<Shipment | null> {
     const client = await getPool();
 
-    const result = await client.query(
-      `SELECT * FROM shipments WHERE order_id = $1`,
-      [orderId]
-    );
+    const result = await client.query(`SELECT * FROM shipments WHERE order_id = $1`, [orderId]);
 
     if (result.rows.length === 0) {
       return null;
@@ -217,7 +210,7 @@ export class ShippingService {
     );
 
     const shipments = await Promise.all(
-      result.rows.map(async (row) => {
+      result.rows.map(async row => {
         const shipment = this.mapRowToShipment(row);
         // Get labels for each shipment
         const labelsResult = await client.query(
@@ -489,7 +482,9 @@ export class ShippingService {
       totalCost: parseFloat(row.total_cost),
       status: row.status,
       shipDate: row.ship_date ? new Date(row.ship_date) : undefined,
-      estimatedDeliveryDate: row.estimated_delivery_date ? new Date(row.estimated_delivery_date) : undefined,
+      estimatedDeliveryDate: row.estimated_delivery_date
+        ? new Date(row.estimated_delivery_date)
+        : undefined,
       actualDeliveryDate: row.actual_delivery_date ? new Date(row.actual_delivery_date) : undefined,
       carrierShipmentId: row.carrier_shipment_id,
       carrierResponse: row.carrier_response,

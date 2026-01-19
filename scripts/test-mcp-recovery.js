@@ -49,7 +49,7 @@ async function test1_BuildMCP() {
   });
 
   await new Promise((resolve, reject) => {
-    build.on('close', (code) => {
+    build.on('close', code => {
       if (code === 0) resolve();
       else reject(new Error(`Build failed with code ${code}`));
     });
@@ -78,14 +78,14 @@ async function test2_StartMCP() {
   let started = false;
   let output = '';
 
-  monitor.stdout.on('data', (data) => {
+  monitor.stdout.on('data', data => {
     output += data.toString();
     if (output.includes('WMS MCP (Local)') && output.includes('RUNNING')) {
       started = true;
     }
   });
 
-  monitor.stderr.on('data', (data) => {
+  monitor.stderr.on('data', data => {
     const text = data.toString();
     if (text.includes('WMS MCP (Local)') && text.includes('started successfully')) {
       started = true;
@@ -124,7 +124,7 @@ async function test3_KillAndRecover() {
   let recovered = false;
   let restartCount = 0;
 
-  monitor.stdout.on('data', (data) => {
+  monitor.stdout.on('data', data => {
     const text = data.toString();
 
     // Extract PID from output
@@ -142,7 +142,7 @@ async function test3_KillAndRecover() {
     }
   });
 
-  monitor.stderr.on('data', (data) => {
+  monitor.stderr.on('data', data => {
     const text = data.toString();
 
     // Extract PID from stderr

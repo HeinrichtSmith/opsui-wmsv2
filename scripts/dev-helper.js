@@ -40,7 +40,7 @@ function log(message, color = colors.reset) {
 // ============================================================================
 
 async function killPort(port) {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     if (process.platform === 'win32') {
       exec(`netstat -ano | findstr :${port}`, (error, stdout) => {
         if (!stdout) {
@@ -99,18 +99,20 @@ async function cleanupPorts() {
 // ============================================================================
 
 async function checkHealth(url, timeout = 5000) {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     const timer = setTimeout(() => {
       resolve(false);
     }, timeout);
 
-    http.get(url, (res) => {
-      clearTimeout(timer);
-      resolve(res.statusCode === 200);
-    }).on('error', () => {
-      clearTimeout(timer);
-      resolve(false);
-    });
+    http
+      .get(url, res => {
+        clearTimeout(timer);
+        resolve(res.statusCode === 200);
+      })
+      .on('error', () => {
+        clearTimeout(timer);
+        resolve(false);
+      });
   });
 }
 
@@ -153,7 +155,7 @@ class ServiceManager {
     service.ready = false;
 
     // Pipe output
-    service.stdout.on('data', (data) => {
+    service.stdout.on('data', data => {
       const output = data.toString();
       if (output.includes('ready') || output.includes('listening')) {
         service.ready = true;
@@ -163,18 +165,18 @@ class ServiceManager {
       }
     });
 
-    service.stderr.on('data', (data) => {
+    service.stderr.on('data', data => {
       const output = data.toString();
       if (options.logOutput !== false) {
         process.stderr.write(`[${name}] ${output}`);
       }
     });
 
-    service.on('error', (error) => {
+    service.on('error', error => {
       log(`❌ ${name} failed to start: ${error.message}`, colors.red);
     });
 
-    service.on('exit', (code) => {
+    service.on('exit', code => {
       if (code !== 0 && code !== null) {
         log(`⚠️  ${name} exited with code ${code}`, colors.yellow);
       }
@@ -316,7 +318,6 @@ async function main() {
 
     // Keep running
     await new Promise(() => {});
-
   } catch (error) {
     log(`\n❌ Error: ${error.message}`, colors.red);
     await manager.stopAll();

@@ -40,10 +40,15 @@ router.post(
     const substituteSku = req.body.substituteSku ?? req.body.substitute_sku;
 
     // Validate required fields
-    if (!orderId || !orderItemId || !sku || !type ||
-        typeof quantityExpected !== 'number' ||
-        typeof quantityActual !== 'number' ||
-        !reason) {
+    if (
+      !orderId ||
+      !orderItemId ||
+      !sku ||
+      !type ||
+      typeof quantityExpected !== 'number' ||
+      typeof quantityActual !== 'number' ||
+      !reason
+    ) {
       return res.status(400).json({
         error: 'Missing required fields',
         code: 'MISSING_FIELDS',

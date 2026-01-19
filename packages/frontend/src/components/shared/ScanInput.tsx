@@ -91,12 +91,19 @@ export function ScanInput({
         spellCheck={false}
       />
       {error && (
-        <p className="mt-2 text-sm dark:text-error-400 text-error-600 dark:bg-error-500/10 bg-error-50 border border-error-500/30 rounded-lg px-3 py-2" role="alert">
+        <p
+          className="mt-2 text-sm dark:text-error-400 text-error-600 dark:bg-error-500/10 bg-error-50 border border-error-500/30 rounded-lg px-3 py-2"
+          role="alert"
+        >
           {error}
         </p>
       )}
       <p className="mt-2 text-xs dark:text-gray-500 text-gray-500 flex items-center gap-2">
-        Press <kbd className="px-2 py-1 dark:bg-white/[0.05] bg-gray-100 dark:border-white/[0.1] border border-gray-300 dark:text-gray-400 text-gray-600 rounded text-xs">Enter</kbd> after scanning
+        Press{' '}
+        <kbd className="px-2 py-1 dark:bg-white/[0.05] bg-gray-100 dark:border-white/[0.1] border border-gray-300 dark:text-gray-400 text-gray-600 rounded text-xs">
+          Enter
+        </kbd>{' '}
+        after scanning
       </p>
     </div>
   );

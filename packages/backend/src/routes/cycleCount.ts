@@ -27,15 +27,7 @@ router.post(
   '/plans',
   authorize(UserRole.STOCK_CONTROLLER, UserRole.SUPERVISOR, UserRole.ADMIN),
   asyncHandler(async (req: AuthenticatedRequest, res) => {
-    const {
-      planName,
-      countType,
-      scheduledDate,
-      location,
-      sku,
-      countBy,
-      notes,
-    } = req.body;
+    const { planName, countType, scheduledDate, location, sku, countBy, notes } = req.body;
 
     // Validate required fields
     if (!planName || !countType || !scheduledDate || !countBy) {
@@ -154,13 +146,7 @@ router.post(
 router.post(
   '/entries',
   asyncHandler(async (req: AuthenticatedRequest, res) => {
-    const {
-      planId,
-      sku,
-      binLocation,
-      countedQuantity,
-      notes,
-    } = req.body;
+    const { planId, sku, binLocation, countedQuantity, notes } = req.body;
 
     // Validate required fields
     if (!planId || !sku || !binLocation || countedQuantity === undefined) {

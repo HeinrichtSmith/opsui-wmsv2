@@ -2,7 +2,8 @@ const { Client } = require('pg');
 
 async function test() {
   const client = new Client({
-    connectionString: process.env.DATABASE_URL || 'postgresql://wms_user:wms_password@localhost:5432/wms_db'
+    connectionString:
+      process.env.DATABASE_URL || 'postgresql://wms_user:wms_password@localhost:5432/wms_db',
   });
 
   try {
@@ -84,7 +85,9 @@ async function test() {
     console.log('\n✓ Test 6: Current picker statuses in PICKING orders:');
     console.log('  Total PICKING orders:', result.rowCount);
     result.rows.forEach(row => {
-      console.log(`    - Order ${row.order_id}: ${row.picker_status} (Picker: ${row.picker_id || 'None'})`);
+      console.log(
+        `    - Order ${row.order_id}: ${row.picker_status} (Picker: ${row.picker_id || 'None'})`
+      );
     });
 
     console.log('\n✅ All tests passed!');

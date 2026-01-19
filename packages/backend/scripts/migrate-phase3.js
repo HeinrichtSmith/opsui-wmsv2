@@ -88,7 +88,6 @@ async function runMigration() {
     console.log('  - sync_job_logs');
     console.log('  - webhook_events');
     console.log('  - carrier_accounts');
-
   } catch (error) {
     console.error('❌ Migration failed:', error.message);
     throw error;

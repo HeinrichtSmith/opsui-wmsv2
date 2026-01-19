@@ -8,17 +8,23 @@ const client = new Client({
   password: 'wms_password',
 });
 
-client.connect().then(() => {
-  client.query('SELECT column_name FROM information_schema.columns WHERE table_name = \'skus\' ORDER BY ordinal_position')
-    .then(result => {
-      console.log('SKUS table columns:');
-      result.rows.forEach(row => console.log('  - ' + row.column_name));
-      client.end();
-    })
-    .catch(err => {
-      console.error('Error:', err);
-      client.end();
-    });
-}).catch(err => {
-  console.error('Connection error:', err);
-});
+client
+  .connect()
+  .then(() => {
+    client
+      .query(
+        "SELECT column_name FROM information_schema.columns WHERE table_name = 'skus' ORDER BY ordinal_position"
+      )
+      .then(result => {
+        console.log('SKUS table columns:');
+        result.rows.forEach(row => console.log('  - ' + row.column_name));
+        client.end();
+      })
+      .catch(err => {
+        console.error('Error:', err);
+        client.end();
+      });
+  })
+  .catch(err => {
+    console.error('Connection error:', err);
+  });

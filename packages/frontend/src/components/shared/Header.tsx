@@ -26,6 +26,7 @@ import {
   CurrencyDollarIcon,
   Bars3Icon,
   XMarkIcon,
+  UserGroupIcon,
 } from '@heroicons/react/24/outline';
 import { UserRole } from '@opsui/shared';
 import { useState, useRef, useEffect } from 'react';
@@ -128,7 +129,9 @@ function MobileMenu({
           {/* Header */}
           <div className="dark:border-b dark:border-white/[0.08] border-b border-gray-200 px-6 py-4 flex items-center justify-between">
             <div className="flex-1 min-w-0">
-              <h2 className="text-lg font-semibold dark:text-white text-gray-900 truncate">{userName}</h2>
+              <h2 className="text-lg font-semibold dark:text-white text-gray-900 truncate">
+                {userName}
+              </h2>
               <p className="text-sm dark:text-gray-400 text-gray-600 truncate">{userEmail}</p>
             </div>
             <button
@@ -152,18 +155,22 @@ function MobileMenu({
                   <div className="flex items-center gap-3">
                     <CogIcon className="h-5 w-5 dark:text-primary-400 text-primary-600" />
                     <div className="text-left">
-                      <p className="text-sm font-semibold dark:text-white text-gray-900">Switch Role</p>
+                      <p className="text-sm font-semibold dark:text-white text-gray-900">
+                        Switch Role
+                      </p>
                       <p className="text-xs dark:text-primary-300 text-primary-700">
                         {getEffectiveRole() || userRole}
                       </p>
                     </div>
                   </div>
-                  <ChevronDownIcon className={`h-5 w-5 dark:text-primary-400 text-primary-600 transition-transform duration-300 ${showRoleSwitcher ? 'rotate-180' : ''}`} />
+                  <ChevronDownIcon
+                    className={`h-5 w-5 dark:text-primary-400 text-primary-600 transition-transform duration-300 ${showRoleSwitcher ? 'rotate-180' : ''}`}
+                  />
                 </button>
 
                 {showRoleSwitcher && (
                   <div className="ml-4 space-y-2 mb-4">
-                    {allRoleViews.map((view) => {
+                    {allRoleViews.map(view => {
                       const ViewIcon = view.icon;
                       const isActive = view.role === getEffectiveRole();
                       return (
@@ -186,7 +193,7 @@ function MobileMenu({
               </div>
             )}
 
-            {navGroups.map((group) => {
+            {navGroups.map(group => {
               const GroupIcon = group.icon;
               return (
                 <div key={group.key}>
@@ -195,7 +202,7 @@ function MobileMenu({
                     {group.label}
                   </h3>
                   <div className="space-y-1">
-                    {group.items.map((item) => {
+                    {group.items.map(item => {
                       const ItemIcon = item.icon;
                       return (
                         <button
@@ -293,13 +300,15 @@ function NavDropdown({ label, icon: Icon, items, currentPath }: NavDropdownProps
       >
         <Icon className="h-4 w-4" />
         {label}
-        <ChevronDownIcon className={`h-3 w-3 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
+        <ChevronDownIcon
+          className={`h-3 w-3 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
+        />
       </button>
 
       {isOpen && (
         <div className="absolute top-full left-0 mt-2 w-60 dark:bg-gray-900 bg-white rounded-xl dark:border-gray-700 border-gray-200 shadow-2xl animate-fade-in">
           <div className="py-2">
-            {items.map((item) => {
+            {items.map(item => {
               const ItemIcon = item.icon;
               const isActive = item.path === currentPath;
               return (
@@ -315,9 +324,13 @@ function NavDropdown({ label, icon: Icon, items, currentPath }: NavDropdownProps
                       : 'dark:text-gray-200 text-gray-800 dark:hover:text-white hover:text-black dark:hover:bg-gray-800 hover:bg-gray-100'
                   }`}
                 >
-                  <ItemIcon className={`h-4 w-4 flex-shrink-0 transition-colors duration-200 ${
-                    isActive ? 'dark:text-white text-black' : 'dark:text-gray-400 text-gray-600 dark:group-hover:text-gray-300 group-hover:text-gray-700'
-                  }`} />
+                  <ItemIcon
+                    className={`h-4 w-4 flex-shrink-0 transition-colors duration-200 ${
+                      isActive
+                        ? 'dark:text-white text-black'
+                        : 'dark:text-gray-400 text-gray-600 dark:group-hover:text-gray-300 group-hover:text-gray-700'
+                    }`}
+                  />
                   {item.label}
                   {isActive && (
                     <span className="ml-auto w-1.5 h-1.5 rounded-full dark:bg-white bg-gray-900 dark:shadow-[0_0_8px_rgba(255,255,255,0.6)] shadow-[0_0_8px_rgba(0,0,0,0.3)] animate-pulse"></span>
@@ -378,19 +391,63 @@ function RoleViewDropdown({ userName, userEmail, availableViews }: RoleViewDropd
   const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const setActiveRoleMutation = useSetActiveRole();
-  const getEffectiveRole = useAuthStore((state) => state.getEffectiveRole);
-  const [roleVisibility, setRoleVisibility] = useState<Record<string, boolean>>(() => loadRoleVisibility());
+  const getEffectiveRole = useAuthStore(state => state.getEffectiveRole);
+  const [roleVisibility, setRoleVisibility] = useState<Record<string, boolean>>(() =>
+    loadRoleVisibility()
+  );
 
   // Use provided availableViews or default to all views (for backwards compatibility)
   const dropdownRoleViews = availableViews || [
     { key: 'admin', label: 'Admin View', path: '/dashboard', icon: CogIcon, role: UserRole.ADMIN },
-    { key: 'picking', label: 'Picking View', path: '/orders', icon: ClipboardDocumentListIcon, role: UserRole.PICKER },
-    { key: 'packing', label: 'Packing View', path: '/packing', icon: CubeIcon, role: UserRole.PACKER },
-    { key: 'stock-control', label: 'Stock Control View', path: '/stock-control', icon: ScaleIcon, role: UserRole.STOCK_CONTROLLER },
-    { key: 'inwards', label: 'Inwards View', path: '/inwards', icon: InboxIcon, role: 'INWARDS' as UserRole },
-    { key: 'sales', label: 'Sales View', path: '/sales', icon: CurrencyDollarIcon, role: 'SALES' as UserRole },
-    { key: 'production', label: 'Production View', path: '/production', icon: CogIcon, role: 'PRODUCTION' as UserRole },
-    { key: 'maintenance', label: 'Maintenance View', path: '/maintenance', icon: WrenchScrewdriverIcon, role: 'MAINTENANCE' as UserRole },
+    {
+      key: 'picking',
+      label: 'Picking View',
+      path: '/orders',
+      icon: ClipboardDocumentListIcon,
+      role: UserRole.PICKER,
+    },
+    {
+      key: 'packing',
+      label: 'Packing View',
+      path: '/packing',
+      icon: CubeIcon,
+      role: UserRole.PACKER,
+    },
+    {
+      key: 'stock-control',
+      label: 'Stock Control View',
+      path: '/stock-control',
+      icon: ScaleIcon,
+      role: UserRole.STOCK_CONTROLLER,
+    },
+    {
+      key: 'inwards',
+      label: 'Inwards View',
+      path: '/inwards',
+      icon: InboxIcon,
+      role: 'INWARDS' as UserRole,
+    },
+    {
+      key: 'sales',
+      label: 'Sales View',
+      path: '/sales',
+      icon: CurrencyDollarIcon,
+      role: 'SALES' as UserRole,
+    },
+    {
+      key: 'production',
+      label: 'Production View',
+      path: '/production',
+      icon: CogIcon,
+      role: 'PRODUCTION' as UserRole,
+    },
+    {
+      key: 'maintenance',
+      label: 'Maintenance View',
+      path: '/maintenance',
+      icon: WrenchScrewdriverIcon,
+      role: 'MAINTENANCE' as UserRole,
+    },
     { key: 'rma', label: 'RMA View', path: '/rma', icon: ArrowPathIcon, role: 'RMA' as UserRole },
   ];
 
@@ -477,16 +534,20 @@ function RoleViewDropdown({ userName, userEmail, availableViews }: RoleViewDropd
             {userEmail}
           </p>
         </div>
-        <ChevronDownIcon className={`h-4 w-4 dark:text-gray-400 text-gray-600 dark:group-hover:text-white group-hover:text-gray-800 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
+        <ChevronDownIcon
+          className={`h-4 w-4 dark:text-gray-400 text-gray-600 dark:group-hover:text-white group-hover:text-gray-800 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
+        />
       </button>
 
       {isOpen && (
         <div className="absolute top-full right-0 mt-2 w-72 dark:bg-gray-900 bg-white rounded-xl dark:border-gray-700 border-gray-200 shadow-2xl animate-fade-in">
           <div className="px-5 py-3.5 dark:border-b border-b dark:border-gray-700 border-gray-200">
-            <p className="text-xs font-semibold dark:text-blue-400 text-blue-600 uppercase tracking-wider">Role Views</p>
+            <p className="text-xs font-semibold dark:text-blue-400 text-blue-600 uppercase tracking-wider">
+              Role Views
+            </p>
           </div>
           <div className="py-2">
-            {roleViews.map((view) => {
+            {roleViews.map(view => {
               const ViewIcon = view.icon;
               const isActive = view.role === getEffectiveRole();
               return (
@@ -500,14 +561,20 @@ function RoleViewDropdown({ userName, userEmail, availableViews }: RoleViewDropd
                       : 'dark:text-gray-200 text-gray-800 dark:hover:text-white hover:text-black dark:hover:bg-gray-800 hover:bg-gray-100'
                   }`}
                 >
-                  <ViewIcon className={`h-4 w-4 flex-shrink-0 transition-colors duration-200 ${
-                    isActive ? 'dark:text-white text-black' : 'dark:text-gray-400 text-gray-600 dark:group-hover:text-gray-300 group-hover:text-gray-700'
-                  }`} />
+                  <ViewIcon
+                    className={`h-4 w-4 flex-shrink-0 transition-colors duration-200 ${
+                      isActive
+                        ? 'dark:text-white text-black'
+                        : 'dark:text-gray-400 text-gray-600 dark:group-hover:text-gray-300 group-hover:text-gray-700'
+                    }`}
+                  />
                   <div className="text-left flex-1">
                     <div className={isActive ? 'font-semibold' : 'font-normal'}>{view.label}</div>
                     {isActive && (
                       <div className="flex items-center gap-2 mt-0.5">
-                        <span className="text-xs dark:text-blue-200 text-blue-700">Current View</span>
+                        <span className="text-xs dark:text-blue-200 text-blue-700">
+                          Current View
+                        </span>
                         <span className="w-1.5 h-1.5 rounded-full dark:bg-white bg-gray-900 dark:shadow-[0_0_8px_rgba(255,255,255,0.6)] shadow-[0_0_8px_rgba(0,0,0,0.3)] animate-pulse"></span>
                       </div>
                     )}
@@ -543,11 +610,11 @@ function RoleViewDropdown({ userName, userEmail, availableViews }: RoleViewDropd
 export function Header() {
   const navigate = useNavigate();
   const location = useLocation();
-  const user = useAuthStore((state) => state.user);
-  const logout = useAuthStore((state) => state.logout);
+  const user = useAuthStore(state => state.user);
+  const logout = useAuthStore(state => state.logout);
   const logoutMutation = useLogout();
   const setActiveRoleMutation = useSetActiveRole();
-  const getEffectiveRole = useAuthStore((state) => state.getEffectiveRole);
+  const getEffectiveRole = useAuthStore(state => state.getEffectiveRole);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Fetch user's additional granted roles
@@ -591,32 +658,61 @@ export function Header() {
 
     // Operations Group - for supervisors and admins (oversight/monitoring)
     if (user.role === UserRole.SUPERVISOR || user.role === UserRole.ADMIN) {
-      const items: Array<{ key: string; label: string; path: string; icon: React.ComponentType<{ className?: string }> }> = [
+      const items: Array<{
+        key: string;
+        label: string;
+        path: string;
+        icon: React.ComponentType<{ className?: string }>;
+      }> = [
         { key: 'dashboard', label: 'Dashboard', path: '/dashboard', icon: ChartBarIcon },
-        { key: 'exceptions', label: 'Exceptions', path: '/exceptions', icon: ExclamationTriangleIcon },
+        {
+          key: 'exceptions',
+          label: 'Exceptions',
+          path: '/exceptions',
+          icon: ExclamationTriangleIcon,
+        },
       ];
       groups.push({
         key: 'operations',
         label: 'Operations',
         icon: ChartBarIcon,
-        items
+        items,
       });
     }
 
-
     // Inventory Management Group - for supervisors and admins (Phase 2 features)
     if (user.role === UserRole.SUPERVISOR || user.role === UserRole.ADMIN) {
-      const items: Array<{ key: string; label: string; path: string; icon: React.ComponentType<{ className?: string }> }> = [
-        { key: 'cycle-counting', label: 'Cycle Counting', path: '/cycle-counting', icon: ClipboardDocumentListIcon },
-        { key: 'location-capacity', label: 'Location Capacity', path: '/location-capacity', icon: ScaleIcon },
-        { key: 'quality-control', label: 'Quality Control', path: '/quality-control', icon: ShieldCheckIcon }
+      const items: Array<{
+        key: string;
+        label: string;
+        path: string;
+        icon: React.ComponentType<{ className?: string }>;
+      }> = [
+        {
+          key: 'cycle-counting',
+          label: 'Cycle Counting',
+          path: '/cycle-counting',
+          icon: ClipboardDocumentListIcon,
+        },
+        {
+          key: 'location-capacity',
+          label: 'Location Capacity',
+          path: '/location-capacity',
+          icon: ScaleIcon,
+        },
+        {
+          key: 'quality-control',
+          label: 'Quality Control',
+          path: '/quality-control',
+          icon: ShieldCheckIcon,
+        },
       ];
 
       groups.push({
         key: 'inventory',
         label: 'Inventory',
         icon: CubeIcon,
-        items
+        items,
       });
     }
 
@@ -627,9 +723,21 @@ export function Header() {
         label: 'Admin',
         icon: CogIcon,
         items: [
-          { key: 'business-rules', label: 'Business Rules', path: '/business-rules', icon: CogIcon },
+          { key: 'user-roles', label: 'User Roles', path: '/user-roles', icon: UserGroupIcon },
+          {
+            key: 'admin-settings',
+            label: 'Admin Settings',
+            path: '/admin-settings',
+            icon: CogIcon,
+          },
+          {
+            key: 'business-rules',
+            label: 'Business Rules',
+            path: '/business-rules',
+            icon: CogIcon,
+          },
           { key: 'integrations', label: 'Integrations', path: '/integrations', icon: ServerIcon },
-        ]
+        ],
       });
     }
 
@@ -639,9 +747,7 @@ export function Header() {
         key: 'reports',
         label: 'Reports',
         icon: DocumentChartBarIcon,
-        items: [
-          { key: 'reports', label: 'Reports', path: '/reports', icon: DocumentChartBarIcon }
-        ]
+        items: [{ key: 'reports', label: 'Reports', path: '/reports', icon: DocumentChartBarIcon }],
       });
     }
 
@@ -653,21 +759,64 @@ export function Header() {
   // Define all available role views with their paths and icons
   const allAvailableRoleViews = [
     { key: 'admin', label: 'Admin View', path: '/dashboard', icon: CogIcon, role: UserRole.ADMIN },
-    { key: 'picking', label: 'Picking View', path: '/orders', icon: ClipboardDocumentListIcon, role: UserRole.PICKER },
-    { key: 'packing', label: 'Packing View', path: '/packing', icon: CubeIcon, role: UserRole.PACKER },
-    { key: 'stock-control', label: 'Stock Control View', path: '/stock-control', icon: ScaleIcon, role: UserRole.STOCK_CONTROLLER },
-    { key: 'inwards', label: 'Inwards View', path: '/inwards', icon: InboxIcon, role: 'INWARDS' as UserRole },
-    { key: 'sales', label: 'Sales View', path: '/sales', icon: CurrencyDollarIcon, role: 'SALES' as UserRole },
-    { key: 'production', label: 'Production View', path: '/production', icon: CogIcon, role: 'PRODUCTION' as UserRole },
-    { key: 'maintenance', label: 'Maintenance View', path: '/maintenance', icon: WrenchScrewdriverIcon, role: 'MAINTENANCE' as UserRole },
+    {
+      key: 'picking',
+      label: 'Picking View',
+      path: '/orders',
+      icon: ClipboardDocumentListIcon,
+      role: UserRole.PICKER,
+    },
+    {
+      key: 'packing',
+      label: 'Packing View',
+      path: '/packing',
+      icon: CubeIcon,
+      role: UserRole.PACKER,
+    },
+    {
+      key: 'stock-control',
+      label: 'Stock Control View',
+      path: '/stock-control',
+      icon: ScaleIcon,
+      role: UserRole.STOCK_CONTROLLER,
+    },
+    {
+      key: 'inwards',
+      label: 'Inwards View',
+      path: '/inwards',
+      icon: InboxIcon,
+      role: 'INWARDS' as UserRole,
+    },
+    {
+      key: 'sales',
+      label: 'Sales View',
+      path: '/sales',
+      icon: CurrencyDollarIcon,
+      role: 'SALES' as UserRole,
+    },
+    {
+      key: 'production',
+      label: 'Production View',
+      path: '/production',
+      icon: CogIcon,
+      role: 'PRODUCTION' as UserRole,
+    },
+    {
+      key: 'maintenance',
+      label: 'Maintenance View',
+      path: '/maintenance',
+      icon: WrenchScrewdriverIcon,
+      role: 'MAINTENANCE' as UserRole,
+    },
     { key: 'rma', label: 'RMA View', path: '/rma', icon: ArrowPathIcon, role: 'RMA' as UserRole },
   ];
 
   // Filter role views to only include user's base role + granted additional roles
   // Admin users can see all role views
-  const availableRoles = user?.role === UserRole.ADMIN
-    ? Object.values(UserRole) // Admins see all roles
-    : [user?.role, ...(additionalRoles || [])].filter(Boolean) as UserRole[];
+  const availableRoles =
+    user?.role === UserRole.ADMIN
+      ? Object.values(UserRole) // Admins see all roles
+      : ([user?.role, ...(additionalRoles || [])].filter(Boolean) as UserRole[]);
 
   const allRoleViews = allAvailableRoleViews.filter(view => availableRoles.includes(view.role));
 
@@ -702,7 +851,7 @@ export function Header() {
               {/* Navigation dropdowns */}
               {navGroups.length > 0 && (
                 <nav className="flex items-center space-x-1">
-                  {navGroups.map((group) => (
+                  {navGroups.map(group => (
                     <NavDropdown
                       key={group.key}
                       label={group.label}
@@ -722,19 +871,17 @@ export function Header() {
                     userEmail={user.email}
                     availableViews={allRoleViews}
                   />
-                  <span className="badge badge-primary">
-                    {getEffectiveRole() || user.role}
-                  </span>
+                  <span className="badge badge-primary">{getEffectiveRole() || user.role}</span>
                 </div>
               ) : (
                 <div className="flex items-center space-x-3 pl-6 dark:border-l border-l dark:border-white/[0.1] border-gray-300">
                   <div>
-                    <h2 className="text-sm font-semibold dark:text-white text-black tracking-tight">{user.name}</h2>
+                    <h2 className="text-sm font-semibold dark:text-white text-black tracking-tight">
+                      {user.name}
+                    </h2>
                     <p className="text-xs dark:text-gray-400 text-gray-600">{user.email}</p>
                   </div>
-                  <span className="badge badge-primary">
-                    {user.role}
-                  </span>
+                  <span className="badge badge-primary">{user.role}</span>
                 </div>
               )}
             </div>
@@ -742,7 +889,9 @@ export function Header() {
             {/* Mobile user info */}
             <div className="md:hidden flex items-center space-x-2">
               <div className="text-right">
-                <h2 className="text-sm font-semibold dark:text-white text-black tracking-tight">{user.name}</h2>
+                <h2 className="text-sm font-semibold dark:text-white text-black tracking-tight">
+                  {user.name}
+                </h2>
                 <p className="text-xs dark:text-gray-400 text-gray-600">{user.role}</p>
               </div>
             </div>

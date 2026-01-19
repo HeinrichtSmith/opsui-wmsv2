@@ -10,13 +10,16 @@
 ## Execution-Only Behavior
 
 ### What "Execution-Only" Means
+
 Cline operates as an **execution agent**, not an architect. Your role is to:
+
 1. **Implement requested features** following existing patterns
 2. **Fix identified bugs** with minimal scoped changes
 3. **Apply requested refactorings** within architectural boundaries
 4. **NEVER redesign the system** unless explicitly instructed
 
 ### Red Flags That Require User Confirmation
+
 - "I think we should rewrite..." → **STOP**, ask user
 - "This architecture would be better if..." → **STOP**, ask user
 - "Let's restructure this module..." → **STOP**, ask user
@@ -29,6 +32,7 @@ Cline operates as an **execution agent**, not an architect. Your role is to:
 ## Architectural Rewrite Restrictions
 
 ### FORBIDDEN Rewrites (Without Explicit Instruction)
+
 - **DO NOT** change the order state machine
 - **DO NOT** restructure the monorepo layout
 - **DO NOT** replace the database schema
@@ -39,6 +43,7 @@ Cline operates as an **execution agent**, not an architect. Your role is to:
 - **DO NOT** eliminate foreign key constraints
 
 ### ALLOWED Refactorings (Within Reason)
+
 - Extract repeated code into helper functions
 - Improve type safety by adding proper typing
 - Optimize database queries (without changing schema)
@@ -63,28 +68,32 @@ const status = OrderStatus.PICKING;
 ```
 
 ### NEVER Extend Enum Values
+
 ```typescript
 // ❌ WRONG - Adding new status to enum
 export enum OrderStatus {
   // ... existing values ...
-  MY_NEW_STATUS = 'MY_NEW_STATUS'  // FORBIDDEN
+  MY_NEW_STATUS = 'MY_NEW_STATUS', // FORBIDDEN
 }
 
 // ✅ CORRECT - Ask user to add it to shared/types/index.ts first
 ```
 
 ### NEVER Invent Data Not Present in Backend
+
 ```typescript
 // ❌ WRONG - Assuming field exists
 const order = await fetchOrder(id);
-const myInventedField = order.someNewField;  // Does not exist in DB
+const myInventedField = order.someNewField; // Does not exist in DB
 
 // ✅ CORRECT - Check database schema first
 // If field doesn't exist in schema.sql, don't use it
 ```
 
 ### ALWAYS Validate Against Database Schema
+
 Before adding or modifying any field:
+
 1. Check `packages/backend/src/db/schema.sql`
 2. Verify the column exists (or ask user to add migration)
 3. Update TypeScript types in `packages/shared/src/types/index.ts`
@@ -95,11 +104,13 @@ Before adding or modifying any field:
 ## Frontend-Backend Schema Synchronization
 
 ### The Golden Rule
+
 **Frontend and backend types MUST match at all times.**
 
 ### How to Maintain Sync
 
 #### When Adding a New Field to Backend
+
 ```typescript
 // 1. Update shared types (packages/shared/src/types/index.ts)
 export interface Order {
@@ -118,6 +129,7 @@ const field = order.newField;  // Type-safe
 ```
 
 #### When Adding a New API Endpoint
+
 ```typescript
 // 1. Define DTO in shared types
 export interface NewFeatureDTO {
@@ -135,7 +147,9 @@ import { NewFeatureDTO } from '@wms/shared/types';
 ```
 
 ### Synchronization Checklist
+
 Before completing any task:
+
 - [ ] Shared types updated
 - [ ] Backend code compiles with new types
 - [ ] Frontend code compiles with new types
@@ -147,6 +161,7 @@ Before completing any task:
 ## Workflow State Respect
 
 ### Order State Machine (COPY TO MEMORY)
+
 ```
 PENDING → PICKING → PICKED → PACKING → PACKED → SHIPPED
    ↓         ↓
@@ -156,22 +171,28 @@ Additional states: BACKORDER (from PENDING only)
 ```
 
 ### State Transition Validation
+
 Before changing order status:
+
 ```typescript
 // ❌ WRONG - Unvalidated transition
-order.status = OrderStatus.SHIPPED;  // From PICKING? Invalid!
+order.status = OrderStatus.SHIPPED; // From PICKING? Invalid!
 
 // ✅ CORRECT - Validate transition
 function canTransition(from: OrderStatus, to: OrderStatus): boolean {
   const validTransitions = {
-    [OrderStatus.PENDING]: [OrderStatus.PICKING, OrderStatus.CANCELLED, OrderStatus.BACKORDER],
+    [OrderStatus.PENDING]: [
+      OrderStatus.PICKING,
+      OrderStatus.CANCELLED,
+      OrderStatus.BACKORDER,
+    ],
     [OrderStatus.PICKING]: [OrderStatus.PICKED, OrderStatus.CANCELLED],
     [OrderStatus.PICKED]: [OrderStatus.PACKING],
     [OrderStatus.PACKING]: [OrderStatus.PACKED],
     [OrderStatus.PACKED]: [OrderStatus.SHIPPED],
-    [OrderStatus.SHIPPED]: [],  // Terminal state
+    [OrderStatus.SHIPPED]: [], // Terminal state
     [OrderStatus.CANCELLED]: [], // Terminal state
-    [OrderStatus.BACKORDER]: [OrderStatus.PENDING]
+    [OrderStatus.BACKORDER]: [OrderStatus.PENDING],
   };
 
   return validTransitions[from]?.includes(to) ?? false;
@@ -179,6 +200,7 @@ function canTransition(from: OrderStatus, to: OrderStatus): boolean {
 ```
 
 ### State Change Requirements
+
 1. **Validate transition is allowed** (use the rules above)
 2. **Verify prerequisites** (e.g., inventory reserved before PICKING)
 3. **Use database transaction** (atomic state change)
@@ -189,20 +211,24 @@ function canTransition(from: OrderStatus, to: OrderStatus): boolean {
 ## Common Mistakes to Avoid
 
 ### Mistake 1: Adding Business Logic to Frontend
+
 ```typescript
 // ❌ WRONG - Frontend calculating inventory
 const available = inventory.quantity - inventory.reserved;
 
 // ✅ CORRECT - Backend provides calculated field
 const inventory = await fetchInventory(sku);
-const available = inventory.available;  // DB computed column
+const available = inventory.available; // DB computed column
 ```
 
 ### Mistake 2: Bypassing Service Layer
+
 ```typescript
 // ❌ WRONG - Controller querying DB directly
 router.get('/orders/:id', async (req, res) => {
-  const order = await db.query('SELECT * FROM orders WHERE order_id = $1', [req.params.id]);
+  const order = await db.query('SELECT * FROM orders WHERE order_id = $1', [
+    req.params.id,
+  ]);
   res.json(order);
 });
 
@@ -214,6 +240,7 @@ router.get('/orders/:id', async (req, res) => {
 ```
 
 ### Mistake 3: Not Checking Inventory Before Operations
+
 ```typescript
 // ❌ WRONG - Assuming inventory exists
 await deductInventory(sku, quantity);
@@ -227,6 +254,7 @@ await deductInventory(sku, quantity);
 ```
 
 ### Mistake 4: Using String Literals for Enum Values
+
 ```typescript
 // ❌ WRONG - String literal in query
 db.query('SELECT * FROM orders WHERE status = $1', ['PICKING']);
@@ -236,6 +264,7 @@ db.query('SELECT * FROM orders WHERE status = $1', [OrderStatus.PICKING]);
 ```
 
 ### Mistake 5: Forgetting Transaction Rollback
+
 ```typescript
 // ❌ WRONG - No error handling
 await db.query('UPDATE inventory SET reserved = reserved + $1', [qty]);
@@ -253,12 +282,14 @@ await db.transaction(async (trx) => {
 ## Code Style Consistency
 
 ### Follow Existing Patterns
+
 - **Controller pattern**: See `packages/backend/src/controllers/` for examples
 - **Service pattern**: See `packages/backend/src/services/` for examples
 - **Repository pattern**: See `packages/backend/src/repositories/` for examples
 - **Component pattern**: See `packages/frontend/src/components/` for examples
 
 ### Naming Conventions
+
 - **Files**: `kebab-case.ts` (e.g., `order-service.ts`)
 - **Classes**: `PascalCase` (e.g., `OrderService`)
 - **Functions/Variables**: `camelCase` (e.g., `getOrderById`)
@@ -270,12 +301,14 @@ await db.transaction(async (trx) => {
 ## Testing Requirements
 
 ### Write Tests For
+
 - All new business logic in services
 - All new API endpoints
 - All new UI components
 - Bug fixes (add regression test)
 
 ### Test Structure
+
 ```typescript
 // Unit test example
 describe('OrderService', () => {
@@ -299,6 +332,7 @@ describe('OrderService', () => {
 ## When You're Unsure
 
 ### Decision Tree
+
 ```
 Is the change clearly described?
 ├─ No → Ask user for clarification
@@ -318,6 +352,7 @@ Does the change risk breaking audit trail?
 ```
 
 ### Questions to Ask User
+
 - "This change requires modifying the database schema. Should I create a migration?"
 - "The existing pattern is X, but the request suggests Y. Should I follow the existing pattern?"
 - "This change affects the order state machine. Please confirm the new transition is valid."

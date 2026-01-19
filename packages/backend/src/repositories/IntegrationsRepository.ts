@@ -19,7 +19,7 @@ import {
   WebhookEvent,
   WebhookEventType,
   CarrierAccount,
-  CarrierProvider
+  CarrierProvider,
 } from '@opsui/shared';
 
 // ============================================================================
@@ -157,7 +157,7 @@ export class IntegrationsRepository {
       JSON.stringify(integration.syncSettings),
       integration.webhookSettings ? JSON.stringify(integration.webhookSettings) : null,
       integration.lastSyncAt || null,
-      integration.lastSyncStatus || null
+      integration.lastSyncStatus || null,
     ];
 
     const result = await this.pool.query(query, values);
@@ -261,7 +261,7 @@ export class IntegrationsRepository {
       job.recordsSucceeded || 0,
       job.recordsFailed || 0,
       job.errorMessage || null,
-      job.triggeredBy || null
+      job.triggeredBy || null,
     ];
 
     const result = await this.pool.query(query, values);
@@ -292,7 +292,10 @@ export class IntegrationsRepository {
   async updateSyncJob(
     jobId: string,
     updates: Partial<
-      Omit<SyncJob, 'jobId' | 'integrationId' | 'jobType' | 'createdAt' | 'startedAt' | 'triggeredBy'>
+      Omit<
+        SyncJob,
+        'jobId' | 'integrationId' | 'jobType' | 'createdAt' | 'startedAt' | 'triggeredBy'
+      >
     >
   ): Promise<SyncJob | null> {
     const setClauses: string[] = [];
@@ -347,9 +350,7 @@ export class IntegrationsRepository {
   // SYNC JOB LOGS
   // ========================================================================
 
-  async createSyncJobLog(
-    log: Omit<SyncJobLog, 'logId' | 'timestamp'>
-  ): Promise<SyncJobLog> {
+  async createSyncJobLog(log: Omit<SyncJobLog, 'logId' | 'timestamp'>): Promise<SyncJobLog> {
     const query = `
       INSERT INTO sync_job_logs (
         job_id,
@@ -366,7 +367,7 @@ export class IntegrationsRepository {
       log.level,
       log.message,
       log.details ? JSON.stringify(log.details) : null,
-      new Date()
+      new Date(),
     ];
 
     const result = await this.pool.query(query, values);
@@ -412,7 +413,7 @@ export class IntegrationsRepository {
       event.status,
       new Date(),
       event.processingAttempts || 0,
-      event.errorMessage || null
+      event.errorMessage || null,
     ];
 
     const result = await this.pool.query(query, values);
@@ -537,7 +538,7 @@ export class IntegrationsRepository {
       account.accountNumber,
       JSON.stringify(account.credentials),
       account.isActive,
-      new Date()
+      new Date(),
     ];
 
     const result = await this.pool.query(query, values);
@@ -612,7 +613,7 @@ export class IntegrationsRepository {
       lastSyncStatus: row.last_sync_status,
       createdAt: row.created_at,
       updatedAt: row.updated_at,
-      carrierAccounts: row.carrier_accounts || []
+      carrierAccounts: row.carrier_accounts || [],
     };
   }
 
@@ -629,7 +630,7 @@ export class IntegrationsRepository {
       recordsFailed: row.records_failed,
       errorMessage: row.error_message,
       triggeredBy: row.triggered_by,
-      duration: row.duration
+      duration: row.duration,
     };
   }
 
@@ -640,7 +641,7 @@ export class IntegrationsRepository {
       level: row.level,
       message: row.message,
       details: row.details,
-      timestamp: row.timestamp
+      timestamp: row.timestamp,
     };
   }
 
@@ -654,7 +655,7 @@ export class IntegrationsRepository {
       receivedAt: row.received_at,
       processedAt: row.processed_at,
       processingAttempts: row.processing_attempts,
-      errorMessage: row.error_message
+      errorMessage: row.error_message,
     };
   }
 
@@ -667,7 +668,7 @@ export class IntegrationsRepository {
       accountNumber: row.account_number,
       credentials: row.credentials,
       isActive: row.is_active,
-      createdAt: row.created_at
+      createdAt: row.created_at,
     };
   }
 }

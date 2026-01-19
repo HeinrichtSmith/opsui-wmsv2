@@ -23,7 +23,6 @@ async function resetOrders() {
     console.log('✓ Deleted all orders');
 
     console.log('\nDatabase reset complete. Please run: node seed-random-orders.js');
-
   } catch (error) {
     console.error('Error:', error);
   } finally {

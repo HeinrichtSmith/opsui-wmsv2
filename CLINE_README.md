@@ -48,6 +48,7 @@ To use GLM 4.7 API, you need to:
 
 1. **Get your API key** from [Z.AI](https://open.bigmodel.cn/)
 2. **Configure the API endpoint** in `.cline/config.json`:
+
    ```json
    {
      "apiProvider": "glm",
@@ -57,6 +58,7 @@ To use GLM 4.7 API, you need to:
    ```
 
 3. **Set your API key** as an environment variable:
+
    ```bash
    # Windows (PowerShell)
    $env:GLM_API_KEY="your-api-key-here"
@@ -83,6 +85,7 @@ To use GLM 4.7 API, you need to:
 ### 1. Cognitive Frameworks
 
 #### Six Thinking Hats Protocol
+
 Before every response, Cline cycles through six perspectives:
 
 - **🟢 White Hat**: Facts and information
@@ -93,7 +96,9 @@ Before every response, Cline cycles through six perspectives:
 - **🟣 Purple Hat**: Creativity and alternatives
 
 #### Problem Decomposition
+
 Every task follows this framework:
+
 ```
 PROBLEM → CONTEXT → CONSTRAINTS → SOLUTION → VALIDATION → OPTIMIZATION
 ```
@@ -103,21 +108,25 @@ PROBLEM → CONTEXT → CONSTRAINTS → SOLUTION → VALIDATION → OPTIMIZATION
 #### The Iron Clad Commandments
 
 **I. Readability**
+
 - Self-documenting code
 - No abbreviations
 - Descriptive naming
 
 **II. Error Handling**
+
 - Explicit error handling
 - No silent failures
 - Result types for error propagation
 
 **III. Type Safety**
+
 - Type guards over type assertions
 - Runtime validation
 - Strict TypeScript compliance
 
 **IV. Architecture**
+
 - Separation of concerns
 - Dependency injection
 - Composition over inheritance
@@ -125,6 +134,7 @@ PROBLEM → CONTEXT → CONSTRAINTS → SOLUTION → VALIDATION → OPTIMIZATION
 ### 3. Security Protocol
 
 Mandatory security checks for EVERY change:
+
 - ✅ Input validation
 - ✅ Authentication/authorization
 - ✅ SQL injection prevention
@@ -139,6 +149,7 @@ Mandatory security checks for EVERY change:
 ### 4. Testing Strategy
 
 #### Testing Pyramid
+
 ```
         ▲
        /E\        E2E Tests (10%)
@@ -151,6 +162,7 @@ Mandatory security checks for EVERY change:
 ```
 
 #### Coverage Requirements
+
 - **Critical Paths**: 100%
 - **Business Logic**: 90%+
 - **Utilities**: 95%+
@@ -159,12 +171,14 @@ Mandatory security checks for EVERY change:
 ### 5. Performance Optimization
 
 #### Before Optimizing
+
 1. Measure first (never optimize without profiling)
 2. Identify bottlenecks
 3. Set baseline metrics
 4. Define success targets
 
 #### Strategies
+
 - **Database**: N+1 query prevention, query optimization, indexing
 - **Caching**: Multi-layer (memory → Redis → CDN)
 - **Async**: Parallelize independent operations, use promises
@@ -172,6 +186,7 @@ Mandatory security checks for EVERY change:
 ### 6. Refactoring Protocol
 
 #### When to Refactor
+
 - **Rule of Three**: Similar code appears 3 times
 - **Duplicated Logic**: Same logic in multiple places
 - **Long Methods**: >50 lines
@@ -179,6 +194,7 @@ Mandatory security checks for EVERY change:
 - **Complex Conditionals**: >3 conditions
 
 #### Refactoring Steps
+
 1. Write tests covering existing behavior
 2. Make the smallest change that improves code
 3. Run tests to ensure no regression
@@ -221,12 +237,12 @@ Mandatory security checks for EVERY change:
 
 ### Configuration Options
 
-| Option | Type | Description |
-|--------|------|-------------|
-| `temperature` | number | Response randomness (0.0-1.0) |
-| `reasoningEffort` | string | "low", "medium", or "high" |
-| `maxTokens` | integer | Maximum response tokens |
-| `contextTokens` | integer | Context window size |
+| Option            | Type    | Description                   |
+| ----------------- | ------- | ----------------------------- |
+| `temperature`     | number  | Response randomness (0.0-1.0) |
+| `reasoningEffort` | string  | "low", "medium", or "high"    |
+| `maxTokens`       | integer | Maximum response tokens       |
+| `contextTokens`   | integer | Context window size           |
 
 ---
 
@@ -290,6 +306,7 @@ Edit `.vscode/settings.json` to change behavior:
 **User Input**: "Fix the bug in the user authentication"
 
 **Cline Supreme Response**:
+
 ```
 🔍 ANALYSIS
 I've examined the authentication flow in packages/backend/src/services/auth.service.ts.
@@ -317,6 +334,7 @@ Run tests, verify no regression, commit with security-focused message.
 **User Input**: "Add inventory low stock alerts"
 
 **Cline Supreme Response**:
+
 ```
 🔍 ANALYSIS
 Examined inventory service and existing notification system.
@@ -351,6 +369,7 @@ Test with sample data, configure thresholds, deploy to staging.
 ### Issue: Configuration Not Loading
 
 **Solution**:
+
 1. Check VSCode settings for errors
 2. Verify JSON syntax in all config files
 3. Reload VSCode window (Ctrl+Shift+P → "Reload Window")
@@ -358,6 +377,7 @@ Test with sample data, configure thresholds, deploy to staging.
 ### Issue: API Connection Failed
 
 **Solution**:
+
 1. Verify API key is set correctly
 2. Check internet connectivity
 3. Verify API endpoint URL
@@ -366,6 +386,7 @@ Test with sample data, configure thresholds, deploy to staging.
 ### Issue: Responses Not Following Rules
 
 **Solution**:
+
 1. Ensure `.clinerules.md` is in project root
 2. Check `systemPromptOverride` points to correct file
 3. Verify `behaviorProfile` is set to "claude-enhanced"
@@ -378,15 +399,17 @@ Test with sample data, configure thresholds, deploy to staging.
 ### 1. Reduce Context Window
 
 If responses are slow, reduce `contextTokens`:
+
 ```json
 {
-  "contextTokens": 64000  // Default: 128000
+  "contextTokens": 64000 // Default: 128000
 }
 ```
 
 ### 2. Lower Reasoning Effort
 
 For quick tasks, use lower effort:
+
 ```json
 {
   "reasoningEffort": "low"
@@ -396,9 +419,10 @@ For quick tasks, use lower effort:
 ### 3. Adjust Max Tokens
 
 For shorter responses:
+
 ```json
 {
-  "maxTokens": 4096  // Default: 8192
+  "maxTokens": 4096 // Default: 8192
 }
 ```
 
@@ -409,6 +433,7 @@ For shorter responses:
 ### 1. Let Cline Think
 
 Don't interrupt the analysis phase. Let it:
+
 - Read all relevant files
 - Understand the architecture
 - Consider multiple approaches
@@ -417,6 +442,7 @@ Don't interrupt the analysis phase. Let it:
 ### 2. Trust the Process
 
 The structured response format may seem verbose, but each section serves a purpose:
+
 - **Analysis**: Shows understanding
 - **Recommendation**: Provides rationale
 - **Implementation**: The actual code
@@ -427,6 +453,7 @@ The structured response format may seem verbose, but each section serves a purpo
 ### 3. Embrace Uncertainty
 
 When Cline says "I don't know", it's being intellectually honest. It will:
+
 - State what it knows
 - Identify what's missing
 - Propose an investigation plan
@@ -448,16 +475,19 @@ To improve these rules:
 ## 📚 Additional Resources
 
 ### Documentation
+
 - [CLINE_SUPREME_GUIDE.md](./CLINE_SUPREME_GUIDE.md) - Quick reference
 - [.clinerules.md](./.clinerules.md) - Complete ruleset
 - [.cline/schema.json](./.cline/schema.json) - Configuration schema
 
 ### Project Context
+
 - [README.md](./README.md) - Project overview
 - [DEVELOPMENT.md](./DEVELOPMENT.md) - Development guide
 - [QUICKSTART.md](./QUICKSTART.md) - Quick start guide
 
 ### External Links
+
 - [Cline VSCode Extension](https://marketplace.visualstudio.com/items?itemName=Cline.cline)
 - [GLM 4.7 API Documentation](https://open.bigmodel.cn/dev/api)
 - [Warehouse Management System Documentation](./)
@@ -467,6 +497,7 @@ To improve these rules:
 ## 🌟 Acknowledgments
 
 This configuration is inspired by:
+
 - **Claude (Anthropic)** - For the cognitive framework and communication style
 - **GLM 4.7 (Z.AI)** - For the powerful reasoning capabilities
 - **Software Engineering Best Practices** - For the quality standards
@@ -484,6 +515,7 @@ This configuration is part of the Warehouse Management System project.
 **These rules transform Cline from a helpful assistant into an elite cognitive development partner.**
 
 Every interaction will:
+
 - ✅ Leave your codebase better than it was found
 - ✅ Teach best practices through example
 - ✅ Anticipate problems before they manifest
@@ -492,6 +524,7 @@ Every interaction will:
 - ✅ Optimize for maintainability and performance
 
 **Remember**:
+
 > "Every line of code is a liability. Make it work, make it right, make it gone."
 > — Jeff Atwood
 

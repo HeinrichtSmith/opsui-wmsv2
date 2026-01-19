@@ -10,6 +10,7 @@ npm run dev:setup
 ```
 
 This automatically:
+
 - ✅ Installs all dependencies
 - ✅ Sets up Git hooks
 - ✅ Configures development environment
@@ -23,6 +24,7 @@ npm run dev:start
 ```
 
 This automatically:
+
 - ✅ Kills processes on occupied ports (no more manual cleanup!)
 - ✅ Starts backend on port 3001
 - ✅ Starts frontend on port 5173
@@ -50,6 +52,7 @@ npm run generate:component --name MainLayout --type layout
 ```
 
 **Generated files include:**
+
 - TypeScript interfaces
 - Proper imports and exports
 - Hook scaffolding
@@ -63,6 +66,7 @@ npm run generate:api --resource Product
 ```
 
 **Generates:**
+
 - `packages/backend/src/routes/Product.ts` - Express routes with validation
 - `packages/backend/src/services/ProductService.ts` - Business logic layer
 - `packages/backend/src/repositories/ProductRepository.ts` - Data access layer
@@ -97,6 +101,7 @@ git commit
 **If any check fails, the commit is blocked** with clear error messages.
 
 **Fix issues automatically:**
+
 ```bash
 npm run format:fix    # Auto-format all code
 npm run lint:fix     # Auto-fix linting issues
@@ -111,6 +116,7 @@ npm run test:validate
 ```
 
 This runs:
+
 - ✅ Backend type check
 - ✅ Frontend type check
 - ✅ Backend unit tests
@@ -136,6 +142,7 @@ npm run dev:start:no-browser
 ```
 
 **Features:**
+
 - 🔧 Kills processes on ports 3001, 5173, 5174
 - ⏱️ Waits for backend to be healthy
 - ⏱️ Waits for frontend to be ready
@@ -157,6 +164,7 @@ npm run test:watch:frontend
 ```
 
 **Features:**
+
 - 🔍 Typeahead to filter tests
 - 🎨 Colored output (PASS/FAIL)
 - ⚡ Instant feedback on file changes
@@ -170,6 +178,7 @@ npm run test:connection
 ```
 
 **Checks:**
+
 - ✅ Backend API is running (port 3001)
 - ✅ Frontend is running (port 5173)
 - ✅ Database is connected
@@ -184,6 +193,7 @@ npm run perf
 ```
 
 **Shows:**
+
 - API response times (avg, median, P95)
 - Error rate percentage
 - Memory usage
@@ -198,6 +208,7 @@ npm run analyze
 ```
 
 **Shows:**
+
 - Visual treemap of modules
 - Bundle size breakdown
 - Gzip vs Brotli compression
@@ -215,6 +226,7 @@ npm run db:indexes
 ```
 
 **Indexes created:**
+
 - Orders: status, priority, picker assignments
 - Pick tasks: status, order, picker
 - Inventory: SKU, bin, availability
@@ -252,6 +264,7 @@ npm run deps
 ```
 
 **Shows:**
+
 - Current version vs latest
 - Major/minor/patch differences
 - Upgrade recommendations
@@ -264,6 +277,7 @@ npm run deps:update
 ```
 
 **Features:**
+
 - Select which packages to update
 - See breaking changes
 - Safe upgrade recommendations
@@ -280,6 +294,7 @@ npm run mcp:monitor
 ```
 
 **Dashboard shows:**
+
 - Server status (RUNNING/DOWN)
 - Process ID
 - Uptime
@@ -287,6 +302,7 @@ npm run mcp:monitor
 - Last health check
 
 **Features:**
+
 - 🔄 Auto-restart on failure
 - ⏱️ Health checks every 5 seconds
 - 💔 Beatbeat signals
@@ -298,54 +314,54 @@ npm run mcp:monitor
 
 ### Development
 
-| Command | Purpose |
-|---------|---------|
-| `npm run dev:start` | Start all services (auto-cleanup ports) |
-| `npm run dev:setup` | First-time setup |
-| `npm run dev:restart` | Restart dev servers |
+| Command               | Purpose                                 |
+| --------------------- | --------------------------------------- |
+| `npm run dev:start`   | Start all services (auto-cleanup ports) |
+| `npm run dev:setup`   | First-time setup                        |
+| `npm run dev:restart` | Restart dev servers                     |
 
 ### Code Generation
 
-| Command | Purpose |
-|---------|---------|
-| `npm run generate:component --name X --type page` | Generate page component |
-| `npm run generate:api --resource X` | Generate API routes + service |
-| `npm run generate:test --file X` | Generate test file |
+| Command                                           | Purpose                       |
+| ------------------------------------------------- | ----------------------------- |
+| `npm run generate:component --name X --type page` | Generate page component       |
+| `npm run generate:api --resource X`               | Generate API routes + service |
+| `npm run generate:test --file X`                  | Generate test file            |
 
 ### Testing
 
-| Command | Purpose |
-|---------|---------|
-| `npm run test:watch` | Watch all tests |
-| `npm run test:connection` | Validate connectivity |
-| `npm run test:validate` | Pre-commit validation |
-| `npm run test:all` | Run all tests + validation |
+| Command                   | Purpose                    |
+| ------------------------- | -------------------------- |
+| `npm run test:watch`      | Watch all tests            |
+| `npm run test:connection` | Validate connectivity      |
+| `npm run test:validate`   | Pre-commit validation      |
+| `npm run test:all`        | Run all tests + validation |
 
 ### Database
 
-| Command | Purpose |
-|---------|---------|
-| `npm run db:indexes` | Apply performance indexes |
-| `npm run db:status` | View database status |
-| `npm run db validate` | Check data integrity |
-| `npm run db reset` | Reset with backup |
+| Command               | Purpose                   |
+| --------------------- | ------------------------- |
+| `npm run db:indexes`  | Apply performance indexes |
+| `npm run db:status`   | View database status      |
+| `npm run db validate` | Check data integrity      |
+| `npm run db reset`    | Reset with backup         |
 
 ### Monitoring
 
-| Command | Purpose |
-|---------|---------|
-| `npm run perf` | Performance dashboard |
-| `npm run analyze` | Bundle size analyzer |
-| `npm run mcp:monitor` | MCP server health |
+| Command               | Purpose               |
+| --------------------- | --------------------- |
+| `npm run perf`        | Performance dashboard |
+| `npm run analyze`     | Bundle size analyzer  |
+| `npm run mcp:monitor` | MCP server health     |
 
 ### Quality
 
-| Command | Purpose |
-|---------|---------|
-| `npm run format:fix` | Auto-format code |
-| `npm run lint:fix` | Auto-fix linting |
-| `npm run typecheck` | Type check all packages |
-| `npm run deps` | Check for updates |
+| Command              | Purpose                 |
+| -------------------- | ----------------------- |
+| `npm run format:fix` | Auto-format code        |
+| `npm run lint:fix`   | Auto-fix linting        |
+| `npm run typecheck`  | Type check all packages |
+| `npm run deps`       | Check for updates       |
 
 ---
 
@@ -406,6 +422,7 @@ git push
 ### 1. Use Code Generation
 
 Instead of writing boilerplate:
+
 ```bash
 # Generate API in 5 seconds
 npm run generate:api --resource Shipment
@@ -414,6 +431,7 @@ npm run generate:api --resource Shipment
 ### 2. Trust the Pre-Commit Hooks
 
 Don't run checks manually - let Git hooks do it:
+
 ```bash
 git commit  # Hooks run automatically
 ```
@@ -421,6 +439,7 @@ git commit  # Hooks run automatically
 ### 3. Use Watch Mode for Tests
 
 Keep tests running while developing:
+
 ```bash
 npm run test:watch
 ```
@@ -428,6 +447,7 @@ npm run test:watch
 ### 4. Monitor Performance
 
 Keep performance dashboard open:
+
 ```bash
 npm run perf
 ```
@@ -435,6 +455,7 @@ npm run perf
 ### 5. Let Tools Handle Cleanup
 
 No manual process killing:
+
 ```bash
 npm run dev:start  # Automatically cleans ports
 ```
@@ -488,6 +509,7 @@ npm run mcp:monitor
 ## 📊 Automation Impact
 
 ### Before (Manual Work)
+
 - ❌ Manually kill processes on ports
 - ❌ Wait for services to start (unknown when ready)
 - ❌ Write boilerplate code manually
@@ -497,6 +519,7 @@ npm run mcp:monitor
 - ❌ No performance monitoring
 
 ### After (Automated)
+
 - ✅ Automatic port cleanup
 - ✅ Waits for services, opens browser
 - ✅ Generate code in seconds
@@ -507,13 +530,13 @@ npm run mcp:monitor
 
 ### Time Savings
 
-| Task | Before | After | Impact |
-|------|--------|-------|--------|
-| Start dev environment | 2-3 min | 10 sec | Massive savings |
-| Generate CRUD API | 30 min | 5 sec | Massive savings |
-| Run quality checks | 2 min | Auto | Complete automation |
-| Validate connectivity | Manual | Auto | Complete automation |
-| Troubleshoot ports | 5 min | Auto | Complete automation |
+| Task                  | Before  | After  | Impact              |
+| --------------------- | ------- | ------ | ------------------- |
+| Start dev environment | 2-3 min | 10 sec | Massive savings     |
+| Generate CRUD API     | 30 min  | 5 sec  | Massive savings     |
+| Run quality checks    | 2 min   | Auto   | Complete automation |
+| Validate connectivity | Manual  | Auto   | Complete automation |
+| Troubleshoot ports    | 5 min   | Auto   | Complete automation |
 
 **Total time saved per day: Significant time savings!**
 

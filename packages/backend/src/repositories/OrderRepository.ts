@@ -5,13 +5,7 @@
  */
 
 import { BaseRepository } from './BaseRepository';
-import {
-  Order,
-  OrderItem,
-  OrderStatus,
-  OrderPriority,
-  CreateOrderDTO,
-} from '@opsui/shared';
+import { Order, OrderItem, OrderStatus, OrderPriority, CreateOrderDTO } from '@opsui/shared';
 import { query } from '../db/client';
 import { ConflictError, NotFoundError } from '@opsui/shared';
 import { logger } from '../config/logger';
@@ -31,7 +25,7 @@ export class OrderRepository extends BaseRepository<Order> {
   // --------------------------------------------------------------------------
 
   async createOrderWithItems(dto: CreateOrderDTO): Promise<Order> {
-    return this.withTransaction(async (client) => {
+    return this.withTransaction(async client => {
       // Generate order ID
       const orderId = generateOrderId();
 
@@ -114,7 +108,9 @@ export class OrderRepository extends BaseRepository<Order> {
       // Calculate progress based on completed pick tasks
       if (itemsResult.rows.length > 0) {
         const totalTasks = itemsResult.rows.length;
-        const completedTasks = itemsResult.rows.filter((item: any) => item.status === 'COMPLETED').length;
+        const completedTasks = itemsResult.rows.filter(
+          (item: any) => item.status === 'COMPLETED'
+        ).length;
         progress = Math.round((completedTasks / totalTasks) * 100);
       }
     } else {
@@ -133,8 +129,8 @@ export class OrderRepository extends BaseRepository<Order> {
             orderItemId: item.order_item_id,
             sku: item.sku,
             verifiedQuantity: item.verified_quantity,
-            quantity: item.quantity
-          }))
+            quantity: item.quantity,
+          })),
         });
       }
 
@@ -153,13 +149,15 @@ export class OrderRepository extends BaseRepository<Order> {
   // ORDER QUEUE
   // --------------------------------------------------------------------------
 
-  async getOrderQueue(filters: {
-    status?: OrderStatus;
-    priority?: OrderPriority;
-    pickerId?: string;
-    limit?: number;
-    offset?: number;
-  } = {}): Promise<{ orders: Order[]; total: number }> {
+  async getOrderQueue(
+    filters: {
+      status?: OrderStatus;
+      priority?: OrderPriority;
+      pickerId?: string;
+      limit?: number;
+      offset?: number;
+    } = {}
+  ): Promise<{ orders: Order[]; total: number }> {
     const conditions: string[] = [];
     const params: any[] = [];
     let paramIndex = 1;
@@ -230,7 +228,7 @@ export class OrderRepository extends BaseRepository<Order> {
 
     // Fetch items for each order
     const orders = await Promise.all(
-      ordersResult.rows.map(async (order) => {
+      ordersResult.rows.map(async order => {
         let itemsResult: any;
 
         if (order.status === OrderStatus.PICKING) {
@@ -243,7 +241,12 @@ export class OrderRepository extends BaseRepository<Order> {
           console.log('[OrderRepository] Pick tasks result:', itemsResult.rows.length, 'items');
         } else {
           // For PENDING and other statuses, get order items with barcode
-          console.log('[OrderRepository] Fetching order_items for order:', order.orderId, 'status:', order.status);
+          console.log(
+            '[OrderRepository] Fetching order_items for order:',
+            order.orderId,
+            'status:',
+            order.status
+          );
           itemsResult = await query(
             `SELECT oi.order_item_id, oi.order_id, oi.sku, oi.name, s.barcode, oi.bin_location, oi.quantity, oi.picked_quantity, COALESCE(oi.verified_quantity, 0) as verified_quantity, oi.status, oi.skip_reason FROM order_items oi LEFT JOIN skus s ON oi.sku = s.sku WHERE oi.order_id = $1 ORDER BY oi.order_item_id`,
             [order.orderId]
@@ -285,10 +288,12 @@ export class OrderRepository extends BaseRepository<Order> {
   // GET ORDERS WITH ITEMS BY STATUS
   // --------------------------------------------------------------------------
 
-  async getOrdersWithItemsByStatus(filters: {
-    status?: OrderStatus;
-    packerId?: string;
-  } = {}): Promise<{ orders: Order[] }> {
+  async getOrdersWithItemsByStatus(
+    filters: {
+      status?: OrderStatus;
+      packerId?: string;
+    } = {}
+  ): Promise<{ orders: Order[] }> {
     const conditions: string[] = [];
     const params: any[] = [];
     let paramIndex = 1;
@@ -336,7 +341,7 @@ export class OrderRepository extends BaseRepository<Order> {
 
     // Get items for each order
     const orders = await Promise.all(
-      ordersResult.rows.map(async (order) => {
+      ordersResult.rows.map(async order => {
         let itemsResult: any;
 
         if (order.status === OrderStatus.PICKING) {
@@ -385,9 +390,12 @@ export class OrderRepository extends BaseRepository<Order> {
   // --------------------------------------------------------------------------
 
   async claimOrder(orderId: string, pickerId: string): Promise<Order> {
-    return this.withTransaction(async (client) => {
+    return this.withTransaction(async client => {
       // Check if order exists and is claimable
-      const orderResult = await client.query(`SELECT * FROM orders WHERE order_id = $1 FOR UPDATE`, [orderId]);
+      const orderResult = await client.query(
+        `SELECT * FROM orders WHERE order_id = $1 FOR UPDATE`,
+        [orderId]
+      );
 
       if (orderResult.rows.length === 0) {
         throw new NotFoundError('Order', orderId);
@@ -396,30 +404,52 @@ export class OrderRepository extends BaseRepository<Order> {
       const order = orderResult.rows[0];
 
       if (order.status !== OrderStatus.PENDING) {
-        throw new ConflictError(`Order cannot be claimed because it is currently in status: ${order.status}. Only orders in PENDING status can be claimed.`);
+        throw new ConflictError(
+          `Order cannot be claimed because it is currently in status: ${order.status}. Only orders in PENDING status can be claimed.`
+        );
       }
 
       if (order.picker_id) {
-        throw new ConflictError(`Order already claimed by picker ${order.picker_id}. Only one picker can claim an order at a time.`);
+        throw new ConflictError(
+          `Order already claimed by picker ${order.picker_id}. Only one picker can claim an order at a time.`
+        );
       }
 
       // Check if picker has active orders
-      const activeOrdersResult = await client.query(`SELECT COUNT(*) FROM orders WHERE picker_id = $1 AND status = 'PICKING'`, [pickerId]);
+      const activeOrdersResult = await client.query(
+        `SELECT COUNT(*) FROM orders WHERE picker_id = $1 AND status = 'PICKING'`,
+        [pickerId]
+      );
       const activeCount = parseInt(activeOrdersResult.rows[0].count, 10);
 
       if (activeCount >= 5) {
-        throw new ConflictError(`You have reached the maximum limit of 5 active orders. Currently you have ${activeCount} active orders. Please complete or cancel some orders before claiming more.`);
+        throw new ConflictError(
+          `You have reached the maximum limit of 5 active orders. Currently you have ${activeCount} active orders. Please complete or cancel some orders before claiming more.`
+        );
       }
 
-      await client.query(`UPDATE orders SET status = 'PICKING', picker_id = $1, claimed_at = NOW() WHERE order_id = $2`, [pickerId, orderId]);
+      await client.query(
+        `UPDATE orders SET status = 'PICKING', picker_id = $1, claimed_at = NOW() WHERE order_id = $2`,
+        [pickerId, orderId]
+      );
 
       // Generate pick tasks
-      const itemsResult = await client.query(`SELECT * FROM order_items WHERE order_id = $1`, [orderId]);
+      const itemsResult = await client.query(`SELECT * FROM order_items WHERE order_id = $1`, [
+        orderId,
+      ]);
 
       for (const item of itemsResult.rows) {
         await client.query(
           `INSERT INTO pick_tasks (pick_task_id, order_id, order_item_id, sku, name, target_bin, quantity, picked_quantity, status) VALUES ($1, $2, $3, $4, $5, $6, $7, 0, 'PENDING')`,
-          [generatePickTaskId(), orderId, item.order_item_id, item.sku, item.name, item.bin_location, item.quantity]
+          [
+            generatePickTaskId(),
+            orderId,
+            item.order_item_id,
+            item.sku,
+            item.name,
+            item.bin_location,
+            item.quantity,
+          ]
         );
       }
 
@@ -476,7 +506,7 @@ export class OrderRepository extends BaseRepository<Order> {
   // --------------------------------------------------------------------------
 
   async cancelOrder(orderId: string, userId: string, reason: string): Promise<Order> {
-    return this.withTransaction(async (client) => {
+    return this.withTransaction(async client => {
       const order = await this.findByIdOrThrow(orderId);
 
       if (order.status === OrderStatus.SHIPPED) {
@@ -487,7 +517,10 @@ export class OrderRepository extends BaseRepository<Order> {
         return order; // Already cancelled
       }
 
-      await client.query(`UPDATE orders SET status = 'CANCELLED', cancelled_at = NOW() WHERE order_id = $1`, [orderId]);
+      await client.query(
+        `UPDATE orders SET status = 'CANCELLED', cancelled_at = NOW() WHERE order_id = $1`,
+        [orderId]
+      );
 
       await client.query(
         `UPDATE inventory_units SET reserved = reserved - oi.quantity, last_updated = NOW() FROM order_items oi WHERE inventory_units.sku = oi.sku AND inventory_units.bin_location = oi.bin_location AND oi.order_id = $1`,

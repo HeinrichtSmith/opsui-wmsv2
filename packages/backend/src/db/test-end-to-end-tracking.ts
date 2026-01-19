@@ -124,7 +124,6 @@ async function testEndToEndTracking(): Promise<void> {
     console.log('   ✅ Dashboard shows ACTIVE status for active pickers');
     console.log('   ✅ lastViewedAt is recent and accurate');
     console.log('\n🎉 The picker activity tracking system is now working correctly!\n');
-
   } catch (error) {
     console.error('\n❌ Test failed:', error);
     throw error;

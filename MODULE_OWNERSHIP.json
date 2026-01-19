@@ -43,11 +43,7 @@
         "packages/backend/src/services/order.ts",
         "packages/backend/src/models/order.ts"
       ],
-      "apiContracts": [
-        "PickTaskDTO",
-        "ClaimPickTaskRequest",
-        "BinLocation"
-      ]
+      "apiContracts": ["PickTaskDTO", "ClaimPickTaskRequest", "BinLocation"]
     },
     "packing": {
       "owner": "friend2",
@@ -68,11 +64,7 @@
         "packages/backend/src/services/order.ts",
         "packages/backend/src/models/order.ts"
       ],
-      "apiContracts": [
-        "ShipmentDTO",
-        "PackOrderRequest",
-        "ShippingLabel"
-      ]
+      "apiContracts": ["ShipmentDTO", "PackOrderRequest", "ShippingLabel"]
     },
     "admin": {
       "owner": "you",
@@ -93,11 +85,7 @@
         "packages/shared/src/types/index.ts",
         "packages/backend/src/services/auth.ts"
       ],
-      "apiContracts": [
-        "UserDTO",
-        "AnalyticsReport",
-        "Settings"
-      ]
+      "apiContracts": ["UserDTO", "AnalyticsReport", "Settings"]
     }
   },
   "shared": {
@@ -180,10 +168,7 @@
         "packages/backend/src/services/admin/**/*.test.ts"
       ]
     },
-    "sharedTests": [
-      "packages/shared/**/*.test.ts",
-      "packages/backend/src/models/**/*.test.ts"
-    ],
+    "sharedTests": ["packages/shared/**/*.test.ts", "packages/backend/src/models/**/*.test.ts"],
     "beforeMerge": "npm test",
     "afterMerge": "All team members run npm test"
   },
@@ -196,21 +181,11 @@
     },
     "dailySync": {
       "format": "Async posts acceptable",
-      "fields": [
-        "Working on",
-        "Files affected",
-        "Shared code dependencies",
-        "Blockers"
-      ]
+      "fields": ["Working on", "Files affected", "Shared code dependencies", "Blockers"]
     },
     "endOfDay": {
       "format": "Async posts acceptable",
-      "fields": [
-        "Completed",
-        "WIP",
-        "Tomorrow's plan",
-        "Issues encountered"
-      ]
+      "fields": ["Completed", "WIP", "Tomorrow's plan", "Issues encountered"]
     }
   },
   "metrics": {

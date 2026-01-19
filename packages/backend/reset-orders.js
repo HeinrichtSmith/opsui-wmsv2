@@ -15,15 +15,15 @@ async function resetOrders() {
     port: parseInt(process.env.DB_PORT) || 5432,
     database: process.env.DB_NAME || 'wms_db',
     user: process.env.DB_USER || 'wms_user',
-    password: process.env.DB_PASSWORD || 'wms_password'
+    password: process.env.DB_PASSWORD || 'wms_password',
   });
-  
+
   try {
     console.log('Connecting to database...');
     await client.connect();
-    
+
     console.log('\n=== RESETTING STUCK ORDERS ===\n');
-    
+
     // Step 1: Reset orders stuck in PICKING status without a picker
     console.log('1. Resetting orders in PICKING status without picker...');
     const result1 = await client.query(`
@@ -35,7 +35,7 @@ async function resetOrders() {
         AND (picker_id IS NULL OR picker_id = '')
     `);
     console.log(`   Updated ${result1.rowCount} orders`);
-    
+
     // Step 2: Reset all orders in PICKING status (clear all picker assignments)
     console.log('\n2. Resetting all orders in PICKING status...');
     const result2 = await client.query(`
@@ -46,7 +46,7 @@ async function resetOrders() {
       WHERE status = 'PICKING'
     `);
     console.log(`   Updated ${result2.rowCount} orders`);
-    
+
     // Step 3: Delete orphaned pick tasks
     console.log('\n3. Deleting orphaned pick tasks...');
     const result3 = await client.query(`
@@ -54,7 +54,7 @@ async function resetOrders() {
       WHERE order_id NOT IN (SELECT order_id FROM orders)
     `);
     console.log(`   Deleted ${result3.rowCount} orphaned tasks`);
-    
+
     // Step 4: Verify changes
     console.log('\n4. Orders available for claiming:');
     const pendingOrders = await client.query(`
@@ -70,7 +70,7 @@ async function resetOrders() {
       ORDER BY priority DESC, created_at ASC
       LIMIT 10
     `);
-    
+
     if (pendingOrders.rows.length === 0) {
       console.log('   No orders available');
     } else {
@@ -78,7 +78,7 @@ async function resetOrders() {
         console.log(`   ${order.order_id} - ${order.customer_name} (${order.priority})`);
       });
     }
-    
+
     // Step 5: Check specific order ORD-20260112-7802
     console.log('\n5. Specific order: ORD-20260112-7802');
     const specificOrder = await client.query(`
@@ -93,7 +93,7 @@ async function resetOrders() {
       FROM orders
       WHERE order_id = 'ORD-20260112-7802'
     `);
-    
+
     if (specificOrder.rows.length === 0) {
       console.log('   ❌ Order not found');
     } else {
@@ -102,7 +102,7 @@ async function resetOrders() {
       console.log(`   Picker: ${order.picker_id || 'None'}`);
       console.log(`   ${order.claimable}`);
     }
-    
+
     await client.end();
     console.log('\n=== RESET COMPLETE ===\n');
     console.log('✅ All orders have been reset to claimable state');

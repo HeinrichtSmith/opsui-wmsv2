@@ -11,12 +11,11 @@ import { createApp, startServer, waitForDrain } from './app';
 import config from './config';
 import { logger } from './config/logger';
 import { closePool } from './db/client';
+import { acquirePortLock, setupPortLockCleanup, SERVICE_PORTS } from './utils/portLock';
 import {
-  acquirePortLock,
-  setupPortLockCleanup,
-  SERVICE_PORTS
-} from './utils/portLock';
-import { setupGracefulShutdown, isShuttingDown as checkIfShuttingDown } from './utils/gracefulShutdown';
+  setupGracefulShutdown,
+  isShuttingDown as checkIfShuttingDown,
+} from './utils/gracefulShutdown';
 
 // Export shutdown check for health endpoints
 export const isShuttingDown = checkIfShuttingDown;
@@ -30,11 +29,7 @@ const BACKEND_PORT = SERVICE_PORTS.BACKEND_API; // Always 3001
 async function acquireServerPort(): Promise<boolean> {
   logger.info('Acquiring port lock...', { port: BACKEND_PORT });
 
-  const result = await acquirePortLock(
-    BACKEND_PORT,
-    'wms-backend-api',
-    config.host
-  );
+  const result = await acquirePortLock(BACKEND_PORT, 'wms-backend-api', config.host);
 
   if (!result.acquired) {
     logger.error('Failed to acquire port lock - another instance may be running', {
@@ -123,7 +118,7 @@ async function main() {
 
       // 3. Flush any pending operations
       async () => {
-        await new Promise<void>((resolve) => setTimeout(resolve, 100));
+        await new Promise<void>(resolve => setTimeout(resolve, 100));
         logger.info('✅ Pending operations flushed');
       },
     ];
@@ -136,7 +131,6 @@ async function main() {
       cleanupTasks,
       forceTimeout: 30000, // 30 second force timeout
     });
-
   } catch (error) {
     logger.error('Failed to start server', {
       error: error instanceof Error ? error.message : String(error),
@@ -148,9 +142,9 @@ async function main() {
   }
 }
 
-  // --------------------------------------------------------------------------
-  // UNHANDLED ERRORS - PREVENT CRASHES
-  // --------------------------------------------------------------------------
+// --------------------------------------------------------------------------
+// UNHANDLED ERRORS - PREVENT CRASHES
+// --------------------------------------------------------------------------
 
 // Handle unhandled promise rejections without crashing
 process.on('unhandledRejection', (reason, promise) => {
@@ -159,12 +153,12 @@ process.on('unhandledRejection', (reason, promise) => {
     stack: reason instanceof Error ? reason.stack : undefined,
     promise: String(promise),
   });
-  
+
   // Don't exit - just log and continue
 });
 
 // Handle uncaught exceptions but try to recover
-process.on('uncaughtException', (error) => {
+process.on('uncaughtException', error => {
   if (checkIfShuttingDown()) {
     return;
   }

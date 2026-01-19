@@ -31,35 +31,44 @@ async function testPickerAPI() {
     const pickerIds = activePickers.rows.map(r => r.user_id);
     console.log('\nPicker IDs:', pickerIds);
 
-    const activityPromises = pickerIds.map(async (pickerId) => {
+    const activityPromises = pickerIds.map(async pickerId => {
       console.log(`Processing picker: ${pickerId}`);
-      
+
       // Get most recent PICKING order for this picker
-      const activeOrder = await pool.query(`
+      const activeOrder = await pool.query(
+        `
         SELECT order_id, status, progress, updated_at
         FROM orders
         WHERE picker_id = $1 AND status = 'PICKING'
         ORDER BY updated_at DESC
         LIMIT 1
-      `, [pickerId]);
+      `,
+        [pickerId]
+      );
 
       // Get most recent completed order for this picker
-      const recentOrder = await pool.query(`
+      const recentOrder = await pool.query(
+        `
         SELECT order_id, status, progress, updated_at
         FROM orders
         WHERE picker_id = $1
         ORDER BY updated_at DESC
         LIMIT 1
-      `, [pickerId]);
+      `,
+        [pickerId]
+      );
 
       // Get most recent task for this picker
-      const recentTask = await pool.query(`
+      const recentTask = await pool.query(
+        `
         SELECT pick_task_id, started_at, completed_at
         FROM pick_tasks
         WHERE picker_id = $1
         ORDER BY started_at DESC
         LIMIT 1
-      `, [pickerId]);
+      `,
+        [pickerId]
+      );
 
       return {
         pickerId,
@@ -73,7 +82,7 @@ async function testPickerAPI() {
     console.log('\nActivity data for each picker:', JSON.stringify(activityData, null, 2));
 
     // Step 3: Map to response format
-    const result = activityData.map((data) => {
+    const result = activityData.map(data => {
       const now = new Date();
       const fiveMinutesAgo = new Date(now.getTime() - 5 * 60 * 1000);
 
@@ -88,8 +97,7 @@ async function testPickerAPI() {
         currentOrderId = data.activeOrder.order_id;
         orderProgress = data.activeOrder.progress || 0;
         lastViewedAt = data.activeOrder.updated_at;
-      }
-      else if (data.recentOrder) {
+      } else if (data.recentOrder) {
         status = 'IDLE';
         currentOrderId = data.recentOrder.order_id;
         orderProgress = data.recentOrder.progress || 0;
@@ -119,7 +127,6 @@ async function testPickerAPI() {
     });
 
     console.log('\nFinal result to return:', JSON.stringify(result, null, 2));
-
   } catch (error) {
     console.error('Error:', error);
   } finally {

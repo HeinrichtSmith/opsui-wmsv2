@@ -55,7 +55,10 @@ interface GeneratedTest {
 /**
  * Analyze code to determine test requirements
  */
-function analyzeCodeForTesting(code: string, language: string): {
+function analyzeCodeForTesting(
+  code: string,
+  language: string
+): {
   functions: Array<{ name: string; lines: number; complexity: number }>;
   imports: string[];
   exports: string[];
@@ -174,10 +177,7 @@ function generateTypeScriptTest(
 
   // Extract file path for test
   const relativePath = file.replace(process.cwd(), '').replace(/^\//, '');
-  const testFilePath = relativePath.replace(
-    /\.ts$/,
-    `.test.ts`
-  );
+  const testFilePath = relativePath.replace(/\.ts$/, `.test.ts`);
 
   // Build test content
   let testContent = `/**
@@ -459,7 +459,10 @@ from unittest.mock import Mock, patch
 `;
 
   // Add imports under test
-  const moduleName = relativePath.replace(/^src\//, '').replace(/\.py$/, '').replace(/\//g, '.');
+  const moduleName = relativePath
+    .replace(/^src\//, '')
+    .replace(/\.py$/, '')
+    .replace(/\//g, '.');
   testContent += `from ${moduleName} import ${analysis.exports.join(', ')}\n\n`;
 
   // Generate test classes
@@ -482,7 +485,10 @@ from unittest.mock import Mock, patch
     }
   }
 
-  const estimatedCoverage = Math.min(95, analysis.functions.length * 15 + analysis.riskAreas.length * 10 + 20);
+  const estimatedCoverage = Math.min(
+    95,
+    analysis.functions.length * 15 + analysis.riskAreas.length * 10 + 20
+  );
 
   return {
     filePath: testFilePath,
@@ -503,7 +509,8 @@ export const testGenerationTools: ToolMetadata[] = [
    */
   {
     name: 'generate_tests',
-    description: 'Generate automated tests for a code file based on code analysis and existing test patterns',
+    description:
+      'Generate automated tests for a code file based on code analysis and existing test patterns',
     inputSchema: {
       type: 'object',
       properties: {
@@ -610,11 +617,12 @@ export const testGenerationTools: ToolMetadata[] = [
       },
     },
     handler: async (args: ToolArgs, context: ToolContext) => {
-      const targetPath = args.workspacePath as string || context.workspaceRoot;
+      const targetPath = (args.workspacePath as string) || context.workspaceRoot;
 
       try {
         // Try to run coverage command
-        const coverageCmd = 'npm run test:coverage 2>&1 || vitest run --coverage 2>&1 || npx jest --coverage 2>&1';
+        const coverageCmd =
+          'npm run test:coverage 2>&1 || vitest run --coverage 2>&1 || npx jest --coverage 2>&1';
         const result = execSync(coverageCmd, {
           cwd: targetPath,
           encoding: 'utf-8',
@@ -694,7 +702,12 @@ export const testGenerationTools: ToolMetadata[] = [
             file,
             export: exp,
             suggestedTests,
-            priority: analysis.complexity === 'complex' ? 'high' : analysis.complexity === 'medium' ? 'medium' : 'low',
+            priority:
+              analysis.complexity === 'complex'
+                ? 'high'
+                : analysis.complexity === 'medium'
+                  ? 'medium'
+                  : 'low',
           });
         }
       }

@@ -13,10 +13,10 @@ async function fixAdminPassword() {
   const hash = await bcrypt.hash('password123', 10);
   console.log('Generated hash:', hash);
 
-  const result = await pool.query(
-    'UPDATE users SET password_hash = $1 WHERE email = $2',
-    [hash, 'admin@wms.local']
-  );
+  const result = await pool.query('UPDATE users SET password_hash = $1 WHERE email = $2', [
+    hash,
+    'admin@wms.local',
+  ]);
 
   console.log('Updated', result.rowCount, 'admin user');
 

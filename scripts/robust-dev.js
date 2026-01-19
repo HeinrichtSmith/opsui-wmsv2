@@ -33,7 +33,7 @@ function log(message, color = colors.reset) {
 // ============================================================================
 
 async function killPort(port) {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     if (process.platform === 'win32') {
       // Windows: Use netstat and taskkill
       exec(`netstat -ano | findstr :${port}`, (error, stdout) => {
@@ -111,16 +111,18 @@ async function cleanupPorts() {
 // ============================================================================
 
 async function checkURL(url, timeout = 3000) {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     const timer = setTimeout(() => resolve(false), timeout);
 
-    http.get(url, (res) => {
-      clearTimeout(timer);
-      resolve(res.statusCode === 200);
-    }).on('error', () => {
-      clearTimeout(timer);
-      resolve(false);
-    });
+    http
+      .get(url, res => {
+        clearTimeout(timer);
+        resolve(res.statusCode === 200);
+      })
+      .on('error', () => {
+        clearTimeout(timer);
+        resolve(false);
+      });
   });
 }
 
@@ -144,12 +146,12 @@ async function startServices() {
     stdio: ['ignore', 'pipe', 'pipe'],
   });
 
-  backend.stdout.on('data', (data) => {
+  backend.stdout.on('data', data => {
     const output = data.toString();
     process.stdout.write(`[Backend] ${output}`);
   });
 
-  backend.stderr.on('data', (data) => {
+  backend.stderr.on('data', data => {
     const output = data.toString();
     process.stderr.write(`[Backend] ${output}`);
   });
@@ -162,12 +164,12 @@ async function startServices() {
     stdio: ['ignore', 'pipe', 'pipe'],
   });
 
-  frontend.stdout.on('data', (data) => {
+  frontend.stdout.on('data', data => {
     const output = data.toString();
     process.stdout.write(`[Frontend] ${output}`);
   });
 
-  frontend.stderr.on('data', (data) => {
+  frontend.stderr.on('data', data => {
     const output = data.toString();
     process.stderr.write(`[Frontend] ${output}`);
   });
@@ -275,7 +277,7 @@ async function startServices() {
 // MAIN
 // ============================================================================
 
-startServices().catch((error) => {
+startServices().catch(error => {
   log(`\n❌ Error: ${error.message}`, colors.red);
   console.error(error);
   process.exit(1);

@@ -30,14 +30,17 @@ async function resetStuckOrders() {
     }
 
     // Reset them to PENDING
-    const result = await pool.query(`
+    const result = await pool.query(
+      `
       UPDATE orders
       SET status = 'PENDING',
           picker_id = NULL,
           claimed_at = NULL
       WHERE order_id = ANY($1)
       RETURNING order_id
-    `, [stuckOrders.rows.map(o => o.order_id)]);
+    `,
+      [stuckOrders.rows.map(o => o.order_id)]
+    );
 
     console.log(`\nReset ${result.rows.length} orders to PENDING:`);
     result.rows.forEach(order => {
@@ -45,7 +48,6 @@ async function resetStuckOrders() {
     });
 
     console.log('\nThese orders can now be claimed again with fresh pick tasks!');
-
   } catch (error) {
     console.error('Error:', error);
     process.exit(1);

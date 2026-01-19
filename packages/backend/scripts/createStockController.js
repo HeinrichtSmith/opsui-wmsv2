@@ -11,7 +11,11 @@
 const bcrypt = require('bcrypt');
 const { pool } = require('../dist/config/database');
 
-async function createStockController(email = 'stockcontroller@wms.local', password = 'Stock123!', name = 'Stock Controller') {
+async function createStockController(
+  email = 'stockcontroller@wms.local',
+  password = 'Stock123!',
+  name = 'Stock Controller'
+) {
   const client = await pool.connect();
 
   try {
@@ -57,7 +61,6 @@ async function createStockController(email = 'stockcontroller@wms.local', passwo
     console.log('  Email:', email);
     console.log('  Password:', password);
     console.log('\nYou can now login at: http://localhost:5173/login');
-
   } catch (error) {
     await client.query('ROLLBACK');
     console.error('❌ Error creating stock controller:', error);

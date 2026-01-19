@@ -11,11 +11,11 @@ const pool = new Pool({
 
 async function applyFix() {
   console.log('Applying fix for duplicate state change IDs...');
-  
+
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
-    
+
     // Fix state change ID generation
     await client.query(`
       CREATE OR REPLACE FUNCTION generate_state_change_id()
@@ -23,7 +23,7 @@ async function applyFix() {
         SELECT 'OSC-' || TO_CHAR(NOW(), 'YYYYMMDD') || '-' || LPAD(EXTRACT(EPOCH FROM NOW())::BIGINT::TEXT, 12, '0');
       $$ LANGUAGE SQL;
     `);
-    
+
     // Fix transaction ID generation
     await client.query(`
       CREATE OR REPLACE FUNCTION generate_transaction_id()
@@ -31,7 +31,7 @@ async function applyFix() {
         SELECT 'TXN-' || TO_CHAR(NOW(), 'YYYYMMDD') || '-' || LPAD(EXTRACT(EPOCH FROM NOW())::BIGINT::TEXT, 12, '0');
       $$ LANGUAGE SQL;
     `);
-    
+
     await client.query('COMMIT');
     console.log('✓ Fix applied successfully!');
   } catch (error) {
@@ -49,7 +49,7 @@ applyFix()
     console.log('Done!');
     process.exit(0);
   })
-  .catch((error) => {
+  .catch(error => {
     console.error('Failed:', error);
     process.exit(1);
   });

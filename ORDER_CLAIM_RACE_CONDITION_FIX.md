@@ -1,6 +1,7 @@
 # Order Claim Race Condition Fix
 
 ## Problem
+
 The PickingPage had a race condition causing multiple 409 Conflict errors when claiming orders:
 
 ```
@@ -15,7 +16,9 @@ Error: Order cannot be claimed because it is currently in status: PICKING
 ```
 
 ### Root Cause
+
 When React StrictMode or page tracking caused component remounts during the claim process:
+
 1. First `useLayoutEffect` starts claim mutation (sets `isClaimingRef = true`)
 2. Component remounts before mutation completes
 3. Refs reset (`hasClaimedRef = false`), but `isPending` is still `true`
@@ -26,17 +29,26 @@ When React StrictMode or page tracking caused component remounts during the clai
 ## Solution
 
 ### 1. Enhanced Guard Clause
+
 Added `claimMutation.isError` to prevent retrying after failed claims:
 
 ```typescript
 // Prevent multiple claim attempts - use ref + isPending check + isClaiming check + isError check
-if (isClaimingRef.current || claimMutation.isPending || hasClaimedRef.current || claimMutation.isError) {
-  console.log(`[PickingPage] Already claiming, claimed, or had error, skipping`);
+if (
+  isClaimingRef.current ||
+  claimMutation.isPending ||
+  hasClaimedRef.current ||
+  claimMutation.isError
+) {
+  console.log(
+    `[PickingPage] Already claiming, claimed, or had error, skipping`
+  );
   return;
 }
 ```
 
 ### 2. Status Validation Before Mutation
+
 Double-check order status immediately before calling the mutation:
 
 ```typescript
@@ -63,22 +75,24 @@ Double-check order status immediately before calling the mutation:
 ```
 
 ### 3. Smart Error Handling
+
 Don't reset `hasClaimedRef` on 409 conflict errors (order might actually be claimed):
 
 ```typescript
 onError: (error: any) => {
   console.error('[PickingPage] Claim error:', error);
   isClaimingRef.current = false;
-  const errorMsg = error.response?.data?.error || error.message || 'Failed to claim order';
-  
+  const errorMsg =
+    error.response?.data?.error || error.message || 'Failed to claim order';
+
   // Don't reset hasClaimedRef on conflict errors (409) - order might actually be claimed
   const isConflict = error.response?.status === 409;
   if (!isConflict) {
     hasClaimedRef.current = false; // Only reset on non-conflict errors
   }
-  
+
   // ... rest of error handling
-}
+};
 ```
 
 ## Benefits
@@ -92,6 +106,7 @@ onError: (error: any) => {
 ## Testing
 
 To verify the fix:
+
 1. Navigate to a PENDING order
 2. Observe the console logs
 3. Should see only ONE claim attempt
@@ -109,6 +124,7 @@ To verify the fix:
 ## Future Improvements
 
 Consider:
+
 - Using a mutex/lock mechanism at the component level for claim operations
 - Adding backend idempotency for claim requests
 - Implementing optimistic UI updates for faster feedback

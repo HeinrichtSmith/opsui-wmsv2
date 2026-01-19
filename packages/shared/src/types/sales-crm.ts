@@ -12,7 +12,7 @@ export enum CustomerStatus {
   PROSPECT = 'PROSPECT',
   ACTIVE = 'ACTIVE',
   INACTIVE = 'INACTIVE',
-  BLOCKED = 'BLOCKED'
+  BLOCKED = 'BLOCKED',
 }
 
 export enum LeadStatus {
@@ -22,14 +22,14 @@ export enum LeadStatus {
   PROPOSAL = 'PROPOSAL',
   NEGOTIATION = 'NEGOTIATION',
   WON = 'WON',
-  LOST = 'LOST'
+  LOST = 'LOST',
 }
 
 export enum LeadPriority {
   LOW = 'LOW',
   MEDIUM = 'MEDIUM',
   HIGH = 'HIGH',
-  URGENT = 'URGENT'
+  URGENT = 'URGENT',
 }
 
 export enum OpportunityStage {
@@ -38,7 +38,7 @@ export enum OpportunityStage {
   PROPOSAL = 'PROPOSAL',
   NEGOTIATION = 'NEGOTIATION',
   CLOSED_WON = 'CLOSED_WON',
-  CLOSED_LOST = 'CLOSED_LOST'
+  CLOSED_LOST = 'CLOSED_LOST',
 }
 
 export enum QuoteStatus {
@@ -46,7 +46,7 @@ export enum QuoteStatus {
   SENT = 'SENT',
   ACCEPTED = 'ACCEPTED',
   REJECTED = 'REJECTED',
-  EXPIRED = 'EXPIRED'
+  EXPIRED = 'EXPIRED',
 }
 
 // ============================================================================

@@ -79,7 +79,13 @@ function VarianceStatusBadge({ status }: { status: VarianceStatus }) {
   );
 }
 
-function CreateCycleCountModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: () => void }) {
+function CreateCycleCountModal({
+  onClose,
+  onSuccess,
+}: {
+  onClose: () => void;
+  onSuccess: () => void;
+}) {
   const { user } = useAuthStore();
   const createMutation = useCreateCycleCountPlan();
   const [formData, setFormData] = useState({
@@ -115,27 +121,25 @@ function CreateCycleCountModal({ onClose, onSuccess }: { onClose: () => void; on
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">
-              Plan Name *
-            </label>
+            <label className="block text-sm font-medium text-gray-300 mb-1">Plan Name *</label>
             <input
               type="text"
               required
               value={formData.planName}
-              onChange={(e) => setFormData({ ...formData, planName: e.target.value })}
+              onChange={e => setFormData({ ...formData, planName: e.target.value })}
               className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-500"
               placeholder="e.g., Zone A Weekly Count"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">
-              Count Type *
-            </label>
+            <label className="block text-sm font-medium text-gray-300 mb-1">Count Type *</label>
             <select
               required
               value={formData.countType}
-              onChange={(e) => setFormData({ ...formData, countType: e.target.value as CycleCountType })}
+              onChange={e =>
+                setFormData({ ...formData, countType: e.target.value as CycleCountType })
+              }
               className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 text-white"
             >
               <option value={CycleCountType.AD_HOC}>Ad-Hoc Count</option>
@@ -148,14 +152,12 @@ function CreateCycleCountModal({ onClose, onSuccess }: { onClose: () => void; on
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">
-              Scheduled Date *
-            </label>
+            <label className="block text-sm font-medium text-gray-300 mb-1">Scheduled Date *</label>
             <input
               type="date"
               required
               value={formData.scheduledDate}
-              onChange={(e) => setFormData({ ...formData, scheduledDate: e.target.value })}
+              onChange={e => setFormData({ ...formData, scheduledDate: e.target.value })}
               className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 text-white"
             />
           </div>
@@ -167,7 +169,7 @@ function CreateCycleCountModal({ onClose, onSuccess }: { onClose: () => void; on
             <input
               type="text"
               value={formData.location}
-              onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+              onChange={e => setFormData({ ...formData, location: e.target.value })}
               className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-500"
               placeholder="e.g., Zone-A"
             />
@@ -180,19 +182,17 @@ function CreateCycleCountModal({ onClose, onSuccess }: { onClose: () => void; on
             <input
               type="text"
               value={formData.sku}
-              onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
+              onChange={e => setFormData({ ...formData, sku: e.target.value })}
               className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-500"
               placeholder="e.g., SKU-12345"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">
-              Notes
-            </label>
+            <label className="block text-sm font-medium text-gray-300 mb-1">Notes</label>
             <textarea
               value={formData.notes}
-              onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+              onChange={e => setFormData({ ...formData, notes: e.target.value })}
               rows={3}
               className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-500"
               placeholder="Additional instructions or notes..."
@@ -263,28 +263,24 @@ function CountEntryModal({
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              SKU *
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">SKU *</label>
             <input
               type="text"
               required
               value={formData.sku}
-              onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
+              onChange={e => setFormData({ ...formData, sku: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               placeholder="SKU-12345"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Bin Location *
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Bin Location *</label>
             <input
               type="text"
               required
               value={formData.binLocation}
-              onChange={(e) => setFormData({ ...formData, binLocation: e.target.value })}
+              onChange={e => setFormData({ ...formData, binLocation: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               placeholder="Zone-A-01-01"
             />
@@ -299,18 +295,18 @@ function CountEntryModal({
               required
               min="0"
               value={formData.countedQuantity}
-              onChange={(e) => setFormData({ ...formData, countedQuantity: parseInt(e.target.value) || 0 })}
+              onChange={e =>
+                setFormData({ ...formData, countedQuantity: parseInt(e.target.value) || 0 })
+              }
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Notes
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
             <textarea
               value={formData.notes}
-              onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+              onChange={e => setFormData({ ...formData, notes: e.target.value })}
               rows={2}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               placeholder="Any observations or issues..."
@@ -372,7 +368,10 @@ function PlanDetailModal({ plan, onClose }: { plan: any; onClose: () => void }) 
     }
   };
 
-  const pendingVarianceCount = plan.countEntries?.filter((e: any) => e.varianceStatus === VarianceStatus.PENDING && e.variance !== 0).length || 0;
+  const pendingVarianceCount =
+    plan.countEntries?.filter(
+      (e: any) => e.varianceStatus === VarianceStatus.PENDING && e.variance !== 0
+    ).length || 0;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto">
@@ -382,7 +381,9 @@ function PlanDetailModal({ plan, onClose }: { plan: any; onClose: () => void }) 
             <h2 className="text-xl font-semibold text-gray-900">{plan.planName}</h2>
             <div className="flex items-center gap-3 mt-2">
               <StatusBadge status={plan.status} />
-              <span className="text-sm text-gray-500">Scheduled: {new Date(plan.scheduledDate).toLocaleDateString()}</span>
+              <span className="text-sm text-gray-500">
+                Scheduled: {new Date(plan.scheduledDate).toLocaleDateString()}
+              </span>
             </div>
           </div>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-500">
@@ -472,12 +473,24 @@ function PlanDetailModal({ plan, onClose }: { plan: any; onClose: () => void }) 
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">SKU</th>
-                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Location</th>
-                      <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">System Qty</th>
-                      <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">Counted Qty</th>
-                      <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">Variance</th>
-                      <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">Status</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                        SKU
+                      </th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                        Location
+                      </th>
+                      <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">
+                        System Qty
+                      </th>
+                      <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">
+                        Counted Qty
+                      </th>
+                      <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">
+                        Variance
+                      </th>
+                      <th className="px-4 py-2 text-center text-xs font-medium text-gray-500 uppercase">
+                        Status
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
@@ -487,8 +500,11 @@ function PlanDetailModal({ plan, onClose }: { plan: any; onClose: () => void }) 
                         <td className="px-4 py-2 text-sm">{entry.binLocation}</td>
                         <td className="px-4 py-2 text-sm text-right">{entry.systemQuantity}</td>
                         <td className="px-4 py-2 text-sm text-right">{entry.countedQuantity}</td>
-                        <td className={`px-4 py-2 text-sm text-right font-medium ${entry.variance !== 0 ? (entry.variance > 0 ? 'text-green-600' : 'text-red-600') : ''}`}>
-                          {entry.variance > 0 ? '+' : ''}{entry.variance}
+                        <td
+                          className={`px-4 py-2 text-sm text-right font-medium ${entry.variance !== 0 ? (entry.variance > 0 ? 'text-green-600' : 'text-red-600') : ''}`}
+                        >
+                          {entry.variance > 0 ? '+' : ''}
+                          {entry.variance}
                         </td>
                         <td className="px-4 py-2 text-sm text-center">
                           <VarianceStatusBadge status={entry.varianceStatus} />
@@ -511,11 +527,7 @@ function PlanDetailModal({ plan, onClose }: { plan: any; onClose: () => void }) 
       </div>
 
       {showEntryModal && (
-        <CountEntryModal
-          plan={plan}
-          onClose={() => setShowEntryModal(false)}
-          onSuccess={onClose}
-        />
+        <CountEntryModal plan={plan} onClose={() => setShowEntryModal(false)} onSuccess={onClose} />
       )}
     </div>
   );
@@ -532,13 +544,20 @@ export function CycleCountingPage() {
   const [selectedPlan, setSelectedPlan] = useState<any>(null);
   const [filterStatus, setFilterStatus] = useState<string>('');
 
-  const { data: plansData, isLoading, refetch } = useCycleCountPlans({
+  const {
+    data: plansData,
+    isLoading,
+    refetch,
+  } = useCycleCountPlans({
     status: filterStatus || undefined,
   });
 
   const plans = plansData?.plans || [];
 
-  const canCreatePlan = user?.role === UserRole.STOCK_CONTROLLER || user?.role === UserRole.SUPERVISOR || user?.role === UserRole.ADMIN;
+  const canCreatePlan =
+    user?.role === UserRole.STOCK_CONTROLLER ||
+    user?.role === UserRole.SUPERVISOR ||
+    user?.role === UserRole.ADMIN;
 
   return (
     <div className="min-h-screen">
@@ -549,7 +568,9 @@ export function CycleCountingPage() {
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-2xl font-bold text-white">Cycle Counting</h1>
-              <p className="text-gray-400 mt-1">Manage scheduled and ad-hoc inventory cycle counts</p>
+              <p className="text-gray-400 mt-1">
+                Manage scheduled and ad-hoc inventory cycle counts
+              </p>
             </div>
             {canCreatePlan && (
               <button
@@ -562,118 +583,142 @@ export function CycleCountingPage() {
             )}
           </div>
 
-      {/* Filters */}
-      <div className="glass-card rounded-lg p-4">
-        <div className="flex flex-wrap gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Status</label>
-            <select
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-              className="px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 text-white"
-            >
-              <option value="">All Statuses</option>
-              <option value={CycleCountStatus.SCHEDULED}>Scheduled</option>
-              <option value={CycleCountStatus.IN_PROGRESS}>In Progress</option>
-              <option value={CycleCountStatus.COMPLETED}>Completed</option>
-              <option value={CycleCountStatus.RECONCILED}>Reconciled</option>
-            </select>
+          {/* Filters */}
+          <div className="glass-card rounded-lg p-4">
+            <div className="flex flex-wrap gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">Status</label>
+                <select
+                  value={filterStatus}
+                  onChange={e => setFilterStatus(e.target.value)}
+                  className="px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 text-white"
+                >
+                  <option value="">All Statuses</option>
+                  <option value={CycleCountStatus.SCHEDULED}>Scheduled</option>
+                  <option value={CycleCountStatus.IN_PROGRESS}>In Progress</option>
+                  <option value={CycleCountStatus.COMPLETED}>Completed</option>
+                  <option value={CycleCountStatus.RECONCILED}>Reconciled</option>
+                </select>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
 
-      {/* Plans List */}
-      <div className="glass-card rounded-lg overflow-hidden">
-        {isLoading ? (
-          <div className="p-8 text-center text-gray-400">Loading cycle count plans...</div>
-        ) : plans.length === 0 ? (
-          <div className="p-8 text-center text-gray-400">
-            <ClipboardDocumentListIcon className="h-12 w-12 mx-auto mb-4 text-gray-600" />
-            <p>No cycle count plans found</p>
-            {canCreatePlan && (
-              <button
-                onClick={() => setShowCreateModal(true)}
-                className="mt-4 text-blue-400 hover:text-blue-300"
-              >
-                Create your first cycle count plan
-              </button>
+          {/* Plans List */}
+          <div className="glass-card rounded-lg overflow-hidden">
+            {isLoading ? (
+              <div className="p-8 text-center text-gray-400">Loading cycle count plans...</div>
+            ) : plans.length === 0 ? (
+              <div className="p-8 text-center text-gray-400">
+                <ClipboardDocumentListIcon className="h-12 w-12 mx-auto mb-4 text-gray-600" />
+                <p>No cycle count plans found</p>
+                {canCreatePlan && (
+                  <button
+                    onClick={() => setShowCreateModal(true)}
+                    className="mt-4 text-blue-400 hover:text-blue-300"
+                  >
+                    Create your first cycle count plan
+                  </button>
+                )}
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-800">
+                  <thead className="bg-gray-900/50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">
+                        Plan Name
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">
+                        Type
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">
+                        Scheduled Date
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">
+                        Location/SKU
+                      </th>
+                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-400 uppercase">
+                        Status
+                      </th>
+                      <th className="px-6 py-3 text-center text-xs font-medium text-gray-400 uppercase">
+                        Entries
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">
+                        Assigned To
+                      </th>
+                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-400 uppercase">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-gray-900/30 divide-y divide-gray-800">
+                    {plans.map((plan: any) => {
+                      const pendingVariances =
+                        plan.countEntries?.filter(
+                          (e: any) =>
+                            e.varianceStatus === VarianceStatus.PENDING && e.variance !== 0
+                        ).length || 0;
+
+                      return (
+                        <tr key={plan.planId} className="hover:bg-gray-800/50">
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm font-medium text-white">{plan.planName}</div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm text-white">{plan.countType}</div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm text-white">
+                              {new Date(plan.scheduledDate).toLocaleDateString()}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm text-white">
+                              {plan.location || plan.sku || 'All Locations/SKUs'}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-center">
+                            <StatusBadge status={plan.status} />
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-center">
+                            <div className="text-sm text-white">
+                              {plan.countEntries?.length || 0}
+                              {pendingVariances > 0 && (
+                                <span className="ml-2 text-yellow-400">
+                                  ({pendingVariances} pending)
+                                </span>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm text-white">{plan.countBy}</div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <button
+                              onClick={() => setSelectedPlan(plan)}
+                              className="text-blue-400 hover:text-blue-300"
+                            >
+                              View Details
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
             )}
           </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-800">
-              <thead className="bg-gray-900/50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Plan Name</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Type</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Scheduled Date</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Location/SKU</th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-400 uppercase">Status</th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-400 uppercase">Entries</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Assigned To</th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-400 uppercase">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="bg-gray-900/30 divide-y divide-gray-800">
-                {plans.map((plan: any) => {
-                  const pendingVariances = plan.countEntries?.filter((e: any) => e.varianceStatus === VarianceStatus.PENDING && e.variance !== 0).length || 0;
 
-                  return (
-                    <tr key={plan.planId} className="hover:bg-gray-800/50">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-white">{plan.planName}</div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-white">{plan.countType}</div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-white">{new Date(plan.scheduledDate).toLocaleDateString()}</div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-white">
-                          {plan.location || plan.sku || 'All Locations/SKUs'}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-center">
-                        <StatusBadge status={plan.status} />
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-center">
-                        <div className="text-sm text-white">
-                          {plan.countEntries?.length || 0}
-                          {pendingVariances > 0 && (
-                            <span className="ml-2 text-yellow-400">({pendingVariances} pending)</span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-white">{plan.countBy}</div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <button
-                          onClick={() => setSelectedPlan(plan)}
-                          className="text-blue-400 hover:text-blue-300"
-                        >
-                          View Details
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
-
-      {showCreateModal && (
-        <CreateCycleCountModal
-          onClose={() => setShowCreateModal(false)}
-          onSuccess={() => {
-            setShowCreateModal(false);
-            refetch();
-          }}
-        />
-      )}
+          {showCreateModal && (
+            <CreateCycleCountModal
+              onClose={() => setShowCreateModal(false)}
+              onSuccess={() => {
+                setShowCreateModal(false);
+                refetch();
+              }}
+            />
+          )}
 
           {selectedPlan && (
             <PlanDetailModal

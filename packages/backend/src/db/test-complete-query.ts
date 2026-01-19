@@ -9,7 +9,8 @@ async function testCompleteQuery(): Promise<void> {
     const pickerId = 'USR-PICK01';
     console.log(`🔍 Testing complete getPickerOrders for: ${pickerId}\n`);
 
-    const result = await query(`
+    const result = await query(
+      `
       SELECT
         o.order_id,
         o.status,
@@ -30,13 +31,15 @@ async function testCompleteQuery(): Promise<void> {
           ELSE 4
         END,
         o.updated_at DESC
-    `, [pickerId]);
+    `,
+      [pickerId]
+    );
 
     console.log(`✅ Found ${result.rows.length} orders\n`);
     console.log('Raw first row:', result.rows[0]);
     console.log('Raw first row keys:', Object.keys(result.rows[0]));
 
-    const mapped = result.rows.map((row) => ({
+    const mapped = result.rows.map(row => ({
       orderId: row.order_id,
       status: row.status,
       progress: parseInt(row.progress || 0, 10),
@@ -46,7 +49,6 @@ async function testCompleteQuery(): Promise<void> {
     }));
 
     console.log('\nMapped result:', mapped);
-
   } catch (error) {
     console.error('❌ Error:', error);
   } finally {

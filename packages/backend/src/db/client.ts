@@ -16,7 +16,7 @@ import { logger } from '../config/logger';
 for (const key of Object.keys(types)) {
   const oid = (types as any)[key];
   if (typeof oid === 'number' && oid > 10000) {
-    types.setTypeParser(oid, (value) => value);
+    types.setTypeParser(oid, value => value);
   }
 }
 
@@ -50,7 +50,7 @@ export function getPool(): Pool {
   if (!pool) {
     pool = new Pool(poolConfig);
 
-    pool.on('error', (err) => {
+    pool.on('error', err => {
       logger.error('Unexpected database pool error (will attempt recovery)', {
         error: err.message,
         stack: err.stack,
@@ -145,27 +145,24 @@ function mapKeysToCamelCase<T>(obj: any): T {
 /**
  * Execute a query with parameters
  */
-export async function query<T = any>(
-  text: string,
-  params?: any[]
-): Promise<QueryResult<T>> {
+export async function query<T = any>(text: string, params?: any[]): Promise<QueryResult<T>> {
   const start = Date.now();
   try {
     const result = await getPool().query<any>(text, params);
     const duration = Date.now() - start;
-    
+
     // Map column names from snake_case to camelCase
     const mappedRows = result.rows.map(row => mapKeysToCamelCase<T>(row));
-    
+
     logger.debug('Query executed', {
       duration: `${duration}ms`,
       rows: result.rowCount,
       sql: text.substring(0, 100),
     });
-    
+
     return {
       ...result,
-      rows: mappedRows
+      rows: mappedRows,
     };
   } catch (error) {
     logger.error('Query failed', {
@@ -179,9 +176,7 @@ export async function query<T = any>(
 /**
  * Execute a query within a transaction
  */
-export async function transaction<T>(
-  callback: (client: PoolClient) => Promise<T>
-): Promise<T> {
+export async function transaction<T>(callback: (client: PoolClient) => Promise<T>): Promise<T> {
   const client = await getPool().connect();
   try {
     await client.query('BEGIN');

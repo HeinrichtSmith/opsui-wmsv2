@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 /**
  * Keep-Alive Monitor
- * 
+ *
  * Monitors development servers and restarts them if they stop.
  * Run this in a separate terminal to keep servers alive even after sleep.
- * 
+ *
  * Usage: node scripts/keep-alive.js
  */
 
@@ -24,7 +24,7 @@ let frontendRestarts = 0;
  * Check if a URL is reachable
  */
 async function checkUrl(url) {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     const options = {
       method: 'GET',
       timeout: 5000,
@@ -33,7 +33,7 @@ async function checkUrl(url) {
       path: url.includes('/health') ? '/health' : '/',
     };
 
-    const req = http.request(options, (res) => {
+    const req = http.request(options, res => {
       resolve(res.statusCode < 500);
     });
 
@@ -54,7 +54,7 @@ function restartServers() {
   console.log('\n' + '='.repeat(70));
   console.log('🔄 RESTARTING SERVERS');
   console.log('='.repeat(70));
-  
+
   // Kill existing processes on both ports
   const killBackend = spawn('taskkill', ['/F', '/PID', '3001', '/T'], { shell: true });
   const killFrontend = spawn('taskkill', ['/F', '/PID', '5173', '/T'], { shell: true });
@@ -62,7 +62,7 @@ function restartServers() {
   killBackend.on('close', () => {
     killFrontend.on('close', () => {
       console.log('✓ Old processes terminated');
-      
+
       // Wait a moment then restart
       setTimeout(() => {
         console.log('\n🚀 Starting new server instances...\n');
@@ -72,7 +72,7 @@ function restartServers() {
           stdio: 'inherit',
         });
 
-        devProcess.on('error', (err) => {
+        devProcess.on('error', err => {
           console.error('❌ Failed to start servers:', err.message);
         });
 
@@ -141,7 +141,7 @@ process.on('SIGINT', () => {
 });
 
 // Start monitoring
-monitor().catch((err) => {
+monitor().catch(err => {
   console.error('❌ Monitor failed:', err);
   process.exit(1);
 });

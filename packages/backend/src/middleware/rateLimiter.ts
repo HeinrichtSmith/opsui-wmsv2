@@ -21,7 +21,7 @@ export const rateLimiter = rateLimit({
   standardHeaders: true, // Return rate limit info in `RateLimit-*` headers
   legacyHeaders: false, // Disable `X-RateLimit-*` headers
   // Skip rate limiting for health check endpoint
-  skip: (req) => req.path === '/health',
+  skip: req => req.path === '/health',
 });
 
 // ============================================================================

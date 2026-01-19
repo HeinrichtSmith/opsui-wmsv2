@@ -18,6 +18,7 @@ Every line of code must be written with security in mind. Assumptions about user
 ## Core Security Principles
 
 ### 1. Never Trust Client Input
+
 **Rule**: All client input is malicious until proven otherwise.
 
 ```typescript
@@ -36,6 +37,7 @@ app.post('/orders', async (req, res) => {
 ```
 
 ### 2. Principle of Least Privilege
+
 **Rule**: Users should have the minimum permissions necessary to do their job.
 
 ```typescript
@@ -45,7 +47,8 @@ if (user.role === 'ADMIN') {
 }
 
 // ✅ CORRECT - Middleware enforces permissions
-router.delete('/orders/:id',
+router.delete(
+  '/orders/:id',
   authenticate,
   authorize([UserRole.ADMIN]),
   deleteOrderHandler
@@ -53,6 +56,7 @@ router.delete('/orders/:id',
 ```
 
 ### 3. Defense in Depth
+
 **Rule**: Multiple layers of security. If one fails, others protect you.
 
 ```typescript
@@ -70,6 +74,7 @@ await db('orders').insert(typed); // CHECK constraints enforce rules
 ```
 
 ### 4. Fail Securely
+
 **Rule**: When something goes wrong, default to denying access.
 
 ```typescript
@@ -111,15 +116,23 @@ import Joi from 'joi';
 export const createOrderSchema = Joi.object({
   customerId: Joi.string().uuid().required(),
   customerName: Joi.string().max(255).required(),
-  items: Joi.array().items(
-    Joi.object({
-      sku: Joi.string().max(50).required(),
-      quantity: Joi.number().integer().positive().required(),
-      binLocation: Joi.string().pattern(/^[A-Z]-\d{1,3}-\d{2}$/).required()
-    })
-  ).min(1).max(100).required(),
-  priority: Joi.string().valid(...Object.values(OrderPriority)).default(OrderPriority.NORMAL),
-  notes: Joi.string().max(1000).optional()
+  items: Joi.array()
+    .items(
+      Joi.object({
+        sku: Joi.string().max(50).required(),
+        quantity: Joi.number().integer().positive().required(),
+        binLocation: Joi.string()
+          .pattern(/^[A-Z]-\d{1,3}-\d{2}$/)
+          .required(),
+      })
+    )
+    .min(1)
+    .max(100)
+    .required(),
+  priority: Joi.string()
+    .valid(...Object.values(OrderPriority))
+    .default(OrderPriority.NORMAL),
+  notes: Joi.string().max(1000).optional(),
 });
 
 // Use in middleware
@@ -127,7 +140,7 @@ export const validateCreateOrder = async (req, res, next) => {
   try {
     req.body = await createOrderSchema.validateAsync(req.body, {
       abortEarly: false,
-      stripUnknown: true
+      stripUnknown: true,
     });
     next();
   } catch (error) {
@@ -141,14 +154,14 @@ router.post('/orders', validateCreateOrder, createOrderHandler);
 
 ### Validation Rules
 
-| Input Type | Validation Rule | Why |
-|------------|-----------------|-----|
-| UUIDs | Must be valid UUID v4 | Prevents injection |
-| Strings | Max length, no special chars | Prevents DoS |
-| Numbers | Positive, max value | Prevents overflow |
-| Emails | Email format | Prevents injection |
-| Dates | ISO 8601 format | Prevents injection |
-| Arrays | Min/max length | Prevents DoS |
+| Input Type | Validation Rule              | Why                |
+| ---------- | ---------------------------- | ------------------ |
+| UUIDs      | Must be valid UUID v4        | Prevents injection |
+| Strings    | Max length, no special chars | Prevents DoS       |
+| Numbers    | Positive, max value          | Prevents overflow  |
+| Emails     | Email format                 | Prevents injection |
+| Dates      | ISO 8601 format              | Prevents injection |
+| Arrays     | Min/max length               | Prevents DoS       |
 
 ---
 
@@ -211,7 +224,7 @@ export const authorize = (allowedRoles: UserRole[]) => {
         userId: req.user.id,
         role: req.user.role,
         requiredRoles: allowedRoles,
-        endpoint: req.path
+        endpoint: req.path,
       });
       throw new ForbiddenError('Insufficient permissions');
     }
@@ -221,13 +234,15 @@ export const authorize = (allowedRoles: UserRole[]) => {
 };
 
 // Usage
-router.get('/admin/users',
+router.get(
+  '/admin/users',
   authenticate,
   authorize([UserRole.ADMIN]),
   listUsersHandler
 );
 
-router.post('/orders/:id/cancel',
+router.post(
+  '/orders/:id/cancel',
   authenticate,
   authorize([UserRole.SUPERVISOR, UserRole.ADMIN]),
   cancelOrderHandler
@@ -259,11 +274,7 @@ export const authorizeResource = async (req, res, next) => {
 };
 
 // Usage
-router.get('/orders/:id',
-  authenticate,
-  authorizeResource,
-  getOrderHandler
-);
+router.get('/orders/:id', authenticate, authorizeResource, getOrderHandler);
 ```
 
 ---
@@ -281,16 +292,12 @@ async function getOrdersByEmail(email: string) {
 
 // ✅ CORRECT - Parameterized query
 async function getOrdersByEmail(email: string) {
-  return await db('orders')
-    .where({ customer_email: email })
-    .select('*');
+  return await db('orders').where({ customer_email: email }).select('*');
 }
 
 // ✅ CORRECT - Query builder
 async function getOrdersByStatus(statuses: string[]) {
-  return await db('orders')
-    .whereIn('status', statuses)
-    .select('*');
+  return await db('orders').whereIn('status', statuses).select('*');
 }
 ```
 
@@ -299,14 +306,12 @@ async function getOrdersByStatus(statuses: string[]) {
 ```typescript
 // ❌ WRONG - Unsafe interpolation
 async function searchOrders(searchTerm: string) {
-  return await db('orders')
-    .whereRaw(`name LIKE '%${searchTerm}%'`); // SQL injection!
+  return await db('orders').whereRaw(`name LIKE '%${searchTerm}%'`); // SQL injection!
 }
 
 // ✅ CORRECT - Safe binding
 async function searchOrders(searchTerm: string) {
-  return await db('orders')
-    .where('name', 'like', `%${searchTerm}%`);
+  return await db('orders').where('name', 'like', `%${searchTerm}%`);
 }
 
 // ✅ CORRECT - Named bindings
@@ -358,7 +363,7 @@ export const contentSecurityPolicy = (req, res, next) => {
       "img-src 'self' data: https:",
       "font-src 'self' data:",
       "connect-src 'self'",
-      "frame-ancestors 'none'"
+      "frame-ancestors 'none'",
     ].join('; ')
   );
   next();
@@ -402,15 +407,17 @@ function OrderForm() {
 
 ```typescript
 // Cookie configuration
-app.use(session({
-  secret: process.env.SESSION_SECRET,
-  cookie: {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
-    maxAge: 3600000 // 1 hour
-  }
-}));
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    cookie: {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 3600000, // 1 hour
+    },
+  })
+);
 ```
 
 ---
@@ -510,7 +517,11 @@ const IV_LENGTH = 16;
 
 export function encrypt(text: string): string {
   const iv = crypto.randomBytes(IV_LENGTH);
-  const cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(ENCRYPTION_KEY), iv);
+  const cipher = crypto.createCipheriv(
+    'aes-256-cbc',
+    Buffer.from(ENCRYPTION_KEY),
+    iv
+  );
   let encrypted = cipher.update(text);
   encrypted = Buffer.concat([encrypted, cipher.final()]);
   return iv.toString('hex') + ':' + encrypted.toString('hex');
@@ -520,7 +531,11 @@ export function decrypt(encryptedText: string): string {
   const parts = encryptedText.split(':');
   const iv = Buffer.from(parts[0], 'hex');
   const encrypted = parts.slice(1).join(':');
-  const decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(ENCRYPTION_KEY), iv);
+  const decipher = crypto.createDecipheriv(
+    'aes-256-cbc',
+    Buffer.from(ENCRYPTION_KEY),
+    iv
+  );
   let decrypted = decipher.update(Buffer.from(encrypted, 'hex'));
   decrypted = Buffer.concat([decrypted, decipher.final()]);
   return decrypted.toString();
@@ -546,7 +561,10 @@ if (process.env.NODE_ENV === 'production') {
 
 // HSTS header
 app.use((req, res, next) => {
-  res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  res.setHeader(
+    'Strict-Transport-Security',
+    'max-age=31536000; includeSubDomains'
+  );
   next();
 });
 ```
@@ -563,13 +581,15 @@ import winston from 'winston';
 const securityLogger = winston.createLogger({
   level: 'info',
   format: winston.format.json(),
-  transports: [
-    new winston.transports.File({ filename: 'security.log' })
-  ]
+  transports: [new winston.transports.File({ filename: 'security.log' })],
 });
 
 export function logSecurityEvent(event: {
-  type: 'auth_success' | 'auth_failure' | 'unauthorized_access' | 'privilege_escalation';
+  type:
+    | 'auth_success'
+    | 'auth_failure'
+    | 'unauthorized_access'
+    | 'privilege_escalation';
   userId?: string;
   ip: string;
   userAgent: string;
@@ -577,7 +597,7 @@ export function logSecurityEvent(event: {
 }) {
   securityLogger.info({
     ...event,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
 }
 
@@ -592,7 +612,7 @@ app.post('/api/auth/login', async (req, res) => {
       type: 'auth_success',
       userId: user.id,
       ip: req.ip,
-      userAgent: req.get('user-agent')
+      userAgent: req.get('user-agent'),
     });
 
     res.json({ token: generateToken(user) });
@@ -601,7 +621,7 @@ app.post('/api/auth/login', async (req, res) => {
       type: 'auth_failure',
       ip: req.ip,
       userAgent: req.get('user-agent'),
-      details: { email }
+      details: { email },
     });
 
     throw error;
@@ -635,7 +655,7 @@ const requiredEnvVars = [
   'JWT_SECRET',
   'DATABASE_URL',
   'ENCRYPTION_KEY',
-  'REDIS_URL'
+  'REDIS_URL',
 ];
 
 for (const envVar of requiredEnvVars) {
@@ -650,7 +670,7 @@ export const env = {
   databaseUrl: process.env.DATABASE_URL!,
   encryptionKey: process.env.ENCRYPTION_KEY!,
   port: parseInt(process.env.PORT || '3001'),
-  nodeEnv: process.env.NODE_ENV || 'development'
+  nodeEnv: process.env.NODE_ENV || 'development',
 } as const;
 ```
 
@@ -689,12 +709,13 @@ const upload = multer({
   dest: 'uploads/',
   fileFilter,
   limits: {
-    fileSize: 5 * 1024 * 1024 // 5MB max
-  }
+    fileSize: 5 * 1024 * 1024, // 5MB max
+  },
 });
 
 // Use in route
-app.post('/api/documents',
+app.post(
+  '/api/documents',
   authenticate,
   upload.single('document'),
   handleDocumentUpload
@@ -768,12 +789,14 @@ ncu
 Before completing any feature, verify:
 
 ### Authentication & Authorization
+
 - [ ] Does endpoint require authentication?
 - [ ] Are roles checked properly?
 - [ ] Can users only access their own resources?
 - [ ] Are admin actions protected?
 
 ### Input Validation
+
 - [ ] Is all input validated with Joi?
 - [ ] Are numbers bounded (min/max)?
 - [ ] Are strings length-limited?
@@ -781,27 +804,32 @@ Before completing any feature, verify:
 - [ ] Are regex patterns safe?
 
 ### SQL Injection
+
 - [ ] Are all queries parameterized?
 - [ ] No raw SQL with user input?
 - [ ] No string concatenation in queries?
 
 ### XSS Prevention
+
 - [ ] Is user output escaped?
 - [ ] Are CSP headers set?
 - [ ] Is dangerous HTML sanitized?
 
 ### Data Protection
+
 - [ ] Are passwords hashed with bcrypt?
 - [ ] Is sensitive data encrypted?
 - [ ] Are secrets in environment variables?
 - [ ] Are secrets never committed?
 
 ### Rate Limiting
+
 - [ ] Are auth endpoints rate-limited?
 - [ ] Are API endpoints rate-limited?
 - [ ] Can brute force attacks be prevented?
 
 ### Audit Logging
+
 - [ ] Are auth attempts logged?
 - [ ] Are unauthorized attempts logged?
 - [ ] Are privilege escalations logged?
@@ -811,6 +839,7 @@ Before completing any feature, verify:
 ## Common Security Mistakes to Avoid
 
 ### 1. Hardcoded Secrets
+
 ```typescript
 // ❌ WRONG
 const API_KEY = 'sk_live_abc123...';
@@ -820,6 +849,7 @@ const API_KEY = process.env.API_KEY!;
 ```
 
 ### 2. SQL Injection
+
 ```typescript
 // ❌ WRONG
 db.raw(`SELECT * FROM users WHERE id = '${userId}'`);
@@ -829,6 +859,7 @@ db('users').where({ id: userId });
 ```
 
 ### 3. XSS Vulnerability
+
 ```typescript
 // ❌ WRONG
 <div dangerouslySetInnerHTML={{ __html: userInput }} />
@@ -838,6 +869,7 @@ db('users').where({ id: userId });
 ```
 
 ### 4. Weak Passwords
+
 ```typescript
 // ❌ WRONG
 const hashed = await hash(password, 5); // Too few rounds
@@ -847,12 +879,14 @@ const hashed = await bcrypt.hash(password, 10); // At least 10 rounds
 ```
 
 ### 5. Missing Authorization
+
 ```typescript
 // ❌ WRONG
 app.delete('/orders/:id', deleteOrderHandler);
 
 // ✅ CORRECT
-app.delete('/orders/:id',
+app.delete(
+  '/orders/:id',
   authenticate,
   authorize([UserRole.ADMIN]),
   deleteOrderHandler
@@ -889,9 +923,7 @@ describe('Security', () => {
     it('should prevent picker from accessing admin endpoints', async () => {
       const picker = await createTestUser({ role: UserRole.PICKER });
 
-      await expect(
-        adminEndpoint(picker.token)
-      ).rejects.toThrow(ForbiddenError);
+      await expect(adminEndpoint(picker.token)).rejects.toThrow(ForbiddenError);
     });
   });
 });

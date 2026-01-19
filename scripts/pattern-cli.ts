@@ -112,17 +112,28 @@ function formatPattern(pattern: ExtractedPattern, verbose: boolean = false): str
 function formatTableHeader(): string {
   return (
     '\n' +
-    ''.padEnd(40, '-') + ' ' +
-    ''.padEnd(15, '-') + ' ' +
-    ''.padEnd(20, '-') + ' ' +
-    ''.padEnd(12, '-') + '\n' +
-    'Title'.padEnd(40) + ' ' +
-    'Category'.padEnd(15) + ' ' +
-    'Tags'.padEnd(20) + ' ' +
-    'Created'.padEnd(12) + '\n' +
-    ''.padEnd(40, '-') + ' ' +
-    ''.padEnd(15, '-') + ' ' +
-    ''.padEnd(20, '-') + ' ' +
+    ''.padEnd(40, '-') +
+    ' ' +
+    ''.padEnd(15, '-') +
+    ' ' +
+    ''.padEnd(20, '-') +
+    ' ' +
+    ''.padEnd(12, '-') +
+    '\n' +
+    'Title'.padEnd(40) +
+    ' ' +
+    'Category'.padEnd(15) +
+    ' ' +
+    'Tags'.padEnd(20) +
+    ' ' +
+    'Created'.padEnd(12) +
+    '\n' +
+    ''.padEnd(40, '-') +
+    ' ' +
+    ''.padEnd(15, '-') +
+    ' ' +
+    ''.padEnd(20, '-') +
+    ' ' +
     ''.padEnd(12, '-')
   );
 }
@@ -132,9 +143,12 @@ function formatTableHeader(): string {
  */
 function formatTableRow(pattern: ExtractedPattern): string {
   return (
-    pattern.title.substring(0, 37).padEnd(40) + ' ' +
-    pattern.category.padEnd(15) + ' ' +
-    pattern.tags.slice(0, 2).join(', ').substring(0, 17).padEnd(20) + ' ' +
+    pattern.title.substring(0, 37).padEnd(40) +
+    ' ' +
+    pattern.category.padEnd(15) +
+    ' ' +
+    pattern.tags.slice(0, 2).join(', ').substring(0, 17).padEnd(20) +
+    ' ' +
     new Date(pattern.timestamp).toLocaleDateString().padEnd(12)
   );
 }
@@ -145,10 +159,7 @@ function formatTableRow(pattern: ExtractedPattern): string {
 
 const program = new Command();
 
-program
-  .name('pattern')
-  .description('Code pattern management CLI')
-  .version('1.0.0');
+program.name('pattern').description('Code pattern management CLI').version('1.0.0');
 
 /**
  * List all patterns
@@ -159,7 +170,7 @@ program
   .option('-c, --category <category>', 'Filter by category')
   .option('-v, --verbose', 'Show full pattern details')
   .option('-t, --table', 'Display as table')
-  .action(async (options) => {
+  .action(async options => {
     let patterns = await loadPatterns();
 
     if (options.category) {
@@ -236,7 +247,7 @@ program
 program
   .command('get <id>')
   .description('Get full pattern details by ID')
-  .action(async (id) => {
+  .action(async id => {
     const patterns = await loadPatterns();
     const pattern = patterns.find(p => p.id === id);
 
@@ -272,7 +283,7 @@ program
   .command('export')
   .description('Export all patterns as JSON')
   .option('-o, --output <file>', 'Output file (default: patterns-export.json)')
-  .action(async (options) => {
+  .action(async options => {
     const patterns = await loadPatterns();
     const outputFile = options.output || 'patterns-export.json';
 
@@ -335,7 +346,9 @@ program
       .sort((a, b) => b[1] - a[1])
       .forEach(([comp, count]) => console.log(`  ${comp.padEnd(20)} ${count}`));
 
-    console.log(`\n📅 Last Updated: ${new Date(Math.max(...patterns.map(p => new Date(p.timestamp).getTime()))).toLocaleString()}`);
+    console.log(
+      `\n📅 Last Updated: ${new Date(Math.max(...patterns.map(p => new Date(p.timestamp).getTime()))).toLocaleString()}`
+    );
   });
 
 // ============================================================================

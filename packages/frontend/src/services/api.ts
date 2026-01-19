@@ -100,7 +100,10 @@ export const authApi = {
    * Set active role (for multi-role users)
    */
   setActiveRole: async (activeRole: UserRole): Promise<{ user: User; activeRole: UserRole }> => {
-    const response = await apiClient.post<{ user: User; activeRole: UserRole }>('/auth/active-role', { activeRole });
+    const response = await apiClient.post<{ user: User; activeRole: UserRole }>(
+      '/auth/active-role',
+      { activeRole }
+    );
     return response.data;
   },
 
@@ -212,7 +215,9 @@ export const orderApi = {
   /**
    * Get next pick task
    */
-  getNextTask: async (orderId: string): Promise<{
+  getNextTask: async (
+    orderId: string
+  ): Promise<{
     pickTaskId: string;
     sku: string;
     name: string;
@@ -262,7 +267,9 @@ export const orderApi = {
   /**
    * Get order progress
    */
-  getProgress: async (orderId: string): Promise<{
+  getProgress: async (
+    orderId: string
+  ): Promise<{
     total: number;
     completed: number;
     skipped: number;
@@ -512,7 +519,7 @@ export const useUpdateCurrentView = () => {
     onSuccess: (data, variables) => {
       console.log('[useUpdateCurrentView] onSuccess - View updated:', variables);
     },
-    onError: (error) => {
+    onError: error => {
       console.error('[useUpdateCurrentView] onError - Failed to update view:', error);
     },
   });
@@ -526,15 +533,15 @@ export const useSetIdle = () => {
       console.log('[useSetIdle] Success:', response.data);
       return response.data;
     },
-    onError: (error) => {
+    onError: error => {
       console.error('[useSetIdle] onError - Failed to set idle:', error);
     },
   });
 };
 
 export const useSetActiveRole = () => {
-  const setActiveRole = useAuthStore((state) => state.setActiveRole);
-  const updateTokens = useAuthStore((state) => state.updateTokens);
+  const setActiveRole = useAuthStore(state => state.setActiveRole);
+  const updateTokens = useAuthStore(state => state.updateTokens);
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -544,7 +551,7 @@ export const useSetActiveRole = () => {
       console.log('[useSetActiveRole] API response:', response.data);
       return response.data;
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       console.log('[useSetActiveRole] Success - Updating auth store:', data);
       // Update auth store with new activeRole AND new access token
       if (data.accessToken) {
@@ -557,7 +564,7 @@ export const useSetActiveRole = () => {
       // Invalidate and refetch current user query to get updated user data
       queryClient.invalidateQueries({ queryKey: ['auth', 'me'], refetchType: 'all' });
     },
-    onError: (error) => {
+    onError: error => {
       console.error('[useSetActiveRole] Failed to set active role:', error);
       handleAPIError(error);
     },
@@ -604,7 +611,7 @@ export const useGrantRole = () => {
       queryClient.invalidateQueries({ queryKey: ['role-assignments'] });
       queryClient.invalidateQueries({ queryKey: ['users'] });
     },
-    onError: (error) => {
+    onError: error => {
       handleAPIError(error);
     },
   });
@@ -620,7 +627,7 @@ export const useRevokeRole = () => {
       queryClient.invalidateQueries({ queryKey: ['role-assignments'] });
       queryClient.invalidateQueries({ queryKey: ['users'] });
     },
-    onError: (error) => {
+    onError: error => {
       handleAPIError(error);
     },
   });
@@ -666,7 +673,7 @@ export const useOrder = (orderId: string) => {
 
 export const useNextTask = (orderId: string) => {
   const queryClient = useQueryClient();
-  
+
   const result = useQuery({
     queryKey: ['orders', orderId, 'next-task'],
     queryFn: () => {
@@ -682,12 +689,12 @@ export const useNextTask = (orderId: string) => {
   // Invalidate picker activity cache when next task successfully fetches
   // This ensures admin dashboard updates when picker navigates to picking page
   const { data, error, isError } = result;
-  
+
   if (data !== undefined) {
     console.log(`[useNextTask] Success for order ${orderId}:`, data);
     queryClient.invalidateQueries({ queryKey: ['metrics', 'picker-activity'] });
   }
-  
+
   if (isError) {
     console.error(`[useNextTask] Error for order ${orderId}:`, error);
   }
@@ -738,7 +745,9 @@ export const useCompleteOrder = () => {
 };
 
 // Metrics hooks
-export const useDashboardMetrics = (options?: Omit<UseQueryOptions<DashboardMetricsResponse>, 'queryKey' | 'queryFn'>) => {
+export const useDashboardMetrics = (
+  options?: Omit<UseQueryOptions<DashboardMetricsResponse>, 'queryKey' | 'queryFn'>
+) => {
   return useQuery({
     queryKey: ['metrics', 'dashboard'],
     queryFn: metricsApi.getDashboard,
@@ -810,7 +819,9 @@ export const usePackerOrders = (packerId: string, enabled: boolean = true) => {
   });
 };
 
-export const useStockControllerActivity = (options?: Omit<UseQueryOptions, 'queryKey' | 'queryFn'>) => {
+export const useStockControllerActivity = (
+  options?: Omit<UseQueryOptions, 'queryKey' | 'queryFn'>
+) => {
   const result = useQuery({
     queryKey: ['metrics', 'stock-controller-activity'],
     queryFn: async () => {
@@ -857,14 +868,19 @@ export const packingApi = {
    * Claim an order for packing
    */
   claimForPacking: async (orderId: string, packerId: string): Promise<Order> => {
-    const response = await apiClient.post<Order>(`/orders/${orderId}/claim-for-packing`, { packerId });
+    const response = await apiClient.post<Order>(`/orders/${orderId}/claim-for-packing`, {
+      packerId,
+    });
     return response.data;
   },
 
   /**
    * Complete packing
    */
-  completePacking: async (orderId: string, dto: { orderId: string; packerId: string }): Promise<Order> => {
+  completePacking: async (
+    orderId: string,
+    dto: { orderId: string; packerId: string }
+  ): Promise<Order> => {
     const response = await apiClient.post<Order>(`/orders/${orderId}/complete-packing`, dto);
     return response.data;
   },
@@ -894,8 +910,13 @@ export const useClaimOrderForPacking = () => {
 export const useCompletePacking = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ orderId, dto }: { orderId: string; dto: { orderId: string; packerId: string } }) =>
-      packingApi.completePacking(orderId, dto),
+    mutationFn: ({
+      orderId,
+      dto,
+    }: {
+      orderId: string;
+      dto: { orderId: string; packerId: string };
+    }) => packingApi.completePacking(orderId, dto),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['orders'] });
       queryClient.invalidateQueries({ queryKey: ['orders', 'packing-queue'] });
@@ -975,19 +996,20 @@ export const stockControlApi = {
   /**
    * Submit stock count
    */
-  submitStockCount: async (countId: string, items: Array<{ sku: string; countedQuantity: number; notes?: string }>) => {
-    const response = await apiClient.post(`/stock-control/stock-count/${countId}/submit`, { items });
+  submitStockCount: async (
+    countId: string,
+    items: Array<{ sku: string; countedQuantity: number; notes?: string }>
+  ) => {
+    const response = await apiClient.post(`/stock-control/stock-count/${countId}/submit`, {
+      items,
+    });
     return response.data;
   },
 
   /**
    * Get stock counts
    */
-  getStockCounts: async (params?: {
-    status?: string;
-    limit?: number;
-    offset?: number;
-  }) => {
+  getStockCounts: async (params?: { status?: string; limit?: number; offset?: number }) => {
     const response = await apiClient.get('/stock-control/stock-counts', { params });
     return response.data;
   },
@@ -995,7 +1017,13 @@ export const stockControlApi = {
   /**
    * Transfer stock
    */
-  transferStock: async (sku: string, fromBin: string, toBin: string, quantity: number, reason: string) => {
+  transferStock: async (
+    sku: string,
+    fromBin: string,
+    toBin: string,
+    quantity: number,
+    reason: string
+  ) => {
     const response = await apiClient.post('/stock-control/transfer', {
       sku,
       fromBin,
@@ -1049,11 +1077,7 @@ export const stockControlApi = {
   /**
    * Get movement report
    */
-  getMovementReport: async (params?: {
-    startDate?: string;
-    endDate?: string;
-    sku?: string;
-  }) => {
+  getMovementReport: async (params?: { startDate?: string; endDate?: string; sku?: string }) => {
     const response = await apiClient.get('/stock-control/reports/movements', { params });
     return response.data;
   },
@@ -1061,14 +1085,16 @@ export const stockControlApi = {
   /**
    * Reconcile discrepancies
    */
-  reconcileDiscrepancies: async (discrepancies: Array<{
-    sku: string;
-    binLocation: string;
-    systemQuantity: number;
-    actualQuantity: number;
-    variance: number;
-    reason: string;
-  }>) => {
+  reconcileDiscrepancies: async (
+    discrepancies: Array<{
+      sku: string;
+      binLocation: string;
+      systemQuantity: number;
+      actualQuantity: number;
+      variance: number;
+      reason: string;
+    }>
+  ) => {
     const response = await apiClient.post('/stock-control/reconcile', { discrepancies });
     return response.data;
   },
@@ -1076,10 +1102,7 @@ export const stockControlApi = {
   /**
    * Get bin locations
    */
-  getBinLocations: async (params?: {
-    zone?: string;
-    active?: boolean;
-  }) => {
+  getBinLocations: async (params?: { zone?: string; active?: boolean }) => {
     const response = await apiClient.get('/stock-control/bins', { params });
     return response.data;
   },
@@ -1132,19 +1155,20 @@ export const useCreateStockCount = () => {
 export const useSubmitStockCount = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ countId, items }: { countId: string; items: Array<{ sku: string; countedQuantity: number; notes?: string }> }) =>
-      stockControlApi.submitStockCount(countId, items),
+    mutationFn: ({
+      countId,
+      items,
+    }: {
+      countId: string;
+      items: Array<{ sku: string; countedQuantity: number; notes?: string }>;
+    }) => stockControlApi.submitStockCount(countId, items),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['stock-control'] });
     },
   });
 };
 
-export const useStockCounts = (params?: {
-  status?: string;
-  limit?: number;
-  offset?: number;
-}) => {
+export const useStockCounts = (params?: { status?: string; limit?: number; offset?: number }) => {
   return useQuery({
     queryKey: ['stock-control', 'stock-counts', params],
     queryFn: () => stockControlApi.getStockCounts(params),
@@ -1154,7 +1178,13 @@ export const useStockCounts = (params?: {
 export const useTransferStock = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ sku, fromBin, toBin, quantity, reason }: {
+    mutationFn: ({
+      sku,
+      fromBin,
+      toBin,
+      quantity,
+      reason,
+    }: {
       sku: string;
       fromBin: string;
       toBin: string;
@@ -1171,7 +1201,12 @@ export const useTransferStock = () => {
 export const useAdjustInventory = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ sku, binLocation, quantity, reason }: {
+    mutationFn: ({
+      sku,
+      binLocation,
+      quantity,
+      reason,
+    }: {
       sku: string;
       binLocation: string;
       quantity: number;
@@ -1221,14 +1256,16 @@ export const useMovementReport = (params?: {
 export const useReconcileDiscrepancies = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (discrepancies: Array<{
-      sku: string;
-      binLocation: string;
-      systemQuantity: number;
-      actualQuantity: number;
-      variance: number;
-      reason: string;
-    }>) => stockControlApi.reconcileDiscrepancies(discrepancies),
+    mutationFn: (
+      discrepancies: Array<{
+        sku: string;
+        binLocation: string;
+        systemQuantity: number;
+        actualQuantity: number;
+        variance: number;
+        reason: string;
+      }>
+    ) => stockControlApi.reconcileDiscrepancies(discrepancies),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['stock-control'] });
       queryClient.invalidateQueries({ queryKey: ['inventory'] });
@@ -1236,10 +1273,7 @@ export const useReconcileDiscrepancies = () => {
   });
 };
 
-export const useBinLocations = (params?: {
-  zone?: string;
-  active?: boolean;
-}) => {
+export const useBinLocations = (params?: { zone?: string; active?: boolean }) => {
   return useQuery({
     queryKey: ['stock-control', 'bins', params],
     queryFn: () => stockControlApi.getBinLocations(params),
@@ -1457,7 +1491,10 @@ export const cycleCountApi = {
    * Update variance status
    */
   updateVarianceStatus: async (entryId: string, status: string, notes?: string) => {
-    const response = await apiClient.patch(`/cycle-count/entries/${entryId}/variance`, { status, notes });
+    const response = await apiClient.patch(`/cycle-count/entries/${entryId}/variance`, {
+      status,
+      notes,
+    });
     return response.data;
   },
 
@@ -1641,7 +1678,9 @@ export const locationCapacityApi = {
    * Recalculate location capacity
    */
   recalculateCapacity: async (binLocation: string) => {
-    const response = await apiClient.post(`/location-capacity/locations/${binLocation}/recalculate`);
+    const response = await apiClient.post(
+      `/location-capacity/locations/${binLocation}/recalculate`
+    );
     return response.data;
   },
 
@@ -1856,17 +1895,23 @@ export const qualityControlApi = {
   /**
    * Update inspection status
    */
-  updateInspectionStatus: async (inspectionId: string, dto: {
-    status: string;
-    quantityPassed?: number;
-    quantityFailed?: number;
-    defectType?: string;
-    defectDescription?: string;
-    dispositionAction?: string;
-    dispositionNotes?: string;
-    notes?: string;
-  }) => {
-    const response = await apiClient.patch(`/quality-control/inspections/${inspectionId}/status`, dto);
+  updateInspectionStatus: async (
+    inspectionId: string,
+    dto: {
+      status: string;
+      quantityPassed?: number;
+      quantityFailed?: number;
+      defectType?: string;
+      defectDescription?: string;
+      dispositionAction?: string;
+      dispositionNotes?: string;
+      notes?: string;
+    }
+  ) => {
+    const response = await apiClient.patch(
+      `/quality-control/inspections/${inspectionId}/status`,
+      dto
+    );
     return response.data;
   },
 
@@ -1944,7 +1989,9 @@ export const qualityControlApi = {
    * Update return status
    */
   updateReturnStatus: async (returnId: string, status: string) => {
-    const response = await apiClient.patch(`/quality-control/returns/${returnId}/status`, { status });
+    const response = await apiClient.patch(`/quality-control/returns/${returnId}/status`, {
+      status,
+    });
     return response.data;
   },
 };
@@ -2085,7 +2132,8 @@ export const useUpdateInspection = () => {
 export const useDeleteChecklist = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (checklistId: string) => apiClient.delete(`/quality-control/checklists/${checklistId}`),
+    mutationFn: (checklistId: string) =>
+      apiClient.delete(`/quality-control/checklists/${checklistId}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['quality-control', 'checklists'] });
     },
@@ -2245,10 +2293,13 @@ export const inwardsGoodsApi = {
   /**
    * Update putaway task
    */
-  updatePutawayTask: async (putawayTaskId: string, dto: {
-    quantityPutaway: number;
-    status?: string;
-  }) => {
+  updatePutawayTask: async (
+    putawayTaskId: string,
+    dto: {
+      quantityPutaway: number;
+      status?: string;
+    }
+  ) => {
     const response = await apiClient.patch(`/inbound/putaway/${putawayTaskId}`, dto);
     return response.data;
   },
@@ -2263,11 +2314,7 @@ export const useInwardsDashboard = () => {
   });
 };
 
-export const useASNs = (params?: {
-  status?: string;
-  supplierId?: string;
-  enabled?: boolean;
-}) => {
+export const useASNs = (params?: { status?: string; supplierId?: string; enabled?: boolean }) => {
   return useQuery({
     queryKey: ['inwards', 'asn', params],
     queryFn: () => inwardsGoodsApi.getASNs(params),
@@ -2284,11 +2331,7 @@ export const useASN = (asnId: string, enabled: boolean = true) => {
   });
 };
 
-export const useReceipts = (params?: {
-  status?: string;
-  asnId?: string;
-  enabled?: boolean;
-}) => {
+export const useReceipts = (params?: { status?: string; asnId?: string; enabled?: boolean }) => {
   return useQuery({
     queryKey: ['inwards', 'receipts', params],
     queryFn: () => inwardsGoodsApi.getReceipts(params),
@@ -2362,8 +2405,13 @@ export const useAssignPutawayTask = () => {
 export const useUpdatePutawayTask = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ putawayTaskId, dto }: { putawayTaskId: string; dto: { quantityPutaway: number; status?: string } }) =>
-      inwardsGoodsApi.updatePutawayTask(putawayTaskId, dto),
+    mutationFn: ({
+      putawayTaskId,
+      dto,
+    }: {
+      putawayTaskId: string;
+      dto: { quantityPutaway: number; status?: string };
+    }) => inwardsGoodsApi.updatePutawayTask(putawayTaskId, dto),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['inwards', 'putaway'] });
     },

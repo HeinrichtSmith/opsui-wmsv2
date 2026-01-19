@@ -19,11 +19,11 @@ All three add-on modules (Production Management, Sales & CRM, and Maintenance & 
 
 Added three new user roles to the system:
 
-| Role | Purpose | Permissions |
-|------|---------|-------------|
-| **PRODUCTION** | Manufacturing staff | Can manage production orders, record output, access BOMs |
-| **SALES** | Sales team | Can manage customers, leads, opportunities, quotes |
-| **MAINTENANCE** | Maintenance staff | Can manage assets, work orders, service logs |
+| Role            | Purpose             | Permissions                                              |
+| --------------- | ------------------- | -------------------------------------------------------- |
+| **PRODUCTION**  | Manufacturing staff | Can manage production orders, record output, access BOMs |
+| **SALES**       | Sales team          | Can manage customers, leads, opportunities, quotes       |
+| **MAINTENANCE** | Maintenance staff   | Can manage assets, work orders, service logs             |
 
 ```typescript
 export enum UserRole {
@@ -32,9 +32,9 @@ export enum UserRole {
   STOCK_CONTROLLER = 'STOCK_CONTROLLER',
   SUPERVISOR = 'SUPERVISOR',
   ADMIN = 'ADMIN',
-  PRODUCTION = 'PRODUCTION',      // NEW
-  SALES = 'SALES',                // NEW
-  MAINTENANCE = 'MAINTENANCE'     // NEW
+  PRODUCTION = 'PRODUCTION', // NEW
+  SALES = 'SALES', // NEW
+  MAINTENANCE = 'MAINTENANCE', // NEW
 }
 ```
 
@@ -45,6 +45,7 @@ export enum UserRole {
 Complete database migration with all tables, indexes, and constraints:
 
 #### Production Management Tables
+
 - `bill_of_materials` - Product recipes
 - `bom_components` - BOM line items
 - `production_orders` - Manufacturing jobs
@@ -53,6 +54,7 @@ Complete database migration with all tables, indexes, and constraints:
 - `production_journals` - Activity logs
 
 #### Sales & CRM Tables
+
 - `customers` - Customer records
 - `leads` - Sales leads
 - `opportunities` - Pipeline opportunities
@@ -61,6 +63,7 @@ Complete database migration with all tables, indexes, and constraints:
 - `customer_interactions` - Activity history
 
 #### Maintenance & Assets Tables
+
 - `assets` - Equipment/assets registry
 - `maintenance_schedules` - Preventive maintenance schedules
 - `maintenance_work_orders` - Maintenance work orders
@@ -72,6 +75,7 @@ Complete database migration with all tables, indexes, and constraints:
 Created three comprehensive repository classes with full CRUD operations:
 
 #### ProductionRepository
+
 **File:** [packages/backend/src/repositories/ProductionRepository.ts](packages/backend/src/repositories/ProductionRepository.ts)
 
 - `createBOM()`, `findBOMById()`, `findAllBOMs()`
@@ -80,39 +84,51 @@ Created three comprehensive repository classes with full CRUD operations:
 - `createProductionJournalEntry()`, `findProductionJournalEntries()`
 
 #### SalesRepository
+
 **File:** [packages/backend/src/repositories/SalesRepository.ts](packages/backend/src/repositories/SalesRepository.ts)
 
 **Customers:**
+
 - `createCustomer()`, `findCustomerById()`, `findAllCustomers()`, `updateCustomer()`
 
 **Leads:**
+
 - `createLead()`, `findLeadById()`, `findAllLeads()`, `updateLead()`
 
 **Opportunities:**
+
 - `createOpportunity()`, `findOpportunityById()`, `findAllOpportunities()`
 
 **Quotes:**
+
 - `createQuote()`, `findQuoteById()`, `findAllQuotes()`
 
 **Interactions:**
+
 - `createInteraction()`, `findInteractionsByCustomer()`
 
 #### MaintenanceRepository
+
 **File:** [packages/backend/src/repositories/MaintenanceRepository.ts](packages/backend/src/repositories/MaintenanceRepository.ts)
 
 **Assets:**
+
 - `createAsset()`, `findAssetById()`, `findAllAssets()`, `updateAsset()`
 
 **Schedules:**
+
 - `createSchedule()`, `findSchedulesByAsset()`, `findDueSchedules()`
 
 **Work Orders:**
+
 - `createWorkOrder()`, `findWorkOrderById()`, `findAllWorkOrders()`, `completeWorkOrder()`
 
 **Service Logs:**
+
 - `createServiceLog()`, `findServiceLogsByAsset()`
 
 **Meter Readings:**
+
 - `addMeterReading()`, `findMeterReadingsByAsset()`
 
 ### 4. Service Layer ✅
@@ -120,9 +136,11 @@ Created three comprehensive repository classes with full CRUD operations:
 Created three service classes with business logic and validation:
 
 #### ProductionService
+
 **File:** [packages/backend/src/services/ProductionService.ts](packages/backend/src/services/ProductionService.ts)
 
 **Key Business Logic:**
+
 - BOM validation and status management
 - Production order workflow (PLANNED → RELEASED → IN_PROGRESS → COMPLETED)
 - Status transition validation
@@ -131,6 +149,7 @@ Created three service classes with business logic and validation:
 - Automatic order completion when output matches target
 
 **Methods:**
+
 - `createBOM()` - Validates components and creates BOM
 - `createProductionOrder()` - Validates BOM is active, checks availability
 - `releaseProductionOrder()` - Reserves materials
@@ -138,9 +157,11 @@ Created three service classes with business logic and validation:
 - `recordProductionOutput()` - Validates quantities, auto-completes if done
 
 #### SalesService
+
 **File:** [packages/backend/src/services/SalesService.ts](packages/backend/src/services/SalesService.ts)
 
 **Key Business Logic:**
+
 - Customer validation with required billing address
 - Lead assignment and status tracking
 - Lead to customer conversion
@@ -150,6 +171,7 @@ Created three service classes with business logic and validation:
 - Customer interaction logging with last contact date updates
 
 **Methods:**
+
 - `createCustomer()` - Validates company name and address
 - `createLead()` - Validates assignment and source
 - `convertLeadToCustomer()` - Creates customer from won lead
@@ -159,9 +181,11 @@ Created three service classes with business logic and validation:
 - `logInteraction()` - Updates customer last contact date
 
 #### MaintenanceService
+
 **File:** [packages/backend/src/services/MaintenanceService.ts](packages/backend/src/services/MaintenanceService.ts)
 
 **Key Business Logic:**
+
 - Asset validation and status management
 - Work order workflow (SCHEDULED → IN_PROGRESS → COMPLETED)
 - Asset status updates during maintenance
@@ -170,6 +194,7 @@ Created three service classes with business logic and validation:
 - Asset retirement workflow
 
 **Methods:**
+
 - `createAsset()` - Validates name and type
 - `retireAsset()` - Sets status to RETIRED
 - `createSchedule()` - Validates asset existence and due date
@@ -183,25 +208,27 @@ Created three service classes with business logic and validation:
 Created three comprehensive route modules with proper authorization:
 
 #### Production Routes
+
 **File:** [packages/backend/src/routes/production.ts](packages/backend/src/routes/production.ts)
 
 **Base Path:** `/api/production`
 
-| Endpoint | Method | Access | Description |
-|----------|--------|--------|-------------|
-| `/bom` | POST | PROD, SUP, ADM | Create BOM |
-| `/bom` | GET | All | List BOMs |
-| `/bom/:bomId` | GET | All | Get BOM details |
-| `/orders` | POST | PROD, SUP, ADM | Create production order |
-| `/orders` | GET | All | List production orders |
-| `/orders/:orderId` | GET | All | Get order details |
-| `/orders/:orderId` | PUT | PROD, SUP, ADM | Update order |
-| `/orders/:orderId/release` | POST | PROD, SUP, ADM | Release order |
-| `/orders/:orderId/start` | POST | PROD, SUP, ADM | Start production |
-| `/orders/:orderId/output` | POST | PROD, SUP, ADM | Record output |
-| `/orders/:orderId/journal` | GET | All | Get journal entries |
+| Endpoint                   | Method | Access         | Description             |
+| -------------------------- | ------ | -------------- | ----------------------- |
+| `/bom`                     | POST   | PROD, SUP, ADM | Create BOM              |
+| `/bom`                     | GET    | All            | List BOMs               |
+| `/bom/:bomId`              | GET    | All            | Get BOM details         |
+| `/orders`                  | POST   | PROD, SUP, ADM | Create production order |
+| `/orders`                  | GET    | All            | List production orders  |
+| `/orders/:orderId`         | GET    | All            | Get order details       |
+| `/orders/:orderId`         | PUT    | PROD, SUP, ADM | Update order            |
+| `/orders/:orderId/release` | POST   | PROD, SUP, ADM | Release order           |
+| `/orders/:orderId/start`   | POST   | PROD, SUP, ADM | Start production        |
+| `/orders/:orderId/output`  | POST   | PROD, SUP, ADM | Record output           |
+| `/orders/:orderId/journal` | GET    | All            | Get journal entries     |
 
 #### Sales Routes
+
 **File:** [packages/backend/src/routes/sales.ts](packages/backend/src/routes/sales.ts)
 
 **Base Path:** `/api/sales`
@@ -247,6 +274,7 @@ Created three comprehensive route modules with proper authorization:
 | `/customers/:customerId/interactions` | GET | All | Get interactions |
 
 #### Maintenance Routes
+
 **File:** [packages/backend/src/routes/maintenance.ts](packages/backend/src/routes/maintenance.ts)
 
 **Base Path:** `/api/maintenance`
@@ -376,12 +404,14 @@ Content-Type: application/json
 ## Role-Based Access Control
 
 ### Production Role
+
 - Can create/update BOMs
 - Can create/release/start production orders
 - Can record production output
 - Cannot delete production orders (must cancel)
 
 ### Sales Role
+
 - Can create/update customers
 - Can create/update leads
 - Can create/update opportunities
@@ -389,6 +419,7 @@ Content-Type: application/json
 - Can log customer interactions
 
 ### Maintenance Role
+
 - Can create/update assets
 - Can create maintenance schedules
 - Can create/complete work orders
@@ -407,6 +438,7 @@ psql -U your_user -d your_database -f src/db/migrations/004_addon_modules.sql
 ```
 
 Or if using the migration system:
+
 ```bash
 npm run db:migrate -- 004_addon_modules
 ```
@@ -418,16 +450,19 @@ npm run db:migrate -- 004_addon_modules
 The modules are designed to integrate with the core WMS:
 
 ### Production ↔ Inventory
+
 - Material reservation from inventory when order is released
 - Finished goods added to inventory when output is recorded
 - Component quantities tracked per production order
 
 ### Sales ↔ Orders
+
 - Quotes can be converted to customer orders
 - Customer information linked to orders
 - Opportunity pipeline tracks order value
 
 ### Maintenance ↔ Assets
+
 - Asset locations mapped to bin locations
 - Downtime tracking affects production capacity
 - Service history affects asset availability
@@ -491,6 +526,7 @@ While the modules are fully functional, here are potential enhancements:
 ## Testing the Implementation
 
 ### Test Production Module
+
 ```bash
 # Create a BOM
 curl -X POST http://localhost:3001/api/production/bom \
@@ -506,6 +542,7 @@ curl -X POST http://localhost:3001/api/production/bom \
 ```
 
 ### Test Sales Module
+
 ```bash
 # Create a customer
 curl -X POST http://localhost:3001/api/sales/customers \
@@ -524,6 +561,7 @@ curl -X POST http://localhost:3001/api/sales/customers \
 ```
 
 ### Test Maintenance Module
+
 ```bash
 # Create an asset
 curl -X POST http://localhost:3001/api/maintenance/assets \
@@ -544,6 +582,7 @@ curl -X POST http://localhost:3001/api/maintenance/assets \
 ✅ **All three add-on modules are now fully implemented and ready to use!**
 
 The implementation includes:
+
 - Complete database schema with 19 tables
 - 3 comprehensive repository classes with 40+ methods
 - 3 service classes with business logic and validation

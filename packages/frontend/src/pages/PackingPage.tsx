@@ -8,9 +8,25 @@ import { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQueryClient, useMutation, useQuery } from '@tanstack/react-query';
 import { useOrder, useCompletePacking } from '@/services/api';
-import { Card, CardHeader, CardTitle, CardContent, ScanInput, Button, Header } from '@/components/shared';
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  ScanInput,
+  Button,
+  Header,
+} from '@/components/shared';
 import { showSuccess, showError, useAuthStore } from '@/stores';
-import { CheckIcon, ExclamationTriangleIcon, ArrowLeftIcon, CubeIcon, MinusCircleIcon, ArrowPathIcon, PrinterIcon } from '@heroicons/react/24/outline';
+import {
+  CheckIcon,
+  ExclamationTriangleIcon,
+  ArrowLeftIcon,
+  CubeIcon,
+  MinusCircleIcon,
+  ArrowPathIcon,
+  PrinterIcon,
+} from '@heroicons/react/24/outline';
 import { apiClient } from '@/lib/api-client';
 import { formatBinLocation } from '@/lib/utils';
 import { usePageTracking } from '@/hooks/usePageTracking';
@@ -24,8 +40,8 @@ export function PackingPage() {
   const { orderId } = useParams<{ orderId: string }>();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const currentUser = useAuthStore((state) => state.user);
-  const userRole = useAuthStore((state) => state.user?.role);
+  const currentUser = useAuthStore(state => state.user);
+  const userRole = useAuthStore(state => state.user?.role);
 
   // Track current page for admin dashboard
   usePageTracking({ view: orderId ? `Packing ${orderId}` : 'Packing' });
@@ -69,7 +85,7 @@ export function PackingPage() {
       });
       return response.data;
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       console.log('[PackingPage] Order claimed for packing:', data);
       hasClaimedRef.current = true;
       isClaimingRef.current = false;
@@ -103,10 +119,14 @@ export function PackingPage() {
       const isViewOnlyOrder =
         order.status === 'PACKED' ||
         order.status === 'SHIPPED' ||
-        (order.packerId && order.packerId !== currentUserId && (userRole === 'ADMIN' || userRole === 'SUPERVISOR'));
+        (order.packerId &&
+          order.packerId !== currentUserId &&
+          (userRole === 'ADMIN' || userRole === 'SUPERVISOR'));
 
       if (isViewOnlyOrder) {
-        console.log(`[PackingPage] Order is in view-only mode (status: ${order.status}), skipping claim logic`);
+        console.log(
+          `[PackingPage] Order is in view-only mode (status: ${order.status}), skipping claim logic`
+        );
         return;
       }
 
@@ -115,7 +135,12 @@ export function PackingPage() {
       const isReadyForPacking = order?.status === 'PICKED' || order?.status === 'PACKING';
 
       // Prevent multiple claim attempts
-      if (isClaimingRef.current || claimMutation.isPending || hasClaimedRef.current || claimMutation.isError) {
+      if (
+        isClaimingRef.current ||
+        claimMutation.isPending ||
+        hasClaimedRef.current ||
+        claimMutation.isError
+      ) {
         console.log(`[PackingPage] Already claiming, claimed, or had error, skipping`);
         return;
       }
@@ -126,7 +151,9 @@ export function PackingPage() {
       } else if (order.status === 'PICKED') {
         // Claim the order for packing
         if (order.packerId && order.packerId !== currentUserId) {
-          console.log(`[PackingPage] Order claimed by another packer (${order.packerId}), skipping`);
+          console.log(
+            `[PackingPage] Order claimed by another packer (${order.packerId}), skipping`
+          );
           hasClaimedRef.current = true;
           return;
         }
@@ -172,7 +199,8 @@ export function PackingPage() {
 
   // Calculate progress
   const totalItems = order?.items?.length || 0;
-  const completedItems = order?.items?.filter((item) => (item.verifiedQuantity || 0) >= item.quantity) || [];
+  const completedItems =
+    order?.items?.filter(item => (item.verifiedQuantity || 0) >= item.quantity) || [];
   const allVerified = completedItems.length === totalItems && totalItems > 0;
   const verifiedCount = completedItems.length;
 
@@ -189,7 +217,7 @@ export function PackingPage() {
   useEffect(() => {
     if (order && order.items && order.items.length > 0) {
       const firstIncompleteIndex = order.items.findIndex(
-        (item) => (item.verifiedQuantity || 0) < item.quantity && item.status !== 'SKIPPED'
+        item => (item.verifiedQuantity || 0) < item.quantity && item.status !== 'SKIPPED'
       );
       if (firstIncompleteIndex !== -1 && firstIncompleteIndex !== currentItemIndex) {
         setCurrentItemIndex(firstIncompleteIndex);
@@ -287,9 +315,7 @@ export function PackingPage() {
       scannedValue === currentItem.sku;
 
     if (!isValidScan) {
-      const expectedBarcodes = currentItem.barcode
-        ? currentItem.barcode
-        : currentItem.sku;
+      const expectedBarcodes = currentItem.barcode ? currentItem.barcode : currentItem.sku;
       setScanError(`Wrong scan! Expected: ${expectedBarcodes}, scanned: ${scannedValue}`);
       showError(`Wrong barcode scanned`);
       return;
@@ -322,7 +348,10 @@ export function PackingPage() {
         // Item complete, move to next
         if (!order.items) return;
         const nextIncompleteIndex = order.items.findIndex(
-          (item, idx) => idx > currentItemIndex && (item.verifiedQuantity || 0) < item.quantity && item.status !== 'SKIPPED'
+          (item, idx) =>
+            idx > currentItemIndex &&
+            (item.verifiedQuantity || 0) < item.quantity &&
+            item.status !== 'SKIPPED'
         );
 
         if (nextIncompleteIndex !== -1) {
@@ -362,7 +391,10 @@ export function PackingPage() {
       // Move to next item
       if (!order.items) return;
       const nextIncompleteIndex = order.items.findIndex(
-        (item, idx) => idx > currentItemIndex && (item.verifiedQuantity || 0) < item.quantity && item.status !== 'SKIPPED'
+        (item, idx) =>
+          idx > currentItemIndex &&
+          (item.verifiedQuantity || 0) < item.quantity &&
+          item.status !== 'SKIPPED'
       );
 
       if (nextIncompleteIndex !== -1) {
@@ -382,16 +414,14 @@ export function PackingPage() {
     const item = order?.items?.[index];
     if (!item) return;
 
-    const confirmed = confirm(
-      `Do you want to revert the skip for ${item.name} (${item.sku})?`
-    );
+    const confirmed = confirm(`Do you want to revert the skip for ${item.name} (${item.sku})?`);
 
     if (!confirmed) return;
 
     try {
       // Update item status back to PENDING
       await apiClient.put(`/orders/${orderId}/pick-task/${item.orderItemId}`, {
-        status: 'PENDING'
+        status: 'PENDING',
       });
 
       showSuccess('Skip reverted successfully!');
@@ -436,22 +466,25 @@ export function PackingPage() {
         index,
         sku: item.sku,
         currentVerified,
-        itemQuantity: item.quantity
+        itemQuantity: item.quantity,
       });
 
       if (currentVerified <= 0) {
-        showError('No verified items to undo. The item may have already been undone or never verified.');
+        showError(
+          'No verified items to undo. The item may have already been undone or never verified.'
+        );
         await refetch(); // Refresh to show current state
         return;
       }
 
       // Ask for reason
-      const reason = prompt(
-        `Remove 1 verified item from ${item.name} (${item.sku})?\n\n` +
-        `Current: ${currentVerified}/${item.quantity}\n\n` +
-        `After undo: ${Math.max(0, currentVerified - 1)}/${item.quantity}\n\n` +
-        `Please provide a reason:`
-      ) || '';
+      const reason =
+        prompt(
+          `Remove 1 verified item from ${item.name} (${item.sku})?\n\n` +
+            `Current: ${currentVerified}/${item.quantity}\n\n` +
+            `After undo: ${Math.max(0, currentVerified - 1)}/${item.quantity}\n\n` +
+            `Please provide a reason:`
+        ) || '';
 
       if (!reason.trim()) {
         showError('Reason is required to undo a verification');
@@ -480,10 +513,11 @@ export function PackingPage() {
         }
       } catch (error: any) {
         console.error('Undo verification error:', error);
-        
+
         // Handle state mismatch gracefully
-        const errorMsg = error.response?.data?.error || error.message || 'Failed to undo verification';
-        
+        const errorMsg =
+          error.response?.data?.error || error.message || 'Failed to undo verification';
+
         if (errorMsg.includes('Cannot undo more items than verified')) {
           // State changed between our fetch and the request - refresh and inform user
           await refetch();
@@ -530,17 +564,17 @@ export function PackingPage() {
     }
 
     // Check for skipped items
-    const skippedItems = order?.items?.filter((item) => item.status === 'SKIPPED');
+    const skippedItems = order?.items?.filter(item => item.status === 'SKIPPED');
 
     if (skippedItems && skippedItems.length > 0) {
       // Show confirmation dialog for skipped items
-      const itemSummary = skippedItems.map(item =>
-        `" ${item.name} (${item.sku}) - ${item.skipReason || 'No reason provided'}`
-      ).join('\n');
+      const itemSummary = skippedItems
+        .map(item => `" ${item.name} (${item.sku}) - ${item.skipReason || 'No reason provided'}`)
+        .join('\n');
 
       const confirmed = confirm(
         `The following items were skipped and could not be verified:\n\n${itemSummary}\n\n` +
-        `Are you sure you want to complete this order? These items will remain unverified.`
+          `Are you sure you want to complete this order? These items will remain unverified.`
       );
 
       if (!confirmed) {
@@ -610,7 +644,9 @@ export function PackingPage() {
 
   const handleUnclaimOrder = async () => {
     const reason = prompt(
-      `You are about to unclaim this order.\n\n` + `The order will return to PICKED status.\n\n` + `Please provide a reason for unclaiming:`
+      `You are about to unclaim this order.\n\n` +
+        `The order will return to PICKED status.\n\n` +
+        `Please provide a reason for unclaiming:`
     );
 
     if (!reason || !reason.trim()) {
@@ -619,7 +655,9 @@ export function PackingPage() {
     }
 
     const confirmed = confirm(
-      `Are you sure you want to unclaim order ${orderId}?\n\n` + `This action cannot be undone.\n\n` + `Reason: ${reason.trim()}`
+      `Are you sure you want to unclaim order ${orderId}?\n\n` +
+        `This action cannot be undone.\n\n` +
+        `Reason: ${reason.trim()}`
     );
 
     if (!confirmed) {
@@ -649,7 +687,9 @@ export function PackingPage() {
   const isViewMode =
     order &&
     (userRole === 'ADMIN' || userRole === 'SUPERVISOR') &&
-    ((order.packerId && order.packerId !== currentUser?.userId) || order.status === 'PACKED' || order.status === 'SHIPPED');
+    ((order.packerId && order.packerId !== currentUser?.userId) ||
+      order.status === 'PACKED' ||
+      order.status === 'SHIPPED');
 
   return (
     <div className="min-h-screen">
@@ -661,9 +701,13 @@ export function PackingPage() {
             <ExclamationTriangleIcon className="h-6 w-6 text-primary-400 flex-shrink-0" />
             <div className="flex-1">
               <p className="text-sm font-semibold text-white">
-                {order.status === 'PACKED' || order.status === 'SHIPPED' ? 'Viewing completed order' : 'Viewing this packer\'s work in real-time'}
+                {order.status === 'PACKED' || order.status === 'SHIPPED'
+                  ? 'Viewing completed order'
+                  : "Viewing this packer's work in real-time"}
               </p>
-              <p className="text-xs text-gray-400 mt-1">You are in view-only mode. Interactions are disabled.</p>
+              <p className="text-xs text-gray-400 mt-1">
+                You are in view-only mode. Interactions are disabled.
+              </p>
             </div>
           </div>
         )}
@@ -672,7 +716,12 @@ export function PackingPage() {
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-4 flex-1">
             {isViewMode && (
-              <Button variant="secondary" size="sm" onClick={() => navigate('/dashboard')} className="flex items-center gap-2">
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => navigate('/dashboard')}
+                className="flex items-center gap-2"
+              >
                 <ArrowLeftIcon className="h-4 w-4" />
                 Back to Dashboard
               </Button>
@@ -685,7 +734,11 @@ export function PackingPage() {
           <div className="flex gap-3">
             {!isViewMode && (
               <>
-                <Button variant="danger" onClick={handleUnclaimOrder} disabled={order.status !== 'PACKING' && order.status !== 'PICKED'}>
+                <Button
+                  variant="danger"
+                  onClick={handleUnclaimOrder}
+                  disabled={order.status !== 'PACKING' && order.status !== 'PICKED'}
+                >
                   Unclaim Order
                 </Button>
                 <Button variant="secondary" onClick={() => navigate('/packing')}>
@@ -703,7 +756,9 @@ export function PackingPage() {
               <span className="text-sm font-semibold text-gray-300 uppercase tracking-wider">
                 Verified: {verifiedCount} / {totalItems} items
               </span>
-              <span className="text-2xl font-bold text-white">{Math.round((verifiedCount / totalItems) * 100) || 0}%</span>
+              <span className="text-2xl font-bold text-white">
+                {Math.round((verifiedCount / totalItems) * 100) || 0}%
+              </span>
             </div>
             <div className="w-full bg-white/[0.05] rounded-full h-3 overflow-hidden">
               <div
@@ -725,7 +780,9 @@ export function PackingPage() {
                   <ul className="space-y-2 text-gray-300">
                     <li className="flex items-start gap-2">
                       <span className="text-primary-400 mt-1">•</span>
-                      <span>Scan each item's barcode to verify it's present and in good condition</span>
+                      <span>
+                        Scan each item's barcode to verify it's present and in good condition
+                      </span>
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="text-primary-400 mt-1">•</span>
@@ -747,9 +804,7 @@ export function PackingPage() {
                 <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-success-500/20 flex items-center justify-center animate-scale-in">
                   <CheckIcon className="h-10 w-10 text-success-400" />
                 </div>
-                <h2 className="text-3xl font-bold text-white mb-3">
-                  All Items Verified!
-                </h2>
+                <h2 className="text-3xl font-bold text-white mb-3">All Items Verified!</h2>
                 <p className="text-gray-400 mb-8">
                   Order is ready to be packed and shipped. Please enter shipping details.
                 </p>
@@ -791,7 +846,7 @@ export function PackingPage() {
                     </label>
                     <select
                       value={selectedCarrierId}
-                      onChange={(e) => setSelectedCarrierId(e.target.value)}
+                      onChange={e => setSelectedCarrierId(e.target.value)}
                       disabled={isCreatingShipment || isViewMode}
                       className="w-full bg-white/[0.05] border border-white/[0.1] rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50 [&_option]:bg-gray-900 [&_option]:text-white"
                     >
@@ -811,7 +866,7 @@ export function PackingPage() {
                     </label>
                     <select
                       value={serviceType}
-                      onChange={(e) => setServiceType(e.target.value)}
+                      onChange={e => setServiceType(e.target.value)}
                       disabled={isCreatingShipment || isViewMode}
                       className="w-full bg-white/[0.05] border border-white/[0.1] rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50 [&_option]:bg-gray-900 [&_option]:text-white"
                     >
@@ -830,7 +885,7 @@ export function PackingPage() {
                     <input
                       type="text"
                       value={trackingNumber}
-                      onChange={(e) => setTrackingNumber(e.target.value)}
+                      onChange={e => setTrackingNumber(e.target.value)}
                       placeholder="Enter tracking number..."
                       disabled={isCreatingShipment || isViewMode}
                       className="w-full bg-white/[0.05] border border-white/[0.1] rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50"
@@ -846,7 +901,7 @@ export function PackingPage() {
                       type="number"
                       min="1"
                       value={totalPackages}
-                      onChange={(e) => setTotalPackages(e.target.value)}
+                      onChange={e => setTotalPackages(e.target.value)}
                       disabled={isCreatingShipment || isViewMode}
                       className="w-full bg-white/[0.05] border border-white/[0.1] rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50"
                     />
@@ -862,7 +917,7 @@ export function PackingPage() {
                       min="0.01"
                       step="0.01"
                       value={totalWeight}
-                      onChange={(e) => setTotalWeight(e.target.value)}
+                      onChange={e => setTotalWeight(e.target.value)}
                       placeholder="Enter total weight..."
                       disabled={isCreatingShipment || isViewMode}
                       className="w-full bg-white/[0.05] border border-white/[0.1] rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50"
@@ -923,14 +978,18 @@ export function PackingPage() {
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
                 <span className="text-white">Current Item to Verify</span>
-                <span className="text-sm text-gray-400">{verifiedCount + 1} of {totalItems}</span>
+                <span className="text-sm text-gray-400">
+                  {verifiedCount + 1} of {totalItems}
+                </span>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               {/* Item Info */}
               <div className="flex items-start gap-4">
                 <div className="flex-1">
-                  <h3 className="text-2xl font-bold text-white tracking-tight">{currentItem.name}</h3>
+                  <h3 className="text-2xl font-bold text-white tracking-tight">
+                    {currentItem.name}
+                  </h3>
                   {currentItem.barcode && (
                     <p className="text-2xl font-mono text-gray-300 mt-3 tracking-wider bg-white/[0.02] inline-block px-4 py-2 rounded-lg border border-white/[0.08]">
                       {currentItem.barcode}
@@ -943,7 +1002,9 @@ export function PackingPage() {
                   )}
                   <div className="flex items-center gap-3 mt-3">
                     <span className="text-sm text-gray-400">Qty: {currentItem.quantity}</span>
-                    <span className="text-sm text-gray-400 font-mono">{formatBinLocation(currentItem.binLocation)}</span>
+                    <span className="text-sm text-gray-400 font-mono">
+                      {formatBinLocation(currentItem.binLocation)}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -959,9 +1020,7 @@ export function PackingPage() {
                 <div className="text-5xl text-gray-600">/</div>
                 <div className="text-center">
                   <p className="text-sm text-gray-400 uppercase tracking-wider mb-2">Needed</p>
-                  <p className="text-4xl font-bold text-white">
-                    {currentItem.quantity}
-                  </p>
+                  <p className="text-4xl font-bold text-white">{currentItem.quantity}</p>
                 </div>
               </div>
 
@@ -971,13 +1030,18 @@ export function PackingPage() {
                   value={scanValue}
                   onChange={setScanValue}
                   onScan={handleScan}
-                  placeholder={currentItem.barcode ? "Scan barcode..." : "Scan or enter item code..."}
+                  placeholder={
+                    currentItem.barcode ? 'Scan barcode...' : 'Scan or enter item code...'
+                  }
                   error={scanError || undefined}
                   disabled={isViewMode ? true : undefined}
                 />
                 {currentItem.barcode && (
                   <p className="mt-3 text-sm text-gray-400 bg-white/[0.02] inline-block px-4 py-2 rounded-lg border border-white/[0.08]">
-                    Scan this barcode: <span className="font-mono font-semibold text-primary-400">{currentItem.barcode}</span>
+                    Scan this barcode:{' '}
+                    <span className="font-mono font-semibold text-primary-400">
+                      {currentItem.barcode}
+                    </span>
                   </p>
                 )}
                 {!currentItem.barcode && (
@@ -1032,10 +1096,10 @@ export function PackingPage() {
                       isCompleted
                         ? 'border-success-500/50 bg-success-500/10 shadow-glow'
                         : isSkipped
-                        ? 'border-warning-500/50 bg-warning-500/10'
-                        : isCurrent
-                        ? 'border-primary-500/50 bg-primary-500/10 shadow-glow'
-                        : 'border-white/[0.08] bg-white/[0.02] hover:bg-white/[0.05]'
+                          ? 'border-warning-500/50 bg-warning-500/10'
+                          : isCurrent
+                            ? 'border-primary-500/50 bg-primary-500/10 shadow-glow'
+                            : 'border-white/[0.08] bg-white/[0.02] hover:bg-white/[0.05]'
                     } ${isCurrent ? 'ring-2 ring-primary-500/30' : ''}`}
                   >
                     <div className="flex items-center gap-4">
@@ -1049,7 +1113,7 @@ export function PackingPage() {
                             <ExclamationTriangleIcon className="h-6 w-6 text-warning-400 flex-shrink-0" />
                             {!isViewMode && (
                               <button
-                                onClick={(e) => {
+                                onClick={e => {
                                   e.stopPropagation();
                                   handleUnskipItem(index);
                                 }}
@@ -1065,15 +1129,21 @@ export function PackingPage() {
 
                       {/* Item Info */}
                       <div className="flex-1">
-                        <p className={`font-semibold text-lg ${
-                          isCompleted ? 'text-success-300' :
-                          isSkipped ? 'text-warning-300' :
-                          'text-white'
-                        }`}>
+                        <p
+                          className={`font-semibold text-lg ${
+                            isCompleted
+                              ? 'text-success-300'
+                              : isSkipped
+                                ? 'text-warning-300'
+                                : 'text-white'
+                          }`}
+                        >
                           {item.name}
                         </p>
                         {!item.barcode && (
-                          <p className="text-xs text-warning-400 font-mono mt-1">No barcode assigned</p>
+                          <p className="text-xs text-warning-400 font-mono mt-1">
+                            No barcode assigned
+                          </p>
                         )}
                         {item.barcode && (
                           <p className="text-sm text-gray-500 font-mono">{item.barcode}</p>
@@ -1087,30 +1157,39 @@ export function PackingPage() {
 
                       {/* Quantity */}
                       <div className="text-right">
-                        <p className={`font-semibold text-lg ${
-                          isCompleted ? 'text-success-300' :
-                          isSkipped ? 'text-warning-300' :
-                          'text-white'
-                        }`}>
-                          {isSkipped ? 'Skipped' : `${item.verifiedQuantity || 0} / ${item.quantity}`}
+                        <p
+                          className={`font-semibold text-lg ${
+                            isCompleted
+                              ? 'text-success-300'
+                              : isSkipped
+                                ? 'text-warning-300'
+                                : 'text-white'
+                          }`}
+                        >
+                          {isSkipped
+                            ? 'Skipped'
+                            : `${item.verifiedQuantity || 0} / ${item.quantity}`}
                         </p>
                         <p className="text-sm text-gray-500 font-mono">{item.binLocation}</p>
 
                         {/* Undo Verification button - only show if actually has verified items */}
-                        {(item.verifiedQuantity || 0) > 0 && !isSkipped && !isViewMode && !undoLoading[index] && (
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleUndoVerification(index);
-                            }}
-                            disabled={undoLoading[index]}
-                            className={`mt-2 text-error-400 hover:text-error-300 transition-colors flex items-center gap-1 justify-end hover:bg-error-500/10 px-2 py-1 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent`}
-                            title="Remove last verified item"
-                          >
-                            <MinusCircleIcon className="h-4 w-4" />
-                            <span className="text-xs">Undo Verify</span>
-                          </button>
-                        )}
+                        {(item.verifiedQuantity || 0) > 0 &&
+                          !isSkipped &&
+                          !isViewMode &&
+                          !undoLoading[index] && (
+                            <button
+                              onClick={e => {
+                                e.stopPropagation();
+                                handleUndoVerification(index);
+                              }}
+                              disabled={undoLoading[index]}
+                              className={`mt-2 text-error-400 hover:text-error-300 transition-colors flex items-center gap-1 justify-end hover:bg-error-500/10 px-2 py-1 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent`}
+                              title="Remove last verified item"
+                            >
+                              <MinusCircleIcon className="h-4 w-4" />
+                              <span className="text-xs">Undo Verify</span>
+                            </button>
+                          )}
                         {undoLoading[index] && (
                           <div className="mt-2 text-error-400 flex items-center gap-1 justify-end animate-pulse">
                             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current" />
@@ -1128,7 +1207,10 @@ export function PackingPage() {
 
         {/* Complete Packing Button - Only show if not in shipping form mode */}
         {!isViewMode && !showShippingForm && (
-          <Card variant="glass" className={`border-2 card-hover ${allVerified ? 'border-success-500/50 shadow-glow' : 'border-white/[0.08]'}`}>
+          <Card
+            variant="glass"
+            className={`border-2 card-hover ${allVerified ? 'border-success-500/50 shadow-glow' : 'border-white/[0.08]'}`}
+          >
             <CardContent className="p-6">
               <Button
                 variant={allVerified ? 'success' : 'secondary'}
@@ -1138,7 +1220,9 @@ export function PackingPage() {
                 disabled={!allVerified}
                 className={!allVerified ? '' : 'shadow-glow'}
               >
-                {allVerified ? 'Enter Shipping Details' : `Verify All Items First (${verifiedCount}/${totalItems})`}
+                {allVerified
+                  ? 'Enter Shipping Details'
+                  : `Verify All Items First (${verifiedCount}/${totalItems})`}
               </Button>
               {!allVerified && (
                 <p className="text-center text-sm text-gray-400 mt-3">
@@ -1153,7 +1237,9 @@ export function PackingPage() {
         {isViewMode && (
           <Card variant="glass" className="border-primary-500/30 border">
             <CardContent className="p-6 text-center">
-              <p className="text-sm text-primary-300">Interactions are disabled in view-only mode</p>
+              <p className="text-sm text-primary-300">
+                Interactions are disabled in view-only mode
+              </p>
             </CardContent>
           </Card>
         )}

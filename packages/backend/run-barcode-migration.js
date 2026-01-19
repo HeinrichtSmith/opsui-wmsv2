@@ -7,20 +7,20 @@ const { query } = require('./src/db/client');
 async function runMigration() {
   try {
     console.log('Adding barcode column to SKUs...');
-    
+
     // Add barcode column
     await query(`
       ALTER TABLE skus 
       ADD COLUMN IF NOT EXISTS barcode VARCHAR(20) UNIQUE
     `);
-    
+
     // Add index
     await query(`
       CREATE INDEX IF NOT EXISTS idx_skus_barcode ON skus(barcode)
     `);
-    
+
     console.log('Column added, updating barcodes for existing SKUs...');
-    
+
     // Update barcodes
     const updates = [
       ['WIDGET-A', '0796548106754'],
@@ -32,14 +32,17 @@ async function runMigration() {
       ['PART-123', '0796548106815'],
       ['PART-456', '0796548106822'],
     ];
-    
+
     for (const [sku, barcode] of updates) {
-      await query(`
+      await query(
+        `
         UPDATE skus SET barcode = $1 WHERE sku = $2
-      `, [barcode, sku]);
+      `,
+        [barcode, sku]
+      );
       console.log(`Updated ${sku} with barcode ${barcode}`);
     }
-    
+
     console.log('Migration completed successfully!');
     process.exit(0);
   } catch (error) {

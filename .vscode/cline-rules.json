@@ -276,7 +276,7 @@
       "contextAnalysis",
       "constraintIdentification",
       "solutionDesign",
-    "validationPlanning",
+      "validationPlanning",
       "optimization"
     ]
   },
@@ -313,12 +313,7 @@
     }
   },
   "cline.supreme.performanceOptimization": {
-    "beforeOptimizing": [
-      "measureFirst",
-      "identifyBottleneck",
-      "setBaseline",
-      "defineTarget"
-    ],
+    "beforeOptimizing": ["measureFirst", "identifyBottleneck", "setBaseline", "defineTarget"],
     "strategies": {
       "database": {
         "nPlusOnePrevention": true,
@@ -388,13 +383,7 @@
       "temporaryField",
       "lazyClass"
     ],
-    "steps": [
-      "writeTests",
-      "makeSmallestChange",
-      "runTests",
-      "commit",
-      "document"
-    ]
+    "steps": ["writeTests", "makeSmallestChange", "runTests", "commit", "document"]
   },
   "cline.supreme.documentation": {
     "principles": [
@@ -408,13 +397,7 @@
     ],
     "functionDocs": {
       "required": true,
-      "include": [
-        "description",
-        "params",
-        "returns",
-        "throws",
-        "example"
-      ]
+      "include": ["description", "params", "returns", "throws", "example"]
     }
   },
   "cline.supreme.projectContext": {

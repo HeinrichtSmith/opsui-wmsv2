@@ -30,13 +30,15 @@ async function checkViewUpdates() {
     console.log(`   Last Updated: ${row.current_view_updated_at || 'NEVER'}`);
     console.log(`   Minutes Ago: ${row.minutes_ago ? row.minutes_ago.toFixed(2) : 'NEVER'}`);
     console.log(`   Last Login: ${row.last_login_at || 'NEVER'}`);
-    
+
     const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000);
     const updateDate = row.current_view_updated_at ? new Date(row.current_view_updated_at) : null;
     const inWindow = updateDate && updateDate >= fiveMinAgo;
-    
+
     console.log(`   Should be ACTIVE: ${inWindow ? 'YES' : 'NO'}`);
-    console.log(`   Current View indicates Order Queue: ${row.current_view === 'Order Queue' ? 'YES' : 'NO'}`);
+    console.log(
+      `   Current View indicates Order Queue: ${row.current_view === 'Order Queue' ? 'YES' : 'NO'}`
+    );
   });
 
   console.log('\n=== Complete ===');
@@ -44,7 +46,7 @@ async function checkViewUpdates() {
 
 checkViewUpdates()
   .then(() => process.exit(0))
-  .catch((error) => {
+  .catch(error => {
     console.error('Error:', error);
     process.exit(1);
   });

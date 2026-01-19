@@ -196,31 +196,37 @@ import { useOrderQuery } from '@/api/orders';
 ## Annotation Guidelines
 
 ### @purpose
+
 - Keep it brief (one sentence)
 - Describe WHAT, not HOW
 - Start with a strong verb: "Manages", "Provides", "Handles", "Implements"
 
 ### @complexity
+
 - **low**: Simple CRUD, straightforward logic (< 100 lines)
 - **medium**: Some business logic, conditional flows (100-300 lines)
 - **high**: Multiple responsibilities, complex algorithms, transaction coordination (300+ lines)
 
 ### @tested
+
 - **yes**: > 80% coverage, all critical paths covered
 - **no**: No tests (should be rare)
 - **partial**: < 80% coverage, add percentage
 
 ### @last-change
+
 - Format: YYYY-MM-DD
 - Brief description in parentheses
 - Keep it to one line
 
 ### @dependencies
+
 - List key dependencies only
 - Don't include standard library
 - Focus on project dependencies
 
 ### @domain
+
 - One of: orders, inventory, auth, users, metrics, picking, packing, shipping, etc.
 - Helps with file organization and ownership
 
@@ -229,16 +235,19 @@ import { useOrderQuery } from '@/api/orders';
 ## Progressive Annotation Strategy
 
 ### Priority 1 (Annotate First)
+
 - All service layer files
 - Repository files with complex queries
 - Main page components (PickingPage, PackingPage, DashboardPage)
 
 ### Priority 2 (Annotate Next)
+
 - Controller/route files
 - Repository files with simple queries
 - Reusable components (Button, Card, etc.)
 
 ### Priority 3 (Annotate If Time)
+
 - Utility functions
 - Type definition files
 - Test files
@@ -248,6 +257,7 @@ import { useOrderQuery } from '@/api/orders';
 ## Usage for GLM 4.7
 
 When GLM 4.7 reads a file with annotations, it understands:
+
 1. **Purpose** - What problem this solves
 2. **Complexity** - How careful to be when modifying
 3. **Test Coverage** - How risky changes are
@@ -257,6 +267,7 @@ When GLM 4.7 reads a file with annotations, it understands:
 7. **Security** - What to watch for
 
 This context helps GLM 4.7:
+
 - Make better decisions about changes
 - Anticipate side effects
 - Suggest appropriate optimizations
@@ -267,6 +278,7 @@ This context helps GLM 4.7:
 ## MCP Integration (Future)
 
 Automatic annotation extractor could:
+
 1. Scan new files for missing annotations
 2. Suggest annotations based on code analysis
 3. Update @last-change automatically on commit

@@ -17,7 +17,7 @@ import {
   ExportJob,
   ReportType,
   ReportStatus,
-  ReportFormat
+  ReportFormat,
 } from '@opsui/shared';
 
 // ============================================================================
@@ -110,7 +110,7 @@ export class ReportsRepository {
       allowSchedule: row.allow_schedule,
       isPublic: row.is_public,
       tags: row.tags || [],
-      category: row.category
+      category: row.category,
     }));
   }
 
@@ -154,7 +154,7 @@ export class ReportsRepository {
       allowSchedule: row.allow_schedule,
       isPublic: row.is_public,
       tags: row.tags || [],
-      category: row.category
+      category: row.category,
     };
   }
 
@@ -197,7 +197,7 @@ export class ReportsRepository {
         report.allowSchedule,
         report.isPublic,
         report.tags || [],
-        report.category || null
+        report.category || null,
       ]);
 
       await client.query('COMMIT');
@@ -348,7 +348,7 @@ export class ReportsRepository {
       execution.fileSizeBytes || null,
       execution.rowCount || null,
       execution.executionTimeMs,
-      execution.errorMessage || null
+      execution.errorMessage || null,
     ]);
 
     const row = result.rows[0];
@@ -364,7 +364,7 @@ export class ReportsRepository {
       fileSizeBytes: row.file_size_bytes,
       rowCount: row.row_count,
       executionTimeMs: row.execution_time_ms,
-      errorMessage: row.error_message
+      errorMessage: row.error_message,
     };
   }
 
@@ -397,7 +397,7 @@ export class ReportsRepository {
       fileSizeBytes: row.file_size_bytes,
       rowCount: row.row_count,
       executionTimeMs: row.execution_time_ms,
-      errorMessage: row.error_message
+      errorMessage: row.error_message,
     }));
   }
 
@@ -445,7 +445,7 @@ export class ReportsRepository {
       createdBy: row.created_by,
       createdAt: row.created_at,
       updatedBy: row.updated_by,
-      updatedAt: row.updated_at
+      updatedAt: row.updated_at,
     }));
   }
 
@@ -479,14 +479,16 @@ export class ReportsRepository {
       createdBy: row.created_by,
       createdAt: row.created_at,
       updatedBy: row.updated_by,
-      updatedAt: row.updated_at
+      updatedAt: row.updated_at,
     };
   }
 
   /**
    * Create a dashboard
    */
-  async createDashboard(dashboard: Omit<Dashboard, 'dashboardId' | 'createdAt'>): Promise<Dashboard> {
+  async createDashboard(
+    dashboard: Omit<Dashboard, 'dashboardId' | 'createdAt'>
+  ): Promise<Dashboard> {
     const dashboardId = `DASH-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
     const query = `
@@ -506,7 +508,7 @@ export class ReportsRepository {
       dashboard.owner,
       dashboard.isPublic,
       dashboard.createdBy,
-      new Date()
+      new Date(),
     ]);
 
     return this.findDashboardById(dashboardId) as Promise<Dashboard>;
@@ -539,13 +541,13 @@ export class ReportsRepository {
       job.fields,
       job.status,
       job.createdBy,
-      new Date()
+      new Date(),
     ]);
 
     return {
       jobId,
       ...job,
-      createdAt: new Date()
+      createdAt: new Date(),
     };
   }
 
@@ -612,7 +614,7 @@ export class ReportsRepository {
         fileUrl: row.file_url,
         fileSizeBytes: row.file_size_bytes,
         recordCount: row.record_count,
-        errorMessage: row.error_message
+        errorMessage: row.error_message,
       };
     }
 

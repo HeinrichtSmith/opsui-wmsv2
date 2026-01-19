@@ -38,8 +38,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       'inline-flex items-center justify-center font-medium transition-all duration-300 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50';
 
     const variantStyles = {
-      primary:
-        'btn-primary text-white rounded-xl',
+      primary: 'btn-primary text-white rounded-xl',
       secondary:
         'dark:btn-secondary dark:text-gray-200 dark:border-white/[0.1] bg-gray-100 text-gray-700 border border-gray-300 rounded-xl hover:bg-gray-200 dark:hover:bg-white/[0.08] dark:hover:border-white/[0.15] transition-all',
       success:

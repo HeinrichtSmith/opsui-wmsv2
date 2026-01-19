@@ -50,11 +50,14 @@ export function useUndo<T>(initialState: T | null = null): UseUndoReturn<T> {
   const [present, setPresent] = useState<T | null>(initialState);
   const [future, setFuture] = useState<T[][]>([]);
 
-  const set = useCallback((newPresent: T) => {
-    setPast(prev => [...prev, present].filter(p => p !== null) as T[][]);
-    setPresent(newPresent);
-    setFuture([]);
-  }, [present]);
+  const set = useCallback(
+    (newPresent: T) => {
+      setPast(prev => [...prev, present].filter(p => p !== null) as T[][]);
+      setPresent(newPresent);
+      setFuture([]);
+    },
+    [present]
+  );
 
   const undo = useCallback(() => {
     if (past.length === 0) return;
@@ -99,7 +102,7 @@ export function useUndo<T>(initialState: T | null = null): UseUndoReturn<T> {
     redo,
     canUndo: past.length > 0,
     canRedo: future.length > 0,
-    clearHistory
+    clearHistory,
   };
 }
 
@@ -195,7 +198,7 @@ export function useUndoableAction(options: UseUndoableActionOptions) {
       setCanUndo(false);
       setDidExecute(false);
       setLastError(null);
-    }
+    },
   };
 }
 
@@ -229,7 +232,7 @@ export function useKeyboardUndo({
   redo,
   canUndo,
   canRedo,
-  enabled = true
+  enabled = true,
 }: UseKeyboardUndoOptions) {
   if (typeof window === 'undefined') return; // SSR check
 

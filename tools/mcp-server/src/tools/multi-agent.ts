@@ -171,7 +171,11 @@ function decomposeTask(task: string, description: string, context: string): SubT
   const taskLower = task.toLowerCase();
 
   // Feature implementation pattern
-  if (taskLower.includes('feature') || taskLower.includes('implement') || taskLower.includes('add')) {
+  if (
+    taskLower.includes('feature') ||
+    taskLower.includes('implement') ||
+    taskLower.includes('add')
+  ) {
     subTasks.push({
       id: `arch-${taskId}`,
       parentTask: taskId,
@@ -273,7 +277,11 @@ function decomposeTask(task: string, description: string, context: string): SubT
   }
 
   // Refactoring pattern
-  else if (taskLower.includes('refactor') || taskLower.includes('clean up') || taskLower.includes('restructure')) {
+  else if (
+    taskLower.includes('refactor') ||
+    taskLower.includes('clean up') ||
+    taskLower.includes('restructure')
+  ) {
     subTasks.push({
       id: `analyze-${taskId}`,
       parentTask: taskId,
@@ -324,7 +332,11 @@ function decomposeTask(task: string, description: string, context: string): SubT
   }
 
   // Optimization pattern
-  else if (taskLower.includes('optimize') || taskLower.includes('performance') || taskLower.includes('faster')) {
+  else if (
+    taskLower.includes('optimize') ||
+    taskLower.includes('performance') ||
+    taskLower.includes('faster')
+  ) {
     subTasks.push({
       id: `profile-${taskId}`,
       parentTask: taskId,
@@ -461,7 +473,8 @@ function calculateExecutionOrder(subTasks: SubTask[]): string[][] {
 // ORCHESTRATION STORAGE
 // ============================================================================
 
-const getOrchestrationDir = (workspaceRoot: string) => path.join(workspaceRoot, '.wms-cache', 'orchestration');
+const getOrchestrationDir = (workspaceRoot: string) =>
+  path.join(workspaceRoot, '.wms-cache', 'orchestration');
 
 async function ensureOrchestrationDir(workspaceRoot: string): Promise<void> {
   await fs.mkdir(getOrchestrationDir(workspaceRoot), { recursive: true });
@@ -518,8 +531,8 @@ export const multiAgentTools: ToolMetadata[] = [
     },
     handler: async (args: ToolArgs, context: ToolContext) => {
       const task = args.task as string;
-      const description = args.description as string || '';
-      const taskContext = args.context as string || '';
+      const description = (args.description as string) || '';
+      const taskContext = (args.context as string) || '';
 
       const subTasks = decomposeTask(task, description, taskContext);
       const executionOrder = calculateExecutionOrder(subTasks);
@@ -625,7 +638,10 @@ export const multiAgentTools: ToolMetadata[] = [
             subTask.status = 'completed';
             subTask.completedAt = new Date().toISOString();
             subTask.duration = Math.floor(Math.random() * 300000) + 60000; // 1-6 min
-            subTask.output = { status: 'completed', message: `Task ${subTask.title} completed successfully` };
+            subTask.output = {
+              status: 'completed',
+              message: `Task ${subTask.title} completed successfully`,
+            };
             results.set(taskId, subTask.output);
           }
         }

@@ -74,29 +74,35 @@ function WorkflowStage({
         isActive
           ? 'bg-primary-500/20 border-2 border-primary-500'
           : isCompleted
-          ? 'bg-success-500/10 border border-success-500/30 cursor-pointer hover:border-success-500/50'
-          : 'bg-gray-800/50 border border-gray-700 cursor-pointer hover:border-gray-600'
+            ? 'bg-success-500/10 border border-success-500/30 cursor-pointer hover:border-success-500/50'
+            : 'bg-gray-800/50 border border-gray-700 cursor-pointer hover:border-gray-600'
       }`}
     >
-      <div className={`p-3 rounded-full mb-2 ${
-        isActive
-          ? 'bg-primary-500 text-white'
-          : isCompleted
-          ? 'bg-success-500/20 text-success-400'
-          : 'bg-gray-700 text-gray-400'
-      }`}>
+      <div
+        className={`p-3 rounded-full mb-2 ${
+          isActive
+            ? 'bg-primary-500 text-white'
+            : isCompleted
+              ? 'bg-success-500/20 text-success-400'
+              : 'bg-gray-700 text-gray-400'
+        }`}
+      >
         <StageIcon className="h-6 w-6" />
       </div>
-      <span className={`text-sm font-semibold ${
-        isActive ? 'text-white' : isCompleted ? 'text-success-400' : 'text-gray-400'
-      }`}>
+      <span
+        className={`text-sm font-semibold ${
+          isActive ? 'text-white' : isCompleted ? 'text-success-400' : 'text-gray-400'
+        }`}
+      >
         {stage.label}
       </span>
 
       {/* Connection line */}
-      <div className={`absolute -right-3 top-1/2 -translate-y-1/2 z-10 ${
-        isCompleted ? 'text-success-500' : 'text-gray-700'
-      }`}>
+      <div
+        className={`absolute -right-3 top-1/2 -translate-y-1/2 z-10 ${
+          isCompleted ? 'text-success-500' : 'text-gray-700'
+        }`}
+      >
         <ArrowRightIcon className="h-6 w-6" />
       </div>
     </button>
@@ -191,7 +197,11 @@ function StatusBadge({
   );
 }
 
-function ASNCard({ asn, onViewDetails, onStartReceiving }: {
+function ASNCard({
+  asn,
+  onViewDetails,
+  onStartReceiving,
+}: {
   asn: AdvanceShippingNotice;
   onViewDetails: (asnId: string) => void;
   onStartReceiving: (asnId: string) => void;
@@ -222,7 +232,9 @@ function ASNCard({ asn, onViewDetails, onStartReceiving }: {
           </div>
           <div>
             <p className="text-gray-400 text-xs">Items</p>
-            <p className="text-white font-medium">{itemCount} ({totalExpected} units)</p>
+            <p className="text-white font-medium">
+              {itemCount} ({totalExpected} units)
+            </p>
           </div>
           <div>
             <p className="text-gray-400 text-xs">Carrier</p>
@@ -256,7 +268,10 @@ function ASNCard({ asn, onViewDetails, onStartReceiving }: {
   );
 }
 
-function ReceiptCard({ receipt, onViewDetails }: {
+function ReceiptCard({
+  receipt,
+  onViewDetails,
+}: {
   receipt: Receipt;
   onViewDetails: (receiptId: string) => void;
 }) {
@@ -302,14 +317,19 @@ function ReceiptCard({ receipt, onViewDetails }: {
   );
 }
 
-function PutawayTaskCard({ task, onAssign, onUpdate }: {
+function PutawayTaskCard({
+  task,
+  onAssign,
+  onUpdate,
+}: {
   task: PutawayTask;
   onAssign: (taskId: string) => void;
   onUpdate: (taskId: string) => void;
 }) {
-  const progress = task.quantityToPutaway > 0
-    ? Math.round((task.quantityPutaway / task.quantityToPutaway) * 100)
-    : 0;
+  const progress =
+    task.quantityToPutaway > 0
+      ? Math.round((task.quantityPutaway / task.quantityToPutaway) * 100)
+      : 0;
 
   return (
     <Card variant="glass" className="card-hover border-l-4 border-l-purple-500">
@@ -373,10 +393,7 @@ function PutawayTaskCard({ task, onAssign, onUpdate }: {
 // MODALS (simplified for brevity - same as before)
 // ============================================================================
 
-function CreateASNModal({ onClose, onSuccess }: {
-  onClose: () => void;
-  onSuccess: () => void;
-}) {
+function CreateASNModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: () => void }) {
   const createASN = useCreateASN();
   const [supplierId, setSupplierId] = useState('');
   const [poNumber, setPoNumber] = useState('');
@@ -420,7 +437,7 @@ function CreateASNModal({ onClose, onSuccess }: {
                 type="text"
                 required
                 value={supplierId}
-                onChange={(e) => setSupplierId(e.target.value)}
+                onChange={e => setSupplierId(e.target.value)}
                 className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
                 placeholder="SUP-001"
               />
@@ -431,24 +448,35 @@ function CreateASNModal({ onClose, onSuccess }: {
                 type="text"
                 required
                 value={poNumber}
-                onChange={(e) => setPoNumber(e.target.value)}
+                onChange={e => setPoNumber(e.target.value)}
                 className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
                 placeholder="PO-2024-001"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">Expected Arrival</label>
+              <label className="block text-sm font-medium text-gray-300 mb-1">
+                Expected Arrival
+              </label>
               <input
                 type="date"
                 required
                 value={expectedDate}
-                onChange={(e) => setExpectedDate(e.target.value)}
+                onChange={e => setExpectedDate(e.target.value)}
                 className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
               />
             </div>
             <div className="flex gap-3">
-              <Button type="button" variant="secondary" onClick={onClose} className="flex-1">Cancel</Button>
-              <Button type="submit" variant="primary" disabled={createASN.isPending} className="flex-1">Create</Button>
+              <Button type="button" variant="secondary" onClick={onClose} className="flex-1">
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                variant="primary"
+                disabled={createASN.isPending}
+                className="flex-1"
+              >
+                Create
+              </Button>
             </div>
           </form>
         </CardContent>
@@ -457,7 +485,11 @@ function CreateASNModal({ onClose, onSuccess }: {
   );
 }
 
-function CreateReceiptModal({ asnId, onClose, onSuccess }: {
+function CreateReceiptModal({
+  asnId,
+  onClose,
+  onSuccess,
+}: {
   asnId?: string;
   onClose: () => void;
   onSuccess: () => void;
@@ -471,7 +503,9 @@ function CreateReceiptModal({ asnId, onClose, onSuccess }: {
       await createReceipt.mutateAsync({
         asnId,
         receiptType,
-        lineItems: [{ sku: 'SKU-001', quantityOrdered: 10, quantityReceived: 10, quantityDamaged: 0 }],
+        lineItems: [
+          { sku: 'SKU-001', quantityOrdered: 10, quantityReceived: 10, quantityDamaged: 0 },
+        ],
       });
       onSuccess();
       onClose();
@@ -497,7 +531,7 @@ function CreateReceiptModal({ asnId, onClose, onSuccess }: {
               <label className="block text-sm font-medium text-gray-300 mb-1">Receipt Type</label>
               <select
                 value={receiptType}
-                onChange={(e) => setReceiptType(e.target.value as any)}
+                onChange={e => setReceiptType(e.target.value as any)}
                 className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white"
               >
                 <option value="PO">Purchase Order</option>
@@ -506,8 +540,17 @@ function CreateReceiptModal({ asnId, onClose, onSuccess }: {
               </select>
             </div>
             <div className="flex gap-3">
-              <Button type="button" variant="secondary" onClick={onClose} className="flex-1">Cancel</Button>
-              <Button type="submit" variant="primary" disabled={createReceipt.isPending} className="flex-1">Create</Button>
+              <Button type="button" variant="secondary" onClick={onClose} className="flex-1">
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                variant="primary"
+                disabled={createReceipt.isPending}
+                className="flex-1"
+              >
+                Create
+              </Button>
             </div>
           </form>
         </CardContent>
@@ -530,7 +573,9 @@ function InwardsGoodsPage() {
 
   const { data: dashboard, isLoading } = useInwardsDashboard();
   const { data: asns, refetch: refetchAsns } = useASNs({ enabled: currentStage === 'asn' });
-  const { data: receipts, refetch: refetchReceipts } = useReceipts({ enabled: currentStage === 'receiving' });
+  const { data: receipts, refetch: refetchReceipts } = useReceipts({
+    enabled: currentStage === 'receiving',
+  });
   const { data: putawayTasks } = usePutawayTasks({ enabled: currentStage === 'putaway' });
 
   const updateASNStatus = useUpdateASNStatus();
@@ -593,10 +638,30 @@ function InwardsGoodsPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <MetricCard title="Pending ASNs" value={dashboard.pendingASNs} icon={TruckIcon} color="primary" />
-              <MetricCard title="Active Receipts" value={dashboard.activeReceipts} icon={InboxIcon} color="warning" />
-              <MetricCard title="Pending Putaway" value={dashboard.pendingPutaway} icon={CubeIcon} color="error" />
-              <MetricCard title="Received Today" value={dashboard.todayReceived} icon={CheckCircleIcon} color="success" />
+              <MetricCard
+                title="Pending ASNs"
+                value={dashboard.pendingASNs}
+                icon={TruckIcon}
+                color="primary"
+              />
+              <MetricCard
+                title="Active Receipts"
+                value={dashboard.activeReceipts}
+                icon={InboxIcon}
+                color="warning"
+              />
+              <MetricCard
+                title="Pending Putaway"
+                value={dashboard.pendingPutaway}
+                icon={CubeIcon}
+                color="error"
+              />
+              <MetricCard
+                title="Received Today"
+                value={dashboard.todayReceived}
+                icon={CheckCircleIcon}
+                color="success"
+              />
             </div>
 
             <Card variant="glass">
@@ -605,15 +670,30 @@ function InwardsGoodsPage() {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-3 gap-4">
-                  <Button variant="primary" size="lg" onClick={() => setAsnModalOpen(true)} className="flex items-center justify-center gap-2">
+                  <Button
+                    variant="primary"
+                    size="lg"
+                    onClick={() => setAsnModalOpen(true)}
+                    className="flex items-center justify-center gap-2"
+                  >
                     <PlusIcon className="h-5 w-5" />
                     New ASN
                   </Button>
-                  <Button variant="secondary" size="lg" onClick={() => setReceiptModalOpen(true)} className="flex items-center justify-center gap-2">
+                  <Button
+                    variant="secondary"
+                    size="lg"
+                    onClick={() => setReceiptModalOpen(true)}
+                    className="flex items-center justify-center gap-2"
+                  >
                     <InboxIcon className="h-5 w-5" />
                     New Receipt
                   </Button>
-                  <Button variant="secondary" size="lg" onClick={() => setSearchParams({ tab: 'putaway' })} className="flex items-center justify-center gap-2">
+                  <Button
+                    variant="secondary"
+                    size="lg"
+                    onClick={() => setSearchParams({ tab: 'putaway' })}
+                    className="flex items-center justify-center gap-2"
+                  >
                     <CubeIcon className="h-5 w-5" />
                     View Putaway
                   </Button>
@@ -629,7 +709,9 @@ function InwardsGoodsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-2xl font-bold text-white">Advance Shipping Notices</h2>
-                <p className="text-gray-400 text-sm mt-1">Track incoming shipments before arrival</p>
+                <p className="text-gray-400 text-sm mt-1">
+                  Track incoming shipments before arrival
+                </p>
               </div>
               <Button variant="primary" onClick={() => setAsnModalOpen(true)}>
                 <PlusIcon className="h-5 w-5 mr-2" />
@@ -643,7 +725,7 @@ function InwardsGoodsPage() {
                   <ASNCard
                     key={asn.asnId}
                     asn={asn}
-                    onViewDetails={(id) => navigate(`/inwards/asn/${id}`)}
+                    onViewDetails={id => navigate(`/inwards/asn/${id}`)}
                     onStartReceiving={handleStartReceiving}
                   />
                 ))}
@@ -680,7 +762,7 @@ function InwardsGoodsPage() {
                   <ReceiptCard
                     key={receipt.receiptId}
                     receipt={receipt}
-                    onViewDetails={(id) => navigate(`/inwards/receipt/${id}`)}
+                    onViewDetails={id => navigate(`/inwards/receipt/${id}`)}
                   />
                 ))}
               </div>
@@ -701,7 +783,9 @@ function InwardsGoodsPage() {
           <div className="space-y-6">
             <div>
               <h2 className="text-2xl font-bold text-white">Putaway Tasks</h2>
-              <p className="text-gray-400 text-sm mt-1">Store received items in their bin locations</p>
+              <p className="text-gray-400 text-sm mt-1">
+                Store received items in their bin locations
+              </p>
             </div>
 
             {putawayTasks && putawayTasks.length > 0 ? (
@@ -710,8 +794,10 @@ function InwardsGoodsPage() {
                   <PutawayTaskCard
                     key={task.putawayTaskId}
                     task={task}
-                    onAssign={(id) => navigate(`/inwards/putaway/${id}`)}
-                    onUpdate={() => {/* TODO */}}
+                    onAssign={id => navigate(`/inwards/putaway/${id}`)}
+                    onUpdate={() => {
+                      /* TODO */
+                    }}
                   />
                 ))}
               </div>
@@ -728,8 +814,15 @@ function InwardsGoodsPage() {
         )}
       </main>
 
-      {asnModalOpen && <CreateASNModal onClose={() => setAsnModalOpen(false)} onSuccess={() => refetchAsns()} />}
-      {receiptModalOpen && <CreateReceiptModal onClose={() => setReceiptModalOpen(false)} onSuccess={() => refetchReceipts()} />}
+      {asnModalOpen && (
+        <CreateASNModal onClose={() => setAsnModalOpen(false)} onSuccess={() => refetchAsns()} />
+      )}
+      {receiptModalOpen && (
+        <CreateReceiptModal
+          onClose={() => setReceiptModalOpen(false)}
+          onSuccess={() => refetchReceipts()}
+        />
+      )}
     </div>
   );
 }

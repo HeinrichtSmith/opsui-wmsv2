@@ -13,17 +13,20 @@ You need **PostgreSQL** installed and running to use this application.
 #### Installing PostgreSQL
 
 **Option 1: Download from PostgreSQL.org**
+
 1. Go to https://www.postgresql.org/download/windows/
 2. Download and install PostgreSQL 15+
 3. During installation, set a password for the `postgres` user
 4. Note the installation path (default: `C:\Program Files\PostgreSQL\15`)
 
 **Option 2: Using Chocolatey**
+
 ```powershell
 choco install postgresql
 ```
 
 **Option 3: Using Docker**
+
 ```powershell
 docker run --name wms-postgres -e POSTGRES_PASSWORD=wms_password -e POSTGRES_DB=wms_db -p 5432:5432 -d postgres:15
 ```
@@ -33,12 +36,14 @@ docker run --name wms-postgres -e POSTGRES_PASSWORD=wms_password -e POSTGRES_DB=
 **Option A: Using PostgreSQL directly**
 
 1. **Open PostgreSQL command line** (pgAdmin or psql):
+
 ```bash
 # Using psql from command line
 psql -U postgres
 ```
 
 2. **Create database and user**:
+
 ```sql
 CREATE DATABASE wms_db;
 CREATE USER wms_user WITH PASSWORD 'wms_password';
@@ -47,6 +52,7 @@ GRANT ALL PRIVILEGES ON DATABASE wms_db TO wms_user;
 ```
 
 **Option B: Using Docker (recommended for testing)**
+
 ```powershell
 # Run PostgreSQL in Docker
 docker run --name wms-postgres -e POSTGRES_PASSWORD=wms_password -e POSTGRES_DB=wms_db -p 5432:5432 -d postgres:15-alpine
@@ -85,11 +91,11 @@ node dist/db/seed.js
 
 Check [MODULE_OWNERSHIP.json](MODULE_OWNERSHIP.json) to see what you own:
 
-| Person | Module | Files You Own |
-|--------|--------|---------------|
+| Person   | Module  | Files You Own                                                                     |
+| -------- | ------- | --------------------------------------------------------------------------------- |
 | Friend 1 | Picking | `packages/frontend/src/pages/picking/`, `packages/backend/src/services/picking/*` |
 | Friend 2 | Packing | `packages/frontend/src/pages/packing/`, `packages/backend/src/services/packing/*` |
-| You | Admin | `packages/frontend/src/pages/admin/`, `packages/backend/src/services/admin/*` |
+| You      | Admin   | `packages/frontend/src/pages/admin/`, `packages/backend/src/services/admin/*`     |
 
 **Key Point**: You can freely modify files in your owned module. Other files need team coordination.
 
@@ -106,6 +112,7 @@ Check [MODULE_OWNERSHIP.json](MODULE_OWNERSHIP.json) to see what you own:
 ### Cline Configuration
 
 Cline will automatically read these rule files:
+
 - [AI_RULES.md](AI_RULES.md) - What AI agents can/cannot do
 - [CLINE_RULES.md](CLINE_RULES.md) - Execution-specific rules
 - [MCP_USAGE.md](MCP_USAGE.md) - MCP tool guidelines
@@ -128,6 +135,7 @@ git checkout -b admin/main
 ```
 
 **Keep this branch in sync with main**:
+
 ```bash
 git checkout main
 git pull origin main
@@ -142,6 +150,7 @@ git merge main
 ### Morning Sync (5 min, async OK)
 
 Post in team chat:
+
 ```
 🟢 Working on: [feature/bug]
 📍 Files: [expected scope]
@@ -150,6 +159,7 @@ Post in team chat:
 ```
 
 **Example**:
+
 ```
 🟢 Working on: Pick task batch claiming feature
 📍 Files: packages/frontend/src/pages/picking/, packages/backend/src/services/picking/
@@ -181,6 +191,7 @@ Cline: [Reads AI_RULES.md, CLINE_RULES.md automatically]
 ### End of Day (5 min, async OK)
 
 Post in team chat:
+
 ```
 ✅ Completed: [what shipped]
 🚧 WIP: [what's in progress]
@@ -216,6 +227,7 @@ npm run dev
 ```
 
 This starts:
+
 - Backend: http://localhost:3001
 - Frontend: http://localhost:5173
 
@@ -261,6 +273,7 @@ git push origin main
 ### Scenario: You need a new type definition
 
 1. **Check who else is affected**:
+
    ```
    Post in team chat:
    "I need to add BatchClaimDTO to packages/shared/src/types/index.ts
@@ -354,11 +367,13 @@ git checkout main && git pull && git checkout your-branch && git merge main
 ## Files You Should Read
 
 **Must Read**:
+
 - [AI_RULES.md](AI_RULES.md) - What AI can/cannot do
 - [CLINE_RULES.md](CLINE_RULES.md) - Execution rules
 - [TEAM_OPERATIONS.md](TEAM_OPERATIONS.md) - Team workflows
 
 **Reference**:
+
 - [MODULE_OWNERSHIP.json](MODULE_OWNERSHIP.json) - Who owns what
 - [MCP_USAGE.md](MCP_USAGE.md) - MCP tool guidelines
 
@@ -407,21 +422,25 @@ git checkout main && git pull && git checkout your-branch && git merge main
 ## What Makes This Work
 
 ### Clear Boundaries
+
 - Each person owns specific files
 - Shared code requires coordination
 - No ambiguity about responsibility
 
 ### AI Guardrails
+
 - Rules prevent architectural mistakes
 - Type safety prevents runtime errors
 - Automated checking prevents boundary violations
 
 ### Over-Communication
+
 - Daily syncs (even async)
 - Coordination before shared changes
 - Quick resolution of conflicts
 
 ### Trust but Verify
+
 - Trust AI within boundaries
 - Review all changes
 - Run tests before merging
@@ -433,6 +452,7 @@ git checkout main && git pull && git checkout your-branch && git merge main
 You're joining an experiment in **AI-only team development**. This is cutting edge, and we're all learning together.
 
 **Key principles**:
+
 - Each person works primarily independently
 - Periodic team coordination
 - AI helps you go faster
@@ -445,24 +465,28 @@ You're joining an experiment in **AI-only team development**. This is cutting ed
 ## Troubleshooting
 
 ### "Connection refused" error
+
 - Make sure PostgreSQL is running
 - Check that DB_HOST, DB_PORT, DB_USER, DB_PASSWORD in `packages/backend/.env` match your PostgreSQL setup
 
 ### "Database does not exist" error
+
 - Run the migration script: `node packages/backend/dist/db/migrate.js`
 
 ### Port already in use
+
 - Change PORT in `packages/backend/.env` (default: 3001)
 - Or stop the process using that port
 
 ### Module not found errors
+
 - Run `npm install` again
 - Run `npm run build` to compile TypeScript
 
 ---
 
-*Last updated: 2025-01-12*
-*Version: 1.0.0*
+_Last updated: 2025-01-12_
+_Version: 1.0.0_
 
 ## Prerequisites
 
@@ -471,17 +495,20 @@ You need **PostgreSQL** installed and running to use this application.
 ### Installing PostgreSQL
 
 #### Option 1: Download from PostgreSQL.org
+
 1. Go to https://www.postgresql.org/download/windows/
 2. Download and install PostgreSQL 15+
 3. During installation, set a password for the `postgres` user
 4. Note the installation path (default: `C:\Program Files\PostgreSQL\15`)
 
 #### Option 2: Using Chocolatey
+
 ```powershell
 choco install postgresql
 ```
 
 #### Option 3: Using Docker
+
 ```powershell
 docker run --name wms-postgres -e POSTGRES_PASSWORD=wms_password -e POSTGRES_DB=wms_db -p 5432:5432 -d postgres:15
 ```
@@ -491,12 +518,14 @@ docker run --name wms-postgres -e POSTGRES_PASSWORD=wms_password -e POSTGRES_DB=
 ### Option A: Using PostgreSQL directly
 
 1. **Open PostgreSQL command line** (pgAdmin or psql):
+
 ```bash
 # Using psql from command line
 psql -U postgres
 ```
 
 2. **Create database and user**:
+
 ```sql
 CREATE DATABASE wms_db;
 CREATE USER wms_user WITH PASSWORD 'wms_password';
@@ -519,11 +548,13 @@ docker run --name wms-postgres -e POSTGRES_PASSWORD=wms_password -e POSTGRES_DB=
 Once PostgreSQL is running:
 
 ### 1. Dependencies already installed
+
 ```bash
 # npm install already completed
 ```
 
 ### 2. Run database migrations
+
 ```bash
 cd packages/backend
 npm run build
@@ -531,11 +562,13 @@ node dist/db/migrate.js
 ```
 
 ### 3. Seed sample data
+
 ```bash
 node dist/db/seed.js
 ```
 
 ### 4. Start the application
+
 ```bash
 # From root directory
 npm run dev
@@ -555,16 +588,20 @@ npm run dev
 ## Troubleshooting
 
 ### "Connection refused" error
+
 - Make sure PostgreSQL is running
 - Check that DB_HOST, DB_PORT, DB_USER, DB_PASSWORD in `packages/backend/.env` match your PostgreSQL setup
 
 ### "Database does not exist" error
+
 - Run the migration script: `node packages/backend/dist/db/migrate.js`
 
 ### Port already in use
+
 - Change PORT in `packages/backend/.env` (default: 3001)
 - Or stop the process using that port
 
 ### Module not found errors
+
 - Run `npm install` again
 - Run `npm run build` to compile TypeScript

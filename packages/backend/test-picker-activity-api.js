@@ -13,13 +13,13 @@ const options = {
     'Content-Type': 'application/json',
     // You need to provide a valid JWT token here
     // Get one from logging in as admin
-  }
+  },
 };
 
-const req = http.request(options, (res) => {
+const req = http.request(options, res => {
   let data = '';
 
-  res.on('data', (chunk) => {
+  res.on('data', chunk => {
     data += chunk;
   });
 
@@ -32,7 +32,7 @@ const req = http.request(options, (res) => {
       console.log();
       console.log(`Found ${response.length} pickers:`);
       console.log();
-      
+
       response.forEach(picker => {
         console.log(`Picker: ${picker.pickerName} (${picker.pickerId})`);
         console.log(`  Status: ${picker.status}`);
@@ -42,7 +42,7 @@ const req = http.request(options, (res) => {
         console.log(`  Current Task: ${picker.currentTask || 'None'}`);
         console.log();
       });
-      
+
       // Check for null lastViewedAt values
       const nullCount = response.filter(p => p.lastViewedAt === null).length;
       if (nullCount > 0) {
@@ -51,7 +51,6 @@ const req = http.request(options, (res) => {
       } else {
         console.log('✓ All pickers have valid lastViewedAt timestamps');
       }
-      
     } catch (e) {
       console.error('Error parsing response:', e.message);
       console.log('Raw response:', data);
@@ -59,13 +58,13 @@ const req = http.request(options, (res) => {
   });
 });
 
-req.on('error', (error) => {
+req.on('error', error => {
   console.error('Error making request:', error.message);
   console.log();
   console.log('Note: You need to:');
   console.log('  1. Start the backend server');
   console.log('  2. Login as admin to get a JWT token');
-  console.log('  3. Add the token to this script\'s headers');
+  console.log("  3. Add the token to this script's headers");
 });
 
 console.log('Testing picker activity API endpoint...');

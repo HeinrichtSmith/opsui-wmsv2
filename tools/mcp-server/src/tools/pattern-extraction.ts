@@ -239,11 +239,7 @@ async function updateIndex(pattern: ExtractedPattern, workspaceRoot: string): Pr
 
   index.set(pattern.id, filename(pattern.id));
 
-  await fs.writeFile(
-    indexFile,
-    JSON.stringify(Array.from(index.entries()), null, 2),
-    'utf-8'
-  );
+  await fs.writeFile(indexFile, JSON.stringify(Array.from(index.entries()), null, 2), 'utf-8');
 }
 
 function filename(id: string): string {
@@ -257,9 +253,7 @@ async function rebuildEmbeddings(workspaceRoot: string): Promise<void> {
   const patterns = await loadPatterns(workspaceRoot);
 
   // Build vocabulary from all pattern texts
-  const corpus = patterns.map(p =>
-    `${p.title} ${p.problem} ${p.solution} ${p.tags.join(' ')}`
-  );
+  const corpus = patterns.map(p => `${p.title} ${p.problem} ${p.solution} ${p.tags.join(' ')}`);
 
   embedding.buildVocabulary(corpus);
 
@@ -281,18 +275,31 @@ export const patternExtractionTools: ToolMetadata[] = [
    */
   {
     name: 'pattern_extract',
-    description: 'Extract and save a code pattern from recent work. Call this after completing a task to build the pattern library.',
+    description:
+      'Extract and save a code pattern from recent work. Call this after completing a task to build the pattern library.',
     inputSchema: {
       type: 'object',
       properties: {
         title: {
           type: 'string',
-          description: 'Brief title describing the pattern (e.g., "Service layer with transaction")',
+          description:
+            'Brief title describing the pattern (e.g., "Service layer with transaction")',
         },
         category: {
           type: 'string',
           description: 'Pattern category',
-          enum: ['service-layer', 'api-route', 'ui-component', 'data-access', 'validation', 'error-handling', 'state-management', 'testing', 'utility', 'other'],
+          enum: [
+            'service-layer',
+            'api-route',
+            'ui-component',
+            'data-access',
+            'validation',
+            'error-handling',
+            'state-management',
+            'testing',
+            'utility',
+            'other',
+          ],
         },
         problem: {
           type: 'string',
@@ -379,18 +386,31 @@ export const patternExtractionTools: ToolMetadata[] = [
    */
   {
     name: 'pattern_search',
-    description: 'Search the pattern library for similar solutions. Uses semantic search to find relevant patterns.',
+    description:
+      'Search the pattern library for similar solutions. Uses semantic search to find relevant patterns.',
     inputSchema: {
       type: 'object',
       properties: {
         query: {
           type: 'string',
-          description: 'Search query describing what you need (e.g., "how to handle transaction rollback")',
+          description:
+            'Search query describing what you need (e.g., "how to handle transaction rollback")',
         },
         category: {
           type: 'string',
           description: 'Filter by category',
-          enum: ['service-layer', 'api-route', 'ui-component', 'data-access', 'validation', 'error-handling', 'state-management', 'testing', 'utility', 'other'],
+          enum: [
+            'service-layer',
+            'api-route',
+            'ui-component',
+            'data-access',
+            'validation',
+            'error-handling',
+            'state-management',
+            'testing',
+            'utility',
+            'other',
+          ],
         },
         tags: {
           type: 'array',
@@ -428,9 +448,7 @@ export const patternExtractionTools: ToolMetadata[] = [
       // Filter by tags if specified
       if (args.tags && Array.isArray(args.tags)) {
         const searchTags = args.tags as string[];
-        patterns = patterns.filter(p =>
-          searchTags.some(tag => p.tags.includes(tag))
-        );
+        patterns = patterns.filter(p => searchTags.some(tag => p.tags.includes(tag)));
       }
 
       // Generate query embedding
@@ -463,9 +481,10 @@ export const patternExtractionTools: ToolMetadata[] = [
           timestamp: r.pattern.timestamp,
         })),
         totalFound: results.length,
-        message: results.length > 0
-          ? `Found ${results.length} similar pattern(s)`
-          : 'No similar patterns found. Try a different query or extract more patterns.',
+        message:
+          results.length > 0
+            ? `Found ${results.length} similar pattern(s)`
+            : 'No similar patterns found. Try a different query or extract more patterns.',
       };
     },
     options: {
@@ -486,7 +505,18 @@ export const patternExtractionTools: ToolMetadata[] = [
         category: {
           type: 'string',
           description: 'Filter by category',
-          enum: ['service-layer', 'api-route', 'ui-component', 'data-access', 'validation', 'error-handling', 'state-management', 'testing', 'utility', 'other'],
+          enum: [
+            'service-layer',
+            'api-route',
+            'ui-component',
+            'data-access',
+            'validation',
+            'error-handling',
+            'state-management',
+            'testing',
+            'utility',
+            'other',
+          ],
         },
         sortBy: {
           type: 'string',
@@ -504,7 +534,7 @@ export const patternExtractionTools: ToolMetadata[] = [
       }
 
       // Sort
-      const sortBy = args.sortBy as string || 'recent';
+      const sortBy = (args.sortBy as string) || 'recent';
       if (sortBy === 'recent') {
         patterns.sort((a, b) => b.timestamp.localeCompare(a.timestamp));
       } else if (sortBy === 'category') {
@@ -536,7 +566,8 @@ export const patternExtractionTools: ToolMetadata[] = [
    */
   {
     name: 'pattern_rebuild',
-    description: 'Rebuild the pattern index and embeddings. Call after manually modifying pattern files.',
+    description:
+      'Rebuild the pattern index and embeddings. Call after manually modifying pattern files.',
     inputSchema: {
       type: 'object',
       properties: {},

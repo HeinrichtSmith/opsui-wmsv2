@@ -23,12 +23,7 @@ interface AppError extends Error {
 // ERROR HANDLER MIDDLEWARE
 // ============================================================================
 
-export function errorHandler(
-  err: AppError,
-  req: Request,
-  res: Response,
-  next: NextFunction
-): void {
+export function errorHandler(err: AppError, req: Request, res: Response, next: NextFunction): void {
   // Log the error
   logger.error('Request error', {
     error: err.message,
@@ -98,7 +93,10 @@ export function asyncHandler<T extends Request = Request>(
 // ============================================================================
 
 export class ValidationError extends Error {
-  constructor(message: string, public details?: unknown) {
+  constructor(
+    message: string,
+    public details?: unknown
+  ) {
     super(message);
     this.name = 'ValidationError';
     this.statusCode = 400;

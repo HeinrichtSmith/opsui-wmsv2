@@ -28,51 +28,57 @@ async function testPickerActivity() {
       ORDER BY current_view_updated_at DESC NULLS LAST
     `);
 
-    console.log('=Ê Picker Status Summary:');
+    console.log('=ï¿½ Picker Status Summary:');
     console.log('=====================================\n');
 
     pickersResult.rows.forEach(picker => {
       console.log(`=d Picker: ${picker.email}`);
       console.log(`   Current View: ${picker.current_view || 'NULL'}`);
       console.log(`   Last Update: ${picker.current_view_updated_at || 'NEVER'}`);
-      console.log(`   Minutes Ago: ${picker.minutes_since_update ? picker.minutes_since_update.toFixed(1) : 'NEVER'}`);
-      
+      console.log(
+        `   Minutes Ago: ${picker.minutes_since_update ? picker.minutes_since_update.toFixed(1) : 'NEVER'}`
+      );
+
       // Determine IN/OUT of WINDOW status
-      const isOrderQueue = picker.current_view === '/orders' || 
-                         picker.current_view === '/orders/' || 
-                         picker.current_view === 'Order Queue';
-      
-      const recentActivity = picker.minutes_since_update !== null && picker.minutes_since_update <= 5;
-      
+      const isOrderQueue =
+        picker.current_view === '/orders' ||
+        picker.current_view === '/orders/' ||
+        picker.current_view === 'Order Queue';
+
+      const recentActivity =
+        picker.minutes_since_update !== null && picker.minutes_since_update <= 5;
+
       let windowStatus = 'UNKNOWN';
       if (isOrderQueue && recentActivity) {
         windowStatus = ' IN WINDOW (Order Queue)';
       } else if (isOrderQueue) {
-        windowStatus = '   IN WINDOW but STALE (>5 min)';
+        windowStatus = 'ï¿½  IN WINDOW but STALE (>5 min)';
       } else {
         windowStatus = 'L OUT OF WINDOW';
       }
-      
+
       console.log(`   Status: ${windowStatus}`);
       console.log('');
     });
 
     // Check for pickers with stale data
-    const stalePickers = pickersResult.rows.filter(p => 
-      p.minutes_since_update === null || p.minutes_since_update > 10
+    const stalePickers = pickersResult.rows.filter(
+      p => p.minutes_since_update === null || p.minutes_since_update > 10
     );
 
     if (stalePickers.length > 0) {
-      console.log('   Pickers with stale data (>10 minutes):');
+      console.log('ï¿½  Pickers with stale data (>10 minutes):');
       console.log('=====================================\n');
       stalePickers.forEach(picker => {
-        console.log(`   ${picker.email} - ${picker.minutes_since_update ? picker.minutes_since_update.toFixed(0) + ' min' : 'NEVER'} ago`);
+        console.log(
+          `   ${picker.email} - ${picker.minutes_since_update ? picker.minutes_since_update.toFixed(0) + ' min' : 'NEVER'} ago`
+        );
       });
       console.log('');
     }
 
     // Check orders for these pickers
-    console.log('=æ Current Orders for Pickers:');
+    console.log('=ï¿½ Current Orders for Pickers:');
     console.log('=====================================\n');
 
     const ordersResult = await query(`
@@ -108,7 +114,6 @@ async function testPickerActivity() {
     console.log('- current_view_updated_at should be recent (<5 min if actively using)');
     console.log('- Status should be "IN WINDOW" if view = Order Queue AND timestamp recent');
     console.log('- Status should be "OUT OF WINDOW" if view ` Order Queue OR timestamp stale');
-
   } catch (error) {
     console.error('Error testing picker activity:', error);
     process.exit(1);
@@ -121,7 +126,7 @@ testPickerActivity()
     console.log('\n Test completed successfully');
     process.exit(0);
   })
-  .catch((error) => {
+  .catch(error => {
     console.error('\nL Test failed:', error);
     process.exit(1);
   });

@@ -20,15 +20,15 @@ async function testCurrentViewAPI(): Promise<void> {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         email: 'john@example.com',
-        password: 'password123'
-      })
+        password: 'password123',
+      }),
     });
 
     if (!loginResponse.ok) {
       throw new Error(`Login failed: ${loginResponse.status} ${loginResponse.statusText}`);
     }
 
-    const loginData = await loginResponse.json() as { token: string; user: { userId: string } };
+    const loginData = (await loginResponse.json()) as { token: string; user: { userId: string } };
     console.log('✅ Login successful');
     console.log(`   User ID: ${loginData.user.userId}`);
     console.log(`   Token: ${loginData.token.substring(0, 20)}...\n`);
@@ -39,19 +39,21 @@ async function testCurrentViewAPI(): Promise<void> {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${loginData.token}`
+        Authorization: `Bearer ${loginData.token}`,
       },
       body: JSON.stringify({
-        view: 'TEST-ORDER-QUEUE'
-      })
+        view: 'TEST-ORDER-QUEUE',
+      }),
     });
 
     if (!updateResponse.ok) {
       const errorText = await updateResponse.text();
-      throw new Error(`Update failed: ${updateResponse.status} ${updateResponse.statusText}\n${errorText}`);
+      throw new Error(
+        `Update failed: ${updateResponse.status} ${updateResponse.statusText}\n${errorText}`
+      );
     }
 
-    const updateData = await updateResponse.json() as { message: string };
+    const updateData = (await updateResponse.json()) as { message: string };
     console.log('✅ Update successful');
     console.log(`   Response: ${updateData.message}\n`);
 
@@ -87,11 +89,15 @@ async function testCurrentViewAPI(): Promise<void> {
     // Verify the update was successful
     const secondsAgo = Math.round(row.secondsAgo);
     if (secondsAgo > 5) {
-      throw new Error(`⚠️  Update was too old (${secondsAgo}s ago). The endpoint may not be working correctly.`);
+      throw new Error(
+        `⚠️  Update was too old (${secondsAgo}s ago). The endpoint may not be working correctly.`
+      );
     }
 
     if (row.currentView !== 'TEST-ORDER-QUEUE') {
-      throw new Error(`⚠️  Current view is not correct. Expected 'TEST-ORDER-QUEUE', got '${row.currentView}'`);
+      throw new Error(
+        `⚠️  Current view is not correct. Expected 'TEST-ORDER-QUEUE', got '${row.currentView}'`
+      );
     }
 
     console.log('✅ SUCCESS! The current-view endpoint is working correctly.');
@@ -101,7 +107,6 @@ async function testCurrentViewAPI(): Promise<void> {
     console.log('   - The issue is in the frontend not calling the endpoint');
 
     await (await import('./client')).closePool();
-
   } catch (error) {
     console.error('\n❌ Test failed:', error instanceof Error ? error.message : error);
     process.exit(1);
@@ -115,7 +120,7 @@ if (require.main === module) {
       console.log('\n✅ Test completed successfully');
       process.exit(0);
     })
-    .catch((error) => {
+    .catch(error => {
       console.error('\n❌ Test failed:', error);
       process.exit(1);
     });

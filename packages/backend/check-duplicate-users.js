@@ -11,7 +11,9 @@ const pool = new Pool({
 async function checkDuplicates() {
   try {
     console.log('=== ALL USERS ===');
-    const allUsers = await pool.query('SELECT user_id, name, email, role, active FROM users ORDER BY user_id');
+    const allUsers = await pool.query(
+      'SELECT user_id, name, email, role, active FROM users ORDER BY user_id'
+    );
     console.log('All users:', JSON.stringify(allUsers.rows, null, 2));
 
     console.log('\n=== USERS WITH NAME "John Picker" ===');
@@ -23,7 +25,6 @@ async function checkDuplicates() {
     const janeUsers = await pool.query("SELECT * FROM users WHERE name = 'Jane Picker'");
     console.log('Jane Picker users count:', janeUsers.rows.length);
     console.log('Jane Picker users:', JSON.stringify(janeUsers.rows, null, 2));
-
   } catch (error) {
     console.error('Error:', error);
   } finally {

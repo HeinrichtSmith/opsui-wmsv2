@@ -15,7 +15,7 @@ import {
   UserRole,
   PickTask,
   TaskStatus,
-  Inventory
+  Inventory,
 } from '@opsui/shared/types';
 
 /**
@@ -32,37 +32,37 @@ export const userFactory = {
       active: true,
       createdAt: faker.date.past().toISOString(),
       updatedAt: faker.date.recent().toISOString(),
-      ...overrides
+      ...overrides,
     };
   },
 
   createPicker(overrides: Partial<User> = {}): User {
     return this.create({
       role: UserRole.PICKER,
-      ...overrides
+      ...overrides,
     });
   },
 
   createPacker(overrides: Partial<User> = {}): User {
     return this.create({
       role: UserRole.PACKER,
-      ...overrides
+      ...overrides,
     });
   },
 
   createAdmin(overrides: Partial<User> = {}): User {
     return this.create({
       role: UserRole.ADMIN,
-      ...overrides
+      ...overrides,
     });
   },
 
   createSupervisor(overrides: Partial<User> = {}): User {
     return this.create({
       role: UserRole.SUPERVISOR,
-      ...overrides
+      ...overrides,
     });
-  }
+  },
 };
 
 /**
@@ -83,7 +83,7 @@ export const orderFactory = {
       items: [],
       createdAt: faker.date.past().toISOString(),
       updatedAt: faker.date.recent().toISOString(),
-      ...overrides
+      ...overrides,
     };
   },
 
@@ -92,7 +92,7 @@ export const orderFactory = {
     return this.create({
       status: OrderStatus.PICKING,
       pickerId: picker.id,
-      ...overrides
+      ...overrides,
     });
   },
 
@@ -102,7 +102,7 @@ export const orderFactory = {
       status: OrderStatus.PICKED,
       pickerId: picker.id,
       items: orderItemFactory.createList(3, { pickedQuantity: 10 }),
-      ...overrides
+      ...overrides,
     });
   },
 
@@ -114,7 +114,7 @@ export const orderFactory = {
       pickerId: picker.id,
       packerId: packer.id,
       items: orderItemFactory.createList(3, { pickedQuantity: 10 }),
-      ...overrides
+      ...overrides,
     });
   },
 
@@ -126,16 +126,16 @@ export const orderFactory = {
       pickerId: picker.id,
       packerId: packer.id,
       items: orderItemFactory.createList(3, { pickedQuantity: 10 }),
-      ...overrides
+      ...overrides,
     });
   },
 
   createWithItems(itemCount: number, overrides: Partial<Order> = {}): Order {
     return this.create({
       items: orderItemFactory.createList(itemCount),
-      ...overrides
+      ...overrides,
     });
-  }
+  },
 };
 
 /**
@@ -151,7 +151,7 @@ export const orderItemFactory = {
       quantity: faker.number.int({ min: 1, max: 100 }),
       pickedQuantity: 0,
       binLocation: `${faker.helpers.arrayElement(['A', 'B', 'C'])}-${faker.number.int({ min: 1, max: 20 })}-${faker.number.int({ min: 1, max: 20 })}`,
-      ...overrides
+      ...overrides,
     };
   },
 
@@ -164,9 +164,9 @@ export const orderItemFactory = {
     return this.create({
       quantity,
       pickedQuantity: quantity,
-      ...overrides
+      ...overrides,
     });
-  }
+  },
 };
 
 /**
@@ -190,7 +190,7 @@ export const pickTaskFactory = {
       priority: order.priority,
       createdAt: faker.date.past().toISOString(),
       updatedAt: faker.date.recent().toISOString(),
-      ...overrides
+      ...overrides,
     };
   },
 
@@ -199,7 +199,7 @@ export const pickTaskFactory = {
     return this.create({
       status: TaskStatus.IN_PROGRESS,
       pickerId: picker.id,
-      ...overrides
+      ...overrides,
     });
   },
 
@@ -208,13 +208,13 @@ export const pickTaskFactory = {
     return this.create({
       status: TaskStatus.COMPLETED,
       pickerId: picker.id,
-      ...overrides
+      ...overrides,
     });
   },
 
   createList(count: number, overrides: Partial<PickTask> = {}): PickTask[] {
     return Array.from({ length: count }, () => this.create(overrides));
-  }
+  },
 };
 
 /**
@@ -235,7 +235,7 @@ export const inventoryFactory = {
       lowStockThreshold: faker.number.int({ min: 5, max: 20 }),
       createdAt: faker.date.past().toISOString(),
       updatedAt: faker.date.recent().toISOString(),
-      ...overrides
+      ...overrides,
     };
   },
 
@@ -245,7 +245,7 @@ export const inventoryFactory = {
       reserved: 10,
       available: 5,
       lowStockThreshold: 10,
-      ...overrides
+      ...overrides,
     });
   },
 
@@ -254,13 +254,13 @@ export const inventoryFactory = {
       quantity: 0,
       reserved: 0,
       available: 0,
-      ...overrides
+      ...overrides,
     });
   },
 
   createList(count: number, overrides: Partial<Inventory> = {}): Inventory[] {
     return Array.from({ length: count }, () => this.create(overrides));
-  }
+  },
 };
 
 /**
@@ -310,7 +310,7 @@ export const testDbHelpers = {
    */
   async createTestTransaction(db: any): Promise<any> {
     return db.transaction();
-  }
+  },
 };
 
 /**
@@ -321,9 +321,7 @@ export const apiTestHelpers = {
    * Get authentication token for test user
    */
   async getAuthToken(request: any, email: string, password: string): Promise<string> {
-    const response = await request
-      .post('/api/auth/login')
-      .send({ email, password });
+    const response = await request.post('/api/auth/login').send({ email, password });
 
     return response.body.token;
   },
@@ -334,8 +332,8 @@ export const apiTestHelpers = {
   authenticatedRequest(token: string) {
     return {
       headers: {
-        Authorization: `Bearer ${token}`
-      }
+        Authorization: `Bearer ${token}`,
+      },
     };
   },
 
@@ -346,7 +344,7 @@ export const apiTestHelpers = {
     expect(response.status).toBe(statusCode);
     expect(response.body.error).toBeDefined();
     expect(response.body.code).toBe(errorCode);
-  }
+  },
 };
 
 /**
@@ -369,13 +367,9 @@ export const perfTestHelpers = {
    */
   generateLoadTestData(orderCount: number) {
     return {
-      users: [
-        userFactory.createPicker(),
-        userFactory.createPacker(),
-        userFactory.createAdmin()
-      ],
+      users: [userFactory.createPicker(), userFactory.createPacker(), userFactory.createAdmin()],
       orders: Array.from({ length: orderCount }, () => orderFactory.create()),
-      inventory: inventoryFactory.createList(100)
+      inventory: inventoryFactory.createList(100),
     };
-  }
+  },
 };

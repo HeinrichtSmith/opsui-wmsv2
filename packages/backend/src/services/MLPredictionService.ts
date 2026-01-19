@@ -172,13 +172,17 @@ export class MLPredictionService {
 
     // Priority adjustment
     const priorityMultiplier: Record<number, number> = {
-      1: 0.8, 2: 0.9, 3: 1.0, 4: 1.2
+      1: 0.8,
+      2: 0.9,
+      3: 1.0,
+      4: 1.2,
     };
     duration *= priorityMultiplier[features.priority_level] || 1.0;
 
     // Time of day
-    const isPeakHour = features.hour_of_day >= 9 && features.hour_of_day <= 11 ||
-                        features.hour_of_day >= 14 && features.hour_of_day <= 16;
+    const isPeakHour =
+      (features.hour_of_day >= 9 && features.hour_of_day <= 11) ||
+      (features.hour_of_day >= 14 && features.hour_of_day <= 16);
     if (isPeakHour) duration *= 1.25;
 
     // Day of week
@@ -196,8 +200,8 @@ export class MLPredictionService {
         breakdown: {
           picking: Math.round(duration * 0.45),
           packing: Math.round(duration * 0.25),
-          travel: Math.round(duration * 0.20),
-          overhead: Math.round(duration * 0.10),
+          travel: Math.round(duration * 0.2),
+          overhead: Math.round(duration * 0.1),
         },
       },
       confidence: 0.85,
@@ -221,8 +225,9 @@ export class MLPredictionService {
       }
     } else {
       const ma7 = this.movingAverage(historicalData, 7);
-      const recentTrend = (ma7[ma7.length - 1] - ma7[Math.max(0, ma7.length - 7)]) /
-                        Math.max(1, ma7[Math.max(0, ma7.length - 7)]);
+      const recentTrend =
+        (ma7[ma7.length - 1] - ma7[Math.max(0, ma7.length - 7)]) /
+        Math.max(1, ma7[Math.max(0, ma7.length - 7)]);
 
       const seasonalFactors = [1.0, 1.05, 1.02, 1.0, 1.08, 0.7, 0.5];
 
@@ -253,7 +258,7 @@ export class MLPredictionService {
    * Local route optimization
    */
   private optimizeRouteLocal(locations: string[], startPoint: string): RouteOptimization {
-    const parsed = locations.map((loc) => {
+    const parsed = locations.map(loc => {
       const parts = loc.split('-').map(Number);
       return { zone: parts[0], aisle: parts[1], shelf: parts[2], original: loc };
     });
@@ -283,7 +288,7 @@ export class MLPredictionService {
 
     return {
       locations: locations,
-      optimized_path: sorted.map((l) => l.original),
+      optimized_path: sorted.map(l => l.original),
       total_distance_meters: Math.round(totalDistance),
       estimated_time_minutes: Math.round(estimatedTime / 60),
     };
@@ -328,7 +333,7 @@ export class MLPredictionService {
       throw new Error(`ML API error: ${response.statusText}`);
     }
 
-    const result = await response.json() as { prediction: DemandForecast };
+    const result = (await response.json()) as { prediction: DemandForecast };
     return result.prediction;
   }
 
@@ -349,7 +354,7 @@ export class MLPredictionService {
       throw new Error(`ML API error: ${response.statusText}`);
     }
 
-    const result = await response.json() as { prediction: RouteOptimization };
+    const result = (await response.json()) as { prediction: RouteOptimization };
     return result.prediction;
   }
 

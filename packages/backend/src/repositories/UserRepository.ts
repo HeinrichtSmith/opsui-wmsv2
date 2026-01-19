@@ -24,10 +24,7 @@ export class UserRepository extends BaseRepository<User> {
   // --------------------------------------------------------------------------
 
   async findByEmail(email: string): Promise<User | null> {
-    const result = await query<User>(
-      `SELECT * FROM users WHERE email = $1`,
-      [email]
-    );
+    const result = await query<User>(`SELECT * FROM users WHERE email = $1`, [email]);
 
     if (result.rows.length === 0) {
       return null;
@@ -88,10 +85,7 @@ export class UserRepository extends BaseRepository<User> {
 
   async verifyPassword(email: string, password: string): Promise<User | null> {
     // Get user with password hash
-    const result = await query(
-      `SELECT * FROM users WHERE email = $1`,
-      [email]
-    );
+    const result = await query(`SELECT * FROM users WHERE email = $1`, [email]);
 
     if (result.rows.length === 0) {
       return null;
@@ -153,10 +147,7 @@ export class UserRepository extends BaseRepository<User> {
   async updatePassword(userId: string, newPassword: string): Promise<void> {
     const passwordHash = await bcrypt.hash(newPassword, 10);
 
-    await query(
-      `UPDATE users SET password_hash = $1 WHERE user_id = $2`,
-      [passwordHash, userId]
-    );
+    await query(`UPDATE users SET password_hash = $1 WHERE user_id = $2`, [passwordHash, userId]);
   }
 
   // --------------------------------------------------------------------------
@@ -164,10 +155,7 @@ export class UserRepository extends BaseRepository<User> {
   // --------------------------------------------------------------------------
 
   async updateLastLogin(userId: string): Promise<void> {
-    await query(
-      `UPDATE users SET last_login_at = NOW() WHERE user_id = $1`,
-      [userId]
-    );
+    await query(`UPDATE users SET last_login_at = NOW() WHERE user_id = $1`, [userId]);
   }
 
   // --------------------------------------------------------------------------
@@ -175,10 +163,7 @@ export class UserRepository extends BaseRepository<User> {
   // --------------------------------------------------------------------------
 
   async setCurrentTask(userId: string, taskId: string | null): Promise<void> {
-    await query(
-      `UPDATE users SET current_task_id = $1 WHERE user_id = $2`,
-      [taskId, userId]
-    );
+    await query(`UPDATE users SET current_task_id = $1 WHERE user_id = $2`, [taskId, userId]);
   }
 
   // --------------------------------------------------------------------------
@@ -200,10 +185,7 @@ export class UserRepository extends BaseRepository<User> {
   // --------------------------------------------------------------------------
 
   async setActiveRole(userId: string, activeRole: UserRole | null): Promise<void> {
-    await query(
-      `UPDATE users SET active_role = $1 WHERE user_id = $2`,
-      [activeRole, userId]
-    );
+    await query(`UPDATE users SET active_role = $1 WHERE user_id = $2`, [activeRole, userId]);
   }
 
   // --------------------------------------------------------------------------
@@ -225,7 +207,7 @@ export class UserRepository extends BaseRepository<User> {
 
     return {
       ...user,
-      additionalRoles: result.rows.map(row => row.role)
+      additionalRoles: result.rows.map(row => row.role),
     };
   }
 
@@ -237,9 +219,7 @@ export class UserRepository extends BaseRepository<User> {
    * Get all users with their additional roles attached
    */
   async getAllUsers(): Promise<User[]> {
-    const result = await query<User>(
-      `SELECT * FROM users ORDER BY created_at DESC`
-    );
+    const result = await query<User>(`SELECT * FROM users ORDER BY created_at DESC`);
 
     // Attach additional roles to each user
     const usersWithRoles = await Promise.all(
@@ -254,10 +234,9 @@ export class UserRepository extends BaseRepository<User> {
   // --------------------------------------------------------------------------
 
   async deactivateUser(userId: string): Promise<User> {
-    const result = await query(
-      `UPDATE users SET active = false WHERE user_id = $1 RETURNING *`,
-      [userId]
-    );
+    const result = await query(`UPDATE users SET active = false WHERE user_id = $1 RETURNING *`, [
+      userId,
+    ]);
 
     if (result.rows.length === 0) {
       throw new NotFoundError('User', userId);
@@ -271,10 +250,9 @@ export class UserRepository extends BaseRepository<User> {
   // --------------------------------------------------------------------------
 
   async activateUser(userId: string): Promise<User> {
-    const result = await query(
-      `UPDATE users SET active = true WHERE user_id = $1 RETURNING *`,
-      [userId]
-    );
+    const result = await query(`UPDATE users SET active = true WHERE user_id = $1 RETURNING *`, [
+      userId,
+    ]);
 
     if (result.rows.length === 0) {
       throw new NotFoundError('User', userId);

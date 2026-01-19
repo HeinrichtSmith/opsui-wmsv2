@@ -121,11 +121,7 @@ export class Cache {
   /**
    * Get or set pattern - returns cached value or computes and caches it
    */
-  async getOrSet<T>(
-    key: string,
-    factory: () => Promise<T>,
-    ttl: number = 5000
-  ): Promise<T> {
+  async getOrSet<T>(key: string, factory: () => Promise<T>, ttl: number = 5000): Promise<T> {
     const cached = this.get<T>(key);
     if (cached !== null) {
       return cached;

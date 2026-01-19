@@ -30,10 +30,10 @@ function log(message, color = colors.reset) {
 async function checkHTTP(url, timeout = 3000) {
   const start = Date.now();
 
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     const client = url.startsWith('https') ? https : http;
 
-    const req = client.get(url, (res) => {
+    const req = client.get(url, res => {
       const responseTime = Date.now() - start;
       resolve({
         service: new URL(url).hostname,
@@ -43,7 +43,7 @@ async function checkHTTP(url, timeout = 3000) {
       });
     });
 
-    req.on('error', (error) => {
+    req.on('error', error => {
       const responseTime = Date.now() - start;
       resolve({
         service: new URL(url).hostname,
@@ -162,7 +162,7 @@ async function validateAPICommunication() {
 
         // Try authenticated request
         const ordersResponse = await fetch('http://localhost:3001/api/orders', {
-          headers: { 'Authorization': `Bearer ${data.token}` },
+          headers: { Authorization: `Bearer ${data.token}` },
         });
 
         if (ordersResponse.ok) {
@@ -237,7 +237,7 @@ async function runValidation() {
 }
 
 // Run validation
-runValidation().catch((error) => {
+runValidation().catch(error => {
   log(`\n❌ Fatal error: ${error.message}`, colors.red);
   console.error(error);
   process.exit(1);

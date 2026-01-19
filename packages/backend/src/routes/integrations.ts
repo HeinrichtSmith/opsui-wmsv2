@@ -144,7 +144,7 @@ router.post(
     } catch (error: any) {
       res.status(400).json({
         success: false,
-        message: error.message
+        message: error.message,
       });
     }
   }
@@ -186,11 +186,7 @@ router.post(
       const jobType = (req.query.type as string) || 'FULL_SYNC';
       const userId = (req as any).user.userId;
 
-      const job = await service.createSyncJob(
-        req.params.integrationId,
-        jobType as any,
-        userId
-      );
+      const job = await service.createSyncJob(req.params.integrationId, jobType as any, userId);
       res.status(201).json(job);
     } catch (error: any) {
       if (error.message.includes('must be active')) {
@@ -250,42 +246,35 @@ router.get(
  * Receive webhook from external system
  * Access: Public (with integration verification)
  */
-router.post(
-  '/:integrationId/webhooks',
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const integration = await repository.findById(req.params.integrationId);
-      if (!integration) {
-        return res.status(404).json({ error: 'Integration not found' });
-      }
-
-      // Verify webhook signature if configured
-      // This is a simplified check - production should use HMAC signatures
-      const signature = req.headers['x-webhook-signature'] as string;
-      if (integration.webhookSettings?.secret && !signature) {
-        return res.status(401).json({ error: 'Missing webhook signature' });
-      }
-
-      const eventType = req.headers['x-webhook-event'] as string;
-      if (!eventType) {
-        return res.status(400).json({ error: 'Missing event type header' });
-      }
-
-      const event = await service.handleWebhook(
-        req.params.integrationId,
-        eventType as any,
-        req.body
-      );
-
-      res.status(202).json({
-        message: 'Webhook received',
-        eventId: event.eventId
-      });
-    } catch (error) {
-      next(error);
+router.post('/:integrationId/webhooks', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const integration = await repository.findById(req.params.integrationId);
+    if (!integration) {
+      return res.status(404).json({ error: 'Integration not found' });
     }
+
+    // Verify webhook signature if configured
+    // This is a simplified check - production should use HMAC signatures
+    const signature = req.headers['x-webhook-signature'] as string;
+    if (integration.webhookSettings?.secret && !signature) {
+      return res.status(401).json({ error: 'Missing webhook signature' });
+    }
+
+    const eventType = req.headers['x-webhook-event'] as string;
+    if (!eventType) {
+      return res.status(400).json({ error: 'Missing event type header' });
+    }
+
+    const event = await service.handleWebhook(req.params.integrationId, eventType as any, req.body);
+
+    res.status(202).json({
+      message: 'Webhook received',
+      eventId: event.eventId,
+    });
+  } catch (error) {
+    next(error);
   }
-);
+});
 
 /**
  * GET /api/integrations/:integrationId/webhooks
@@ -344,7 +333,7 @@ router.post(
     try {
       const account = await service.createCarrierAccount({
         ...req.body,
-        integrationId: req.params.integrationId
+        integrationId: req.params.integrationId,
       });
       res.status(201).json(account);
     } catch (error: any) {
@@ -366,10 +355,7 @@ router.put(
   authorize(UserRole.ADMIN),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const account = await service.updateCarrierAccount(
-        req.params.carrierAccountId,
-        req.body
-      );
+      const account = await service.updateCarrierAccount(req.params.carrierAccountId, req.body);
       if (!account) {
         return res.status(404).json({ error: 'Carrier account not found' });
       }

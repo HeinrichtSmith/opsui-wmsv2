@@ -86,7 +86,7 @@ async function fixTrigger() {
 fixTrigger()
   .then(() => closePool())
   .then(() => process.exit(0))
-  .catch((error) => {
+  .catch(error => {
     console.error(error);
     return closePool().then(() => process.exit(1));
   });

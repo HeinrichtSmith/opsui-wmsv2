@@ -44,12 +44,14 @@ git pull --rebase origin main
 When you complete a task:
 
 1. **Review your changes**:
+
    ```bash
    git status
    git diff
    ```
 
 2. **Commit your changes**:
+
    ```bash
    git add .
    git commit -m "clear description of changes"
@@ -92,11 +94,11 @@ git push origin main
 
 To minimize conflicts, team members should primarily work on their assigned modules:
 
-| Module | Owner | Files/Folders |
-|--------|-------|---------------|
-| Picking | @friend1 | `packages/frontend/src/pages/PickingPage.tsx`, picker-related routes |
-| Packing | @friend2 | `packages/frontend/src/pages/PackingPage.tsx`, packer-related routes |
-| Admin/General | @Heinricht | Admin pages, shared components, infrastructure |
+| Module        | Owner      | Files/Folders                                                        |
+| ------------- | ---------- | -------------------------------------------------------------------- |
+| Picking       | @friend1   | `packages/frontend/src/pages/PickingPage.tsx`, picker-related routes |
+| Packing       | @friend2   | `packages/frontend/src/pages/PackingPage.tsx`, packer-related routes |
+| Admin/General | @Heinricht | Admin pages, shared components, infrastructure                       |
 
 **Note**: This is a guideline - anyone can fix bugs anywhere, but feature work should respect ownership.
 
@@ -205,6 +207,7 @@ git push --force origin main
 ## Communication
 
 **Always communicate in your team chat when**:
+
 - Starting work on a large feature
 - Working on a file others might touch
 - Encountering merge conflicts
@@ -216,6 +219,7 @@ git push --force origin main
 **Team Repository**: https://github.com/opsui/opsui-wmsv2
 
 All team members should:
+
 - Have access to this repository
 - Watch the repository for notifications
 - Review pull requests if using PR workflow
@@ -224,17 +228,20 @@ All team members should:
 ## Auto-Push Configuration
 
 The auto-push hook is in `.husky/post-commit`. It:
+
 - Runs after every commit
 - Pulls latest changes first
 - Pushes only if safe
 - Prevents file corruption from conflicts
 
 **To disable auto-push temporarily**:
+
 ```bash
 chmod -x .husky/post-commit
 ```
 
 **To re-enable**:
+
 ```bash
 chmod +x .husky/post-commit
 ```

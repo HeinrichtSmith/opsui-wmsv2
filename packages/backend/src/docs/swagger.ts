@@ -44,21 +44,21 @@ export const swaggerOptions: swaggerJSDoc.Options = {
       `,
       contact: {
         name: 'WMS Support',
-        email: 'support@wms.local'
+        email: 'support@wms.local',
       },
       license: {
-        name: 'ISC'
-      }
+        name: 'ISC',
+      },
     },
     servers: [
       {
         url: 'http://localhost:3001',
-        description: 'Development server'
+        description: 'Development server',
       },
       {
         url: 'https://api.wms.production.com',
-        description: 'Production server'
-      }
+        description: 'Production server',
+      },
     ],
     components: {
       securitySchemes: {
@@ -66,8 +66,8 @@ export const swaggerOptions: swaggerJSDoc.Options = {
           type: 'http',
           scheme: 'bearer',
           bearerFormat: 'JWT',
-          description: 'JWT token obtained from login endpoint'
-        }
+          description: 'JWT token obtained from login endpoint',
+        },
       },
       schemas: {
         Error: {
@@ -75,15 +75,15 @@ export const swaggerOptions: swaggerJSDoc.Options = {
           properties: {
             error: {
               type: 'string',
-              description: 'Error message'
+              description: 'Error message',
             },
             code: {
               type: 'string',
-              description: 'Error code'
+              description: 'Error code',
             },
             statusCode: {
               type: 'integer',
-              description: 'HTTP status code'
+              description: 'HTTP status code',
             },
             details: {
               type: 'array',
@@ -91,30 +91,39 @@ export const swaggerOptions: swaggerJSDoc.Options = {
                 type: 'object',
                 properties: {
                   field: {
-                    type: 'string'
+                    type: 'string',
                   },
                   message: {
-                    type: 'string'
-                  }
-                }
-              }
-            }
-          }
+                    type: 'string',
+                  },
+                },
+              },
+            },
+          },
         },
         OrderStatus: {
           type: 'string',
-          enum: ['PENDING', 'PICKING', 'PICKED', 'PACKING', 'PACKED', 'SHIPPED', 'CANCELLED', 'BACKORDER'],
-          description: 'Order status in the fulfillment workflow'
+          enum: [
+            'PENDING',
+            'PICKING',
+            'PICKED',
+            'PACKING',
+            'PACKED',
+            'SHIPPED',
+            'CANCELLED',
+            'BACKORDER',
+          ],
+          description: 'Order status in the fulfillment workflow',
         },
         OrderPriority: {
           type: 'string',
           enum: ['LOW', 'NORMAL', 'HIGH', 'URGENT'],
-          description: 'Order priority level'
+          description: 'Order priority level',
         },
         UserRole: {
           type: 'string',
           enum: ['ADMIN', 'PICKER', 'PACKER'],
-          description: 'User role for access control'
+          description: 'User role for access control',
         },
         Order: {
           type: 'object',
@@ -122,198 +131,198 @@ export const swaggerOptions: swaggerJSDoc.Options = {
             orderId: {
               type: 'string',
               description: 'Unique order identifier',
-              example: 'ORD-20250112-123456'
+              example: 'ORD-20250112-123456',
             },
             customerId: {
               type: 'string',
               description: 'Customer identifier',
-              example: 'CUST-001'
+              example: 'CUST-001',
             },
             customerName: {
               type: 'string',
               description: 'Customer name',
-              example: 'John Doe'
+              example: 'John Doe',
             },
             status: {
-              $ref: '#/components/schemas/OrderStatus'
+              $ref: '#/components/schemas/OrderStatus',
             },
             priority: {
-              $ref: '#/components/schemas/OrderPriority'
+              $ref: '#/components/schemas/OrderPriority',
             },
             pickerId: {
               type: 'string',
               nullable: true,
-              description: 'Assigned picker ID'
+              description: 'Assigned picker ID',
             },
             packerId: {
               type: 'string',
               nullable: true,
-              description: 'Assigned packer ID'
+              description: 'Assigned packer ID',
             },
             items: {
               type: 'array',
               items: {
-                $ref: '#/components/schemas/OrderItem'
-              }
+                $ref: '#/components/schemas/OrderItem',
+              },
             },
             createdAt: {
               type: 'string',
               format: 'date-time',
-              description: 'Order creation timestamp'
+              description: 'Order creation timestamp',
             },
             updatedAt: {
               type: 'string',
               format: 'date-time',
-              description: 'Last update timestamp'
-            }
-          }
+              description: 'Last update timestamp',
+            },
+          },
         },
         OrderItem: {
           type: 'object',
           properties: {
             orderItemId: {
               type: 'string',
-              description: 'Unique order item identifier'
+              description: 'Unique order item identifier',
             },
             sku: {
               type: 'string',
               description: 'Stock Keeping Unit',
-              example: 'PROD-001'
+              example: 'PROD-001',
             },
             quantity: {
               type: 'integer',
               minimum: 1,
               description: 'Ordered quantity',
-              example: 10
+              example: 10,
             },
             pickedQuantity: {
               type: 'integer',
               minimum: 0,
               description: 'Quantity picked so far',
-              example: 0
+              example: 0,
             },
             binLocation: {
               type: 'string',
               pattern: '^[A-Z]-\\d{1,3}-\\d{2}$',
               description: 'Bin location (Zone-Aisle-Shelf)',
-              example: 'A-12-03'
-            }
-          }
+              example: 'A-12-03',
+            },
+          },
         },
         PickTask: {
           type: 'object',
           properties: {
             taskId: {
               type: 'string',
-              description: 'Unique pick task identifier'
+              description: 'Unique pick task identifier',
             },
             orderId: {
               type: 'string',
-              description: 'Associated order ID'
+              description: 'Associated order ID',
             },
             sku: {
               type: 'string',
-              description: 'Product SKU'
+              description: 'Product SKU',
             },
             quantity: {
               type: 'integer',
               minimum: 1,
-              description: 'Quantity to pick'
+              description: 'Quantity to pick',
             },
             binLocation: {
               type: 'string',
-              description: 'Bin location'
+              description: 'Bin location',
             },
             status: {
               type: 'string',
               enum: ['PENDING', 'IN_PROGRESS', 'COMPLETED', 'SKIPPED'],
-              description: 'Task status'
+              description: 'Task status',
             },
             pickerId: {
               type: 'string',
               nullable: true,
-              description: 'Assigned picker'
+              description: 'Assigned picker',
             },
             priority: {
-              $ref: '#/components/schemas/OrderPriority'
-            }
-          }
+              $ref: '#/components/schemas/OrderPriority',
+            },
+          },
         },
         Inventory: {
           type: 'object',
           properties: {
             sku: {
               type: 'string',
-              description: 'Stock Keeping Unit'
+              description: 'Stock Keeping Unit',
             },
             productName: {
               type: 'string',
-              description: 'Product name'
+              description: 'Product name',
             },
             quantity: {
               type: 'integer',
               minimum: 0,
-              description: 'Total quantity in bin'
+              description: 'Total quantity in bin',
             },
             reserved: {
               type: 'integer',
               minimum: 0,
-              description: 'Reserved quantity for orders'
+              description: 'Reserved quantity for orders',
             },
             available: {
               type: 'integer',
               minimum: 0,
-              description: 'Available quantity (quantity - reserved)'
+              description: 'Available quantity (quantity - reserved)',
             },
             binLocation: {
               type: 'string',
-              description: 'Bin location'
+              description: 'Bin location',
             },
             lowStockThreshold: {
               type: 'integer',
               minimum: 0,
-              description: 'Low stock alert threshold'
-            }
-          }
-        }
+              description: 'Low stock alert threshold',
+            },
+          },
+        },
       },
       tags: [
         {
           name: 'Auth',
-          description: 'Authentication endpoints'
+          description: 'Authentication endpoints',
         },
         {
           name: 'Orders',
-          description: 'Order management'
+          description: 'Order management',
         },
         {
           name: 'Picking',
-          description: 'Picker operations'
+          description: 'Picker operations',
         },
         {
           name: 'Packing',
-          description: 'Packer operations'
+          description: 'Packer operations',
         },
         {
           name: 'Inventory',
-          description: 'Inventory management'
+          description: 'Inventory management',
         },
         {
           name: 'Users',
-          description: 'User management (Admin)'
+          description: 'User management (Admin)',
         },
         {
           name: 'Analytics',
-          description: 'Reports and analytics (Admin)'
+          description: 'Reports and analytics (Admin)',
         },
         {
           name: 'Health',
-          description: 'Health check endpoints'
-        }
-      ]
-    }
+          description: 'Health check endpoints',
+        },
+      ],
+    },
   },
-  apis: ['./src/routes/**/*.ts', './src/controllers/**/*.ts']
+  apis: ['./src/routes/**/*.ts', './src/controllers/**/*.ts'],
 };
 
 /**
@@ -325,10 +334,13 @@ export const swaggerSpec = swaggerJSDoc(swaggerOptions);
  * Setup Swagger documentation for Express app
  */
 export function setupSwagger(app: any): void {
-  app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
-    explorer: true,
-    customSiteTitle: 'WMS API Docs',
-    customCss: `
+  app.use(
+    '/api/docs',
+    swaggerUi.serve,
+    swaggerUi.setup(swaggerSpec, {
+      explorer: true,
+      customSiteTitle: 'WMS API Docs',
+      customCss: `
       .topbar-wrapper .link {
         display: none;
       }
@@ -338,8 +350,9 @@ export function setupSwagger(app: any): void {
       .info {
         margin: 20px 0;
       }
-    `
-  }));
+    `,
+    })
+  );
 }
 
 /**

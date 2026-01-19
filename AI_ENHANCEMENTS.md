@@ -27,49 +27,62 @@ Create reusable prompt templates that include full project context.
 
 ### File: `prompts/CONTEXT_HEADER.md`
 
-```markdown
+````markdown
 # Warehouse Management System - AI Context
 
 ## Project Overview
+
 - **Type**: Monorepo (npm workspaces)
 - **Domain**: Order fulfillment (PENDING → PICKING → PACKING → SHIPPED)
 - **Stack**: Node.js/Express + React + PostgreSQL + TypeScript
 
 ## My Role
+
 - **Module**: {MODULE_NAME}
 - **Owner**: {USER_ID}
 - **Owned Paths**: {OWNED_PATHS}
 
 ## Critical Constraints
+
 1. NEVER modify files outside owned paths without team coordination
 2. ALWAYS use OrderStatus enum from @wms/shared/types
 3. ALL database mutations must use transactions
 4. Inventory can never be negative (enforced by invariant)
-5. Audit trails are permanent (never delete from *_transactions tables)
+5. Audit trails are permanent (never delete from \*\_transactions tables)
 
 ## State Machine
+
 PENDING → PICKING → PICKED → PACKING → PACKED → SHIPPED
-   ↓         ↓
+↓ ↓
 CANCELLED CANCELLED
 
 ## Available Types
+
 ```typescript
 import { OrderStatus, OrderPriority, UserRole } from '@wms/shared/types';
 import { validateTransition } from '@wms/shared/types/workflow';
 import { invariantInventoryNeverNegative } from '@wms/shared/types/invariants';
 ```
+````
 
 ## System Constants
+
 ```typescript
-import { PICKER_CONFIG, ORDER_CONFIG, BIN_LOCATION_CONFIG } from '@wms/shared/constants/system';
+import {
+  PICKER_CONFIG,
+  ORDER_CONFIG,
+  BIN_LOCATION_CONFIG,
+} from '@wms/shared/constants/system';
 ```
 
 ## Before Making Changes
+
 1. Check ownership: `npx ts-node scripts/check-ownership.ts {USER_ID} {file_path}`
 2. Validate transitions if changing order status
 3. Run tests after changes
 4. Never bypass invariants
-```
+
+````
 
 **Usage**: AI agent prepends this to every conversation.
 
@@ -250,7 +263,7 @@ export function generateVerificationReport(checklist: VerificationChecklist): st
 
   return report;
 }
-```
+````
 
 ---
 
@@ -284,7 +297,7 @@ export async function injectContext(
     relevantDocs: [],
     relevantConstants: [],
     relevantInvariants: [],
-    relatedWork: []
+    relatedWork: [],
   };
 
   // Analyze target files to determine what's being modified
@@ -294,7 +307,9 @@ export async function injectContext(
       context.relevantFiles.push('packages/backend/src/services/order.ts');
       context.relevantDocs.push('packages/shared/src/types/workflow.ts');
       context.relevantInvariants.push('invariantTerminalStateImmutable');
-      context.relevantInvariants.push('invariantPickerRequiredForPickingStates');
+      context.relevantInvariants.push(
+        'invariantPickerRequiredForPickingStates'
+      );
     }
 
     // If modifying inventory-related code
@@ -309,7 +324,9 @@ export async function injectContext(
     // If modifying picking module
     if (file.includes('picking')) {
       context.relevantConstants.push('PICKER_CONFIG');
-      context.relatedWork.push('Friend 2 (Packing) - depends on order status transitions');
+      context.relatedWork.push(
+        'Friend 2 (Packing) - depends on order status transitions'
+      );
     }
 
     // If modifying packing module
@@ -377,7 +394,7 @@ Create a library of approved patterns that AI can reference.
 
 ### File: `patterns/README.md`
 
-```markdown
+````markdown
 # Approved Patterns for WMS Development
 
 ## Pattern: Service Layer Transaction
@@ -393,13 +410,14 @@ async function claimOrder(orderId: string, pickerId: string) {
 
 // ✅ CORRECT - Wrapped in transaction
 async function claimOrder(orderId: string, pickerId: string) {
-  return await db.transaction(async (trx) => {
+  return await db.transaction(async trx => {
     const order = await trx.orders.update({ status: 'PICKING' });
     await trx.pickTasks.create({ orderId, pickerId });
     return order;
   });
 }
 ```
+````
 
 ## Pattern: Enum Usage
 
@@ -443,17 +461,13 @@ async function transitionToPicking(orderId: string) {
   const order = await getOrder(orderId);
 
   // Validate transition before making change
-  await validateTransition(
-    order.status,
-    OrderStatus.PICKING,
-    {
-      orderId,
-      pickerId: 'user-123',
-      orderItems: order.items,
-      maxOrdersPerPicker: 10,
-      // ... other context
-    }
-  );
+  await validateTransition(order.status, OrderStatus.PICKING, {
+    orderId,
+    pickerId: 'user-123',
+    orderItems: order.items,
+    maxOrdersPerPicker: 10,
+    // ... other context
+  });
 
   await db.orders.update({ status: OrderStatus.PICKING });
 }
@@ -483,15 +497,22 @@ if (error.code === '23503') {
 ```typescript
 // ❌ WRONG - Duplicating type definition
 // In frontend:
-interface Order { id: string; status: string; }
+interface Order {
+  id: string;
+  status: string;
+}
 // In backend:
-interface Order { id: string; status: string; }
+interface Order {
+  id: string;
+  status: string;
+}
 
 // ✅ CORRECT - Import from shared
 // In both frontend and backend:
 import { Order } from '@wms/shared/types';
 ```
-```
+
+````
 
 ---
 
@@ -588,7 +609,7 @@ describe('${serviceName}', () => {
 });
   `.trim();
 }
-```
+````
 
 ---
 
@@ -624,7 +645,7 @@ export async function analyzeImpact(
     breaksTests: [],
     requiresMigration: false,
     riskLevel: 'low',
-    recommendations: []
+    recommendations: [],
   };
 
   for (const change of changes) {
@@ -736,7 +757,7 @@ export async function calculateQualityMetrics(
     codeDuplication: await calculateCodeDuplication(),
     cyclomaticComplexity: await calculateCyclomaticComplexity(),
     invariantViolations: await countInvariantViolations(),
-    patternAdherence: await calculatePatternAdherence()
+    patternAdherence: await calculatePatternAdherence(),
   };
 }
 
@@ -803,7 +824,7 @@ export async function reviewCodeChanges(
     warnings: [],
     suggestions: [],
     positiveNotes: [],
-    overallScore: 100
+    overallScore: 100,
   };
 
   for (const change of changes) {
@@ -814,30 +835,46 @@ export async function reviewCodeChanges(
       review.approved = false;
     }
 
-    if (change.diff.includes('DELETE FROM') && change.diff.includes('transactions')) {
-      review.criticalIssues.push(`Deleting from transactions table in ${change.file}`);
+    if (
+      change.diff.includes('DELETE FROM') &&
+      change.diff.includes('transactions')
+    ) {
+      review.criticalIssues.push(
+        `Deleting from transactions table in ${change.file}`
+      );
       review.overallScore -= 50;
       review.approved = false;
     }
 
     // Check for warnings
     if (change.diff.includes('console.log')) {
-      review.warnings.push(`Console.log statements should be removed in ${change.file}`);
+      review.warnings.push(
+        `Console.log statements should be removed in ${change.file}`
+      );
       review.overallScore -= 5;
     }
 
-    if (!change.diff.includes('import {') && change.diff.includes('OrderStatus')) {
-      review.warnings.push(`Possible string literal usage for OrderStatus in ${change.file}`);
+    if (
+      !change.diff.includes('import {') &&
+      change.diff.includes('OrderStatus')
+    ) {
+      review.warnings.push(
+        `Possible string literal usage for OrderStatus in ${change.file}`
+      );
       review.overallScore -= 10;
     }
 
     // Check for positives
     if (change.diff.includes('invariant')) {
-      review.positiveNotes.push(`Good use of invariant checking in ${change.file}`);
+      review.positiveNotes.push(
+        `Good use of invariant checking in ${change.file}`
+      );
     }
 
     if (change.diff.includes('validateTransition')) {
-      review.positiveNotes.push(`Proper state transition validation in ${change.file}`);
+      review.positiveNotes.push(
+        `Proper state transition validation in ${change.file}`
+      );
     }
 
     if (change.diff.includes('transaction(async')) {
@@ -918,43 +955,43 @@ export async function semanticSearch(
         file: 'packages/shared/src/types/workflow.ts',
         relevance: 1.0,
         excerpt: 'VALID_ORDER_TRANSITIONS',
-        reason: 'Defines valid order state transitions'
+        reason: 'Defines valid order state transitions',
       },
       {
         file: 'packages/shared/src/types/index.ts',
         relevance: 0.9,
         excerpt: 'enum OrderStatus',
-        reason: 'Defines OrderStatus enum'
-      }
+        reason: 'Defines OrderStatus enum',
+      },
     ],
-    'inventory': [
+    inventory: [
       {
         file: 'packages/shared/src/types/invariants.ts',
         relevance: 1.0,
         excerpt: 'invariantInventoryNeverNegative',
-        reason: 'Inventory invariant enforcement'
+        reason: 'Inventory invariant enforcement',
       },
       {
         file: 'packages/shared/src/constants/system.ts',
         relevance: 0.8,
         excerpt: 'INVENTORY_CONFIG',
-        reason: 'Inventory configuration constants'
-      }
+        reason: 'Inventory configuration constants',
+      },
     ],
-    'picking': [
+    picking: [
       {
         file: 'packages/backend/src/services/picking',
         relevance: 1.0,
         excerpt: 'PickingService',
-        reason: 'Picking business logic'
+        reason: 'Picking business logic',
       },
       {
         file: 'packages/shared/src/constants/system.ts',
         relevance: 0.7,
         excerpt: 'PICKER_CONFIG',
-        reason: 'Picker configuration'
-      }
-    ]
+        reason: 'Picker configuration',
+      },
+    ],
   };
 
   // Simple keyword matching (in production, use embeddings)
@@ -1020,8 +1057,8 @@ export async function predictConflicts(
       suggestions: [
         'Coordinate with team before modifying shared types',
         'Consider if change can be isolated to module',
-        'Plan for simultaneous updates in all modules'
-      ]
+        'Plan for simultaneous updates in all modules',
+      ],
     });
   }
 
@@ -1035,15 +1072,17 @@ export async function predictConflicts(
       suggestions: [
         'Coordinate changes to order service',
         'Consider batching changes',
-        'Use feature branches for each change'
-      ]
+        'Use feature branches for each change',
+      ],
     });
   }
 
   return predictions;
 }
 
-export function formatConflictPredictions(predictions: ConflictPrediction[]): string {
+export function formatConflictPredictions(
+  predictions: ConflictPrediction[]
+): string {
   if (predictions.length === 0) {
     return '✅ No conflicts predicted\n';
   }
@@ -1070,16 +1109,19 @@ export function formatConflictPredictions(predictions: ConflictPrediction[]): st
 Implement these enhancements in order of impact:
 
 ### Phase 1: Immediate Impact (Week 1)
+
 1. ✅ **Context-Aware Prompt Templates** - Every AI conversation starts with full context
 2. ✅ **Self-Verification Protocol** - AI checks its own work before proposing
 3. ✅ **Pattern Library** - AI references approved patterns
 
 ### Phase 2: Quality Improvement (Week 2)
+
 4. ✅ **Dependency Impact Analyzer** - Know who/what is affected before changing
 5. ✅ **Intelligent Code Reviewer** - AI reviews like a senior engineer
 6. ✅ **Automated Test Generation** - Tests generated automatically
 
 ### Phase 3: Advanced Features (Week 3)
+
 7. ✅ **Context Injection System** - Relevant context auto-injected
 8. ✅ **Semantic Search** - Find relevant code by meaning
 9. ✅ **Predictive Conflict Detection** - Spot conflicts before they happen
@@ -1090,6 +1132,7 @@ Implement these enhancements in order of impact:
 ## How These Make GLM-4.7 More Powerful
 
 ### Before (Current)
+
 ```
 You: "Add feature X"
 AI: "OK, here's the code"
@@ -1100,6 +1143,7 @@ AI: "OK, here's the code"
 ```
 
 ### After (Enhanced)
+
 ```
 You: "Add feature X"
 AI: "Let me analyze this request..."
@@ -1120,14 +1164,14 @@ AI: "Let me analyze this request..."
 
 ## Expected Improvements
 
-| Metric | Before | After | Improvement |
-|--------|--------|-------|-------------|
-| Context awareness | ~20% | ~95% | 4.75x |
-| Bug-free code | ~60% | ~95% | 1.58x |
-| Pattern adherence | ~50% | ~98% | 1.96x |
-| Coordination needs | ~15 missed/week | ~2 missed/week | 7.5x |
-| Merge conflicts | ~5/week | ~1/week | 5x |
-| Review time | ~30 min/change | ~5 min/change | 6x |
+| Metric             | Before          | After          | Improvement |
+| ------------------ | --------------- | -------------- | ----------- |
+| Context awareness  | ~20%            | ~95%           | 4.75x       |
+| Bug-free code      | ~60%            | ~95%           | 1.58x       |
+| Pattern adherence  | ~50%            | ~98%           | 1.96x       |
+| Coordination needs | ~15 missed/week | ~2 missed/week | 7.5x        |
+| Merge conflicts    | ~5/week         | ~1/week        | 5x          |
+| Review time        | ~30 min/change  | ~5 min/change  | 6x          |
 
 ---
 

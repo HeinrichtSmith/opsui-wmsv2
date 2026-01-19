@@ -55,7 +55,13 @@ router.post(
     } = req.body;
 
     // Validate required fields
-    if (!supplierId || !purchaseOrderNumber || !expectedArrivalDate || !lineItems || lineItems.length === 0) {
+    if (
+      !supplierId ||
+      !purchaseOrderNumber ||
+      !expectedArrivalDate ||
+      !lineItems ||
+      lineItems.length === 0
+    ) {
       return res.status(400).json({
         error: 'Missing required fields',
         code: 'MISSING_FIELDS',
@@ -243,10 +249,7 @@ router.post(
   asyncHandler(async (req: AuthenticatedRequest, res) => {
     const { putawayTaskId } = req.params;
 
-    const task = await inboundReceivingService.assignPutawayTask(
-      putawayTaskId,
-      req.user!.userId
-    );
+    const task = await inboundReceivingService.assignPutawayTask(putawayTaskId, req.user!.userId);
 
     res.json(task);
     return;

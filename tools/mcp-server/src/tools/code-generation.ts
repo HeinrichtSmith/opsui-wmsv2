@@ -13,7 +13,8 @@ import type { ToolMetadata, ToolContext, ToolArgs } from '../types/index.js';
 /**
  * Entity template
  */
-const entityTemplate = Handlebars.compile(`import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+const entityTemplate =
+  Handlebars.compile(`import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
 export class {{ClassName}} {
   @PrimaryGeneratedColumn('uuid')
@@ -81,7 +82,8 @@ export class {{ClassName}}Service {
 /**
  * Controller template
  */
-const controllerTemplate = Handlebars.compile(`import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
+const controllerTemplate =
+  Handlebars.compile(`import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
 import { {{ClassName}}Service } from './{{className}}.service';
 import { Create{{ClassName}}Dto, Update{{ClassName}}Dto } from './dto/{{kebabName}}.dto';
 
@@ -161,11 +163,13 @@ export const codeGenerationTools: ToolMetadata[] = [
 
       // Validate entity name
       if (!/^[A-Z][a-zA-Z0-9]*$/.test(entityName)) {
-        throw new Error('Entity name must start with uppercase letter and contain only letters and numbers');
+        throw new Error(
+          'Entity name must start with uppercase letter and contain only letters and numbers'
+        );
       }
 
       // Process fields
-      const processedFields = fields.map((field) => {
+      const processedFields = fields.map(field => {
         const fieldName = field.name;
         const fieldType = field.type;
 

@@ -230,6 +230,6 @@ export function validateBatch(
 
   return {
     valid: errors.length === 0,
-    errors
+    errors,
   };
 }

@@ -66,7 +66,7 @@ export function gracefulShutdownPlugin(options: ShutdownOptions = {}): Plugin {
 
           // Step 4: Close HTTP server
           if (logShutdown) console.log('🔌 Step 4/4: Closing HTTP server...');
-          await new Promise<void>((resolve) => {
+          await new Promise<void>(resolve => {
             server.httpServer.close(() => resolve());
           });
 
@@ -90,7 +90,7 @@ export function gracefulShutdownPlugin(options: ShutdownOptions = {}): Plugin {
       process.on('SIGINT', () => shutdown('SIGINT'));
 
       // Handle Windows-specific signals
-      process.on('message', (msg) => {
+      process.on('message', msg => {
         if (msg === 'shutdown') {
           shutdown('WINDOWS_SHUTDOWN');
         }

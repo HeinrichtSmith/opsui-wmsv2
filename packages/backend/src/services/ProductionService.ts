@@ -14,7 +14,7 @@ import {
   RecordProductionOutputDTO,
   CreateBOMDTO,
   ProductionOrderStatus,
-  NotFoundError
+  NotFoundError,
 } from '@opsui/shared';
 
 export class ProductionService {
@@ -42,7 +42,7 @@ export class ProductionService {
     const bom = await productionRepository.createBOM({
       ...dto,
       status: 'DRAFT',
-      createdBy
+      createdBy,
     });
 
     return bom;
@@ -64,7 +64,10 @@ export class ProductionService {
   // PRODUCTION ORDERS
   // ========================================================================
 
-  async createProductionOrder(dto: CreateProductionOrderDTO, createdBy: string): Promise<ProductionOrder> {
+  async createProductionOrder(
+    dto: CreateProductionOrderDTO,
+    createdBy: string
+  ): Promise<ProductionOrder> {
     // Validate production order
     if (!dto.bomId || dto.bomId.trim() === '') {
       throw new Error('BOM ID is required');
@@ -96,7 +99,7 @@ export class ProductionService {
       productId,
       productName: `Product ${productId}`, // Would fetch from SKU service
       status: 'PLANNED',
-      createdBy
+      createdBy,
     });
 
     return order;
@@ -119,7 +122,11 @@ export class ProductionService {
     return await productionRepository.findAllProductionOrders(filters);
   }
 
-  async updateProductionOrder(orderId: string, dto: UpdateProductionOrderDTO, userId: string): Promise<ProductionOrder> {
+  async updateProductionOrder(
+    orderId: string,
+    dto: UpdateProductionOrderDTO,
+    userId: string
+  ): Promise<ProductionOrder> {
     const order = await productionRepository.findProductionOrderById(orderId);
     if (!order) {
       throw new NotFoundError('Production Order', orderId);
@@ -132,7 +139,7 @@ export class ProductionService {
 
     const updated = await productionRepository.updateProductionOrder(orderId, {
       ...dto,
-      updatedBy: userId
+      updatedBy: userId,
     });
 
     return updated as ProductionOrder;
@@ -151,7 +158,7 @@ export class ProductionService {
     const updated = await productionRepository.updateProductionOrder(orderId, {
       status: 'RELEASED',
       materialsReserved: true,
-      updatedBy: userId
+      updatedBy: userId,
     });
 
     return updated as ProductionOrder;
@@ -167,7 +174,7 @@ export class ProductionService {
     const updated = await productionRepository.updateProductionOrder(orderId, {
       status: 'IN_PROGRESS',
       actualStartDate: new Date(),
-      updatedBy: userId
+      updatedBy: userId,
     });
 
     // Log journal entry
@@ -177,13 +184,16 @@ export class ProductionService {
       producedBy: userId,
       productId: order.productId,
       quantity: 0,
-      notes: 'Production started'
+      notes: 'Production started',
     } as any);
 
     return updated as ProductionOrder;
   }
 
-  async recordProductionOutput(dto: RecordProductionOutputDTO, userId: string): Promise<ProductionOutput> {
+  async recordProductionOutput(
+    dto: RecordProductionOutputDTO,
+    userId: string
+  ): Promise<ProductionOutput> {
     const order = await this.getProductionOrderById(dto.orderId);
 
     if (order.status !== 'IN_PROGRESS') {
@@ -205,7 +215,7 @@ export class ProductionService {
     const output = await productionRepository.createProductionOutput({
       ...dto,
       producedAt: new Date(),
-      producedBy: userId
+      producedBy: userId,
     });
 
     // Check if order is complete
@@ -213,7 +223,7 @@ export class ProductionService {
       await productionRepository.updateProductionOrder(dto.orderId, {
         status: 'COMPLETED',
         actualEndDate: new Date(),
-        updatedBy: userId
+        updatedBy: userId,
       });
     }
 
@@ -229,14 +239,17 @@ export class ProductionService {
   // PRIVATE HELPERS
   // ========================================================================
 
-  private validateStatusTransition(currentStatus: ProductionOrderStatus, newStatus: ProductionOrderStatus): void {
+  private validateStatusTransition(
+    currentStatus: ProductionOrderStatus,
+    newStatus: ProductionOrderStatus
+  ): void {
     const validTransitions: Record<ProductionOrderStatus, ProductionOrderStatus[]> = {
       DRAFT: ['PLANNED', 'CANCELLED'],
       PLANNED: ['RELEASED', 'CANCELLED'],
       RELEASED: ['IN_PROGRESS', 'CANCELLED'],
       IN_PROGRESS: ['COMPLETED', 'CANCELLED'],
       COMPLETED: [],
-      CANCELLED: []
+      CANCELLED: [],
     };
 
     const allowed = validTransitions[currentStatus] || [];

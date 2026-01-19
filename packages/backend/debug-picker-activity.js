@@ -2,7 +2,8 @@ const { Client } = require('pg');
 
 async function debug() {
   const client = new Client({
-    connectionString: process.env.DATABASE_URL || 'postgresql://wms_user:wms_password@localhost:5432/wms_db'
+    connectionString:
+      process.env.DATABASE_URL || 'postgresql://wms_user:wms_password@localhost:5432/wms_db',
   });
 
   try {
@@ -15,7 +16,7 @@ async function debug() {
       FROM users
       WHERE role = 'PICKER' AND active = true
     `);
-    
+
     console.log('Active Pickers:');
     console.log('  Total:', pickers.rowCount);
     pickers.rows.forEach(row => {
@@ -37,7 +38,7 @@ async function debug() {
       WHERE status = 'PICKING'
       ORDER BY updated_at DESC
     `);
-    
+
     console.log('\nOrders with PICKING status:');
     console.log('  Total:', pickingOrders.rowCount);
     pickingOrders.rows.forEach(row => {
@@ -58,7 +59,7 @@ async function debug() {
       GROUP BY status
       ORDER BY count DESC
     `);
-    
+
     console.log('\nOrder Status Breakdown:');
     allOrders.rows.forEach(row => {
       console.log(`    - ${row.status}: ${row.count}`);
@@ -102,7 +103,6 @@ async function debug() {
       console.log(`      Progress: ${row.order_progress}%`);
       console.log(`      Status: ${row.status}`);
     });
-
   } catch (err) {
     console.error('Error:', err.message);
     process.exit(1);

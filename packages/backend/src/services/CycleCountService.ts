@@ -77,10 +77,9 @@ export class CycleCountService {
   async getCycleCountPlan(planId: string): Promise<CycleCountPlan> {
     const client = await getPool();
 
-    const result = await client.query(
-      `SELECT * FROM cycle_count_plans WHERE plan_id = $1`,
-      [planId]
-    );
+    const result = await client.query(`SELECT * FROM cycle_count_plans WHERE plan_id = $1`, [
+      planId,
+    ]);
 
     if (result.rows.length === 0) {
       throw new Error(`Cycle count plan ${planId} not found`);
@@ -162,7 +161,7 @@ export class CycleCountService {
     );
 
     const plans = await Promise.all(
-      result.rows.map(async (row) => {
+      result.rows.map(async row => {
         const plan = this.mapRowToCycleCountPlan(row);
         // Get entries for each plan
         const entriesResult = await client.query(
@@ -289,9 +288,8 @@ export class CycleCountService {
         [dto.sku, dto.binLocation]
       );
 
-      const systemQuantity = inventoryResult.rows.length > 0
-        ? parseFloat(inventoryResult.rows[0].quantity)
-        : 0;
+      const systemQuantity =
+        inventoryResult.rows.length > 0 ? parseFloat(inventoryResult.rows[0].quantity) : 0;
 
       const countedQuantity = dto.countedQuantity;
       const variance = countedQuantity - systemQuantity;
@@ -416,7 +414,11 @@ export class CycleCountService {
       let adjustmentTransactionId = entry.adjustment_transaction_id;
 
       // Process variance if approved
-      if (dto.status === VarianceStatus.APPROVED && entry.variance !== 0 && !entry.adjustment_transaction_id) {
+      if (
+        dto.status === VarianceStatus.APPROVED &&
+        entry.variance !== 0 &&
+        !entry.adjustment_transaction_id
+      ) {
         adjustmentTransactionId = await this.processVarianceAdjustment(
           dto.entryId,
           dto.status,
@@ -519,7 +521,10 @@ export class CycleCountService {
   /**
    * Get applicable tolerance for an SKU/location
    */
-  private async getApplicableTolerance(sku: string, binLocation: string): Promise<CycleCountTolerance> {
+  private async getApplicableTolerance(
+    sku: string,
+    binLocation: string
+  ): Promise<CycleCountTolerance> {
     const client = await getPool();
 
     // Try SKU-specific tolerance first
@@ -584,7 +589,11 @@ export class CycleCountService {
   /**
    * Adjust inventory up (increase quantity)
    */
-  private async adjustInventoryUp(sku: string, binLocation: string, quantity: number): Promise<void> {
+  private async adjustInventoryUp(
+    sku: string,
+    binLocation: string,
+    quantity: number
+  ): Promise<void> {
     const client = await getPool();
 
     // Check if inventory unit exists
@@ -618,7 +627,11 @@ export class CycleCountService {
   /**
    * Adjust inventory down (decrease quantity)
    */
-  private async adjustInventoryDown(sku: string, binLocation: string, quantity: number): Promise<void> {
+  private async adjustInventoryDown(
+    sku: string,
+    binLocation: string,
+    quantity: number
+  ): Promise<void> {
     const client = await getPool();
 
     await client.query(

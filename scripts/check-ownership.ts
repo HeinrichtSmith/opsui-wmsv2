@@ -20,21 +20,27 @@ interface ModuleOwnershipConfig {
   version: string;
   lastUpdated: string;
   team: {
-    members: Record<string, {
-      name: string;
-      role: string;
-      email: string;
-      timezone: string;
-    }>;
+    members: Record<
+      string,
+      {
+        name: string;
+        role: string;
+        email: string;
+        timezone: string;
+      }
+    >;
   };
-  modules: Record<string, {
-    owner: string;
-    name: string;
-    description: string;
-    ownedPaths: string[];
-    sharedDependencies: string[];
-    apiContracts: string[];
-  }>;
+  modules: Record<
+    string,
+    {
+      owner: string;
+      name: string;
+      description: string;
+      ownedPaths: string[];
+      sharedDependencies: string[];
+      apiContracts: string[];
+    }
+  >;
   shared: {
     description: string;
     paths: string[];
@@ -82,7 +88,7 @@ function loadConfig(): ModuleOwnershipConfig {
           description: 'Shared code',
           paths: ['packages/shared/', 'packages/backend/src/db/'],
           approvalRequired: true,
-          minApprovers: 2
+          minApprovers: 2,
         },
         rules: {
           ownership: {
@@ -90,22 +96,22 @@ function loadConfig(): ModuleOwnershipConfig {
             canModifySharedWithApproval: true,
             canModifyOtherModule: false,
             canCreateFilesInOwnModule: true,
-            canCreateFilesInShared: false
+            canCreateFilesInShared: false,
           },
           coordination: {
             beforeChangingShared: 'Post in team chat',
             beforeChangingDependency: 'Notify owners',
             mergeConflictInOwnModule: 'Resolve yourself',
             mergeConflictInShared: 'Discuss with team',
-            mergeConflictInOtherModule: 'Ask owner to resolve'
+            mergeConflictInOtherModule: 'Ask owner to resolve',
           },
           branches: {
             main: 'Production',
             picking: 'friend1',
             packing: 'friend2',
-            admin: 'you'
-          }
-        }
+            admin: 'you',
+          },
+        },
       };
     }
   }
@@ -127,9 +133,7 @@ function pathMatches(filePath: string, pattern: string): boolean {
   const normalizedPattern = normalizePath(pattern);
 
   // Convert wildcard pattern to regex
-  const regexPattern = normalizedPattern
-    .replace(/\*/g, '.*')
-    .replace(/\?/g, '.');
+  const regexPattern = normalizedPattern.replace(/\*/g, '.*').replace(/\?/g, '.');
 
   const regex = new RegExp(`^${regexPattern}`);
   return regex.test(normalizedPath);
@@ -212,7 +216,7 @@ export function canModify(
     return {
       allowed: cfg.rules.ownership.canModifySharedWithApproval,
       reason: cfg.shared.description + ' - requires team coordination',
-      requiresCoordination: true
+      requiresCoordination: true,
     };
   }
 
@@ -223,7 +227,7 @@ export function canModify(
       allowed: cfg.rules.ownership.canModifyOtherModule,
       reason: `Owned by ${module?.name || owner} - contact ${owner} for changes`,
       requiresCoordination: true,
-      owner
+      owner,
     };
   }
 
@@ -232,7 +236,7 @@ export function canModify(
     return {
       allowed: cfg.rules.ownership.canModifyOwnModule,
       reason: 'Within owned module',
-      requiresCoordination: false
+      requiresCoordination: false,
     };
   }
 
@@ -240,14 +244,17 @@ export function canModify(
   return {
     allowed: false,
     reason: 'File not owned by any module - coordinate with team',
-    requiresCoordination: true
+    requiresCoordination: true,
   };
 }
 
 /**
  * Check multiple files and return ownership report
  */
-export function checkOwnership(filePaths: string[], userId: string): {
+export function checkOwnership(
+  filePaths: string[],
+  userId: string
+): {
   canProceed: boolean;
   owned: string[];
   shared: string[];
@@ -274,7 +281,9 @@ export function checkOwnership(filePaths: string[], userId: string): {
       } else {
         unknown.push(filePath);
       }
-      warnings.push(`⚠️  ${filePath}: ${check.reason}${check.owner ? ' (owner: ' + check.owner + ')' : ''}`);
+      warnings.push(
+        `⚠️  ${filePath}: ${check.reason}${check.owner ? ' (owner: ' + check.owner + ')' : ''}`
+      );
     } else {
       owned.push(filePath);
     }
@@ -289,7 +298,7 @@ export function checkOwnership(filePaths: string[], userId: string): {
     otherModules,
     unknown,
     requiresCoordination,
-    warnings
+    warnings,
   };
 }
 
@@ -362,7 +371,10 @@ export function generateCoordinationMessage(
 /**
  * CLI-style output for AI agents
  */
-export function formatOwnershipReport(check: ReturnType<typeof checkOwnership>, userId: string): string {
+export function formatOwnershipReport(
+  check: ReturnType<typeof checkOwnership>,
+  userId: string
+): string {
   let output = '';
 
   output += `📊 Ownership Report for @${userId}\n`;
@@ -430,7 +442,9 @@ export function checkFilesForAI(filePaths: string[], userId: string): void {
   if (check.requiresCoordination) {
     console.log(`\n❌ STOP: These changes require team coordination before proceeding.\n`);
     console.log(`Post this message in your team chat:\n`);
-    console.log(`---\n${generateCoordinationMessage(filePaths, userId, '[describe your task]')}\n---\n`);
+    console.log(
+      `---\n${generateCoordinationMessage(filePaths, userId, '[describe your task]')}\n---\n`
+    );
     // In a real implementation, you might throw an error here
     // throw new Error('Team coordination required');
   }

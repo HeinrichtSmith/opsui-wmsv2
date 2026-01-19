@@ -91,13 +91,15 @@ export class ErrorBoundary extends Component<Props, State> {
             {process.env.NODE_ENV === 'development' && this.state.error && (
               <div style={{ textAlign: 'left', marginTop: '20px' }}>
                 <h4>Error Details:</h4>
-                <pre style={{
-                  background: '#f5f5f5',
-                  padding: '10px',
-                  borderRadius: '4px',
-                  overflow: 'auto',
-                  maxHeight: '300px',
-                }}>
+                <pre
+                  style={{
+                    background: '#f5f5f5',
+                    padding: '10px',
+                    borderRadius: '4px',
+                    overflow: 'auto',
+                    maxHeight: '300px',
+                  }}
+                >
                   {this.state.error.toString()}
                   {this.state.errorInfo?.componentStack}
                 </pre>

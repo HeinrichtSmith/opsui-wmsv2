@@ -17,7 +17,7 @@ import {
   RuleType,
   ConditionOperator,
   ActionType,
-  RuleEventType
+  RuleEventType,
 } from '@opsui/shared';
 
 // ============================================================================
@@ -112,7 +112,7 @@ export class BusinessRulesRepository {
         updatedAt: row.updated_at,
         version: row.version,
         lastExecutedAt: row.last_executed_at,
-        executionCount: row.execution_count
+        executionCount: row.execution_count,
       });
     }
 
@@ -179,14 +179,16 @@ export class BusinessRulesRepository {
       updatedAt: row.updated_at,
       version: row.version,
       lastExecutedAt: row.last_executed_at,
-      executionCount: row.execution_count
+      executionCount: row.execution_count,
     };
   }
 
   /**
    * Create a new business rule
    */
-  async create(rule: Omit<BusinessRule, 'ruleId' | 'createdAt' | 'executionCount' | 'version'>): Promise<BusinessRule> {
+  async create(
+    rule: Omit<BusinessRule, 'ruleId' | 'createdAt' | 'executionCount' | 'version'>
+  ): Promise<BusinessRule> {
     const client = await pool.connect();
 
     try {
@@ -215,7 +217,7 @@ export class BusinessRulesRepository {
         rule.startDate || null,
         rule.endDate || null,
         rule.createdBy,
-        now
+        now,
       ]);
 
       // Insert trigger events
@@ -229,37 +231,37 @@ export class BusinessRulesRepository {
       // Insert conditions
       for (const condition of rule.conditions) {
         const conditionId = `COND-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-        await client.query(`
+        await client.query(
+          `
           INSERT INTO rule_conditions (
             condition_id, rule_id, field, operator, value, value2,
             logical_operator, "order"
           ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-        `, [
-          conditionId,
-          ruleId,
-          condition.field,
-          condition.operator,
-          JSON.stringify(condition.value),
-          condition.value2 ? JSON.stringify(condition.value2) : null,
-          condition.logicalOperator || null,
-          condition.order
-        ]);
+        `,
+          [
+            conditionId,
+            ruleId,
+            condition.field,
+            condition.operator,
+            JSON.stringify(condition.value),
+            condition.value2 ? JSON.stringify(condition.value2) : null,
+            condition.logicalOperator || null,
+            condition.order,
+          ]
+        );
       }
 
       // Insert actions
       for (const action of rule.actions) {
         const actionId = `ACT-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-        await client.query(`
+        await client.query(
+          `
           INSERT INTO rule_actions (
             action_id, rule_id, action_type, parameters, "order"
           ) VALUES ($1, $2, $3, $4, $5)
-        `, [
-          actionId,
-          ruleId,
-          action.actionType,
-          JSON.stringify(action.parameters),
-          action.order
-        ]);
+        `,
+          [actionId, ruleId, action.actionType, JSON.stringify(action.parameters), action.order]
+        );
       }
 
       await client.query('COMMIT');
@@ -350,21 +352,24 @@ export class BusinessRulesRepository {
         await client.query('DELETE FROM rule_conditions WHERE rule_id = $1', [ruleId]);
         for (const condition of updates.conditions) {
           const conditionId = `COND-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-          await client.query(`
+          await client.query(
+            `
             INSERT INTO rule_conditions (
               condition_id, rule_id, field, operator, value, value2,
               logical_operator, "order"
             ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-          `, [
-            conditionId,
-            ruleId,
-            condition.field,
-            condition.operator,
-            JSON.stringify(condition.value),
-            condition.value2 ? JSON.stringify(condition.value2) : null,
-            condition.logicalOperator || null,
-            condition.order
-          ]);
+          `,
+            [
+              conditionId,
+              ruleId,
+              condition.field,
+              condition.operator,
+              JSON.stringify(condition.value),
+              condition.value2 ? JSON.stringify(condition.value2) : null,
+              condition.logicalOperator || null,
+              condition.order,
+            ]
+          );
         }
       }
 
@@ -373,17 +378,14 @@ export class BusinessRulesRepository {
         await client.query('DELETE FROM rule_actions WHERE rule_id = $1', [ruleId]);
         for (const action of updates.actions) {
           const actionId = `ACT-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-          await client.query(`
+          await client.query(
+            `
             INSERT INTO rule_actions (
               action_id, rule_id, action_type, parameters, "order"
             ) VALUES ($1, $2, $3, $4, $5)
-          `, [
-            actionId,
-            ruleId,
-            action.actionType,
-            JSON.stringify(action.parameters),
-            action.order
-          ]);
+          `,
+            [actionId, ruleId, action.actionType, JSON.stringify(action.parameters), action.order]
+          );
         }
       }
 
@@ -439,7 +441,7 @@ export class BusinessRulesRepository {
       value: JSON.parse(row.value),
       value2: row.value2 ? JSON.parse(row.value2) : undefined,
       logicalOperator: row.logical_operator,
-      order: row.order
+      order: row.order,
     }));
   }
 
@@ -470,7 +472,7 @@ export class BusinessRulesRepository {
       ruleId: row.rule_id,
       actionType: row.action_type,
       parameters: JSON.parse(row.parameters),
-      order: row.order
+      order: row.order,
     }));
   }
 
@@ -504,16 +506,19 @@ export class BusinessRulesRepository {
       log.conditionsMet,
       log.executionTimeMs,
       log.errorMessage || null,
-      JSON.stringify(log.executionResults)
+      JSON.stringify(log.executionResults),
     ]);
 
     // Update rule execution stats
-    await pool.query(`
+    await pool.query(
+      `
       UPDATE business_rules
       SET last_executed_at = $1,
           execution_count = execution_count + 1
       WHERE rule_id = $2
-    `, [log.triggeredAt, log.ruleId]);
+    `,
+      [log.triggeredAt, log.ruleId]
+    );
 
     return {
       logId: result.rows[0].log_id,
@@ -526,7 +531,7 @@ export class BusinessRulesRepository {
       conditionsMet: result.rows[0].conditions_met,
       executionResults: log.executionResults,
       executionTimeMs: result.rows[0].execution_time_ms,
-      errorMessage: result.rows[0].error_message
+      errorMessage: result.rows[0].error_message,
     };
   }
 
@@ -558,7 +563,7 @@ export class BusinessRulesRepository {
       conditionsMet: row.conditions_met,
       executionResults: JSON.parse(row.execution_results),
       executionTimeMs: row.execution_time_ms,
-      errorMessage: row.error_message
+      errorMessage: row.error_message,
     }));
   }
 

@@ -32,7 +32,7 @@ export function invariantInventoryNeverNegative(quantity: number): void {
   if (quantity < 0) {
     throw new Error(
       `INVARIANT VIOLATION: Inventory quantity is negative (${quantity}). ` +
-      `Physical inventory cannot be less than zero.`
+        `Physical inventory cannot be less than zero.`
     );
   }
 }
@@ -52,7 +52,7 @@ export function invariantReservedNeverExceedsTotal(quantity: number, reserved: n
   if (reserved > quantity) {
     throw new Error(
       `INVARIANT VIOLATION: Reserved quantity (${reserved}) exceeds total quantity (${quantity}). ` +
-      `Cannot reserve more inventory than exists.`
+        `Cannot reserve more inventory than exists.`
     );
   }
 }
@@ -71,7 +71,7 @@ export function invariantProgressRange(progress: number): void {
   if (progress < 0 || progress > 100) {
     throw new Error(
       `INVARIANT VIOLATION: Order progress (${progress}) is outside valid range [0, 100]. ` +
-      `Progress must be a percentage between 0 and 100.`
+        `Progress must be a percentage between 0 and 100.`
     );
   }
 }
@@ -91,7 +91,7 @@ export function invariantPickedNeverExceedsOrdered(quantity: number, pickedQuant
   if (pickedQuantity > quantity) {
     throw new Error(
       `INVARIANT VIOLATION: Picked quantity (${pickedQuantity}) exceeds ordered quantity (${quantity}). ` +
-      `Cannot pick more items than customer ordered.`
+        `Cannot pick more items than customer ordered.`
     );
   }
 }
@@ -110,7 +110,7 @@ export function invariantQuantityAlwaysPositive(quantity: number): void {
   if (quantity <= 0) {
     throw new Error(
       `INVARIANT VIOLATION: Quantity (${quantity}) is not positive. ` +
-      `Order quantities must be greater than zero.`
+        `Order quantities must be greater than zero.`
     );
   }
 }
@@ -130,7 +130,7 @@ export function invariantTerminalStateImmutable(status: OrderStatus): void {
   if (terminalStates.includes(status)) {
     throw new Error(
       `INVARIANT VIOLATION: Attempting to transition from terminal state (${status}). ` +
-      `Terminal states cannot transition further.`
+        `Terminal states cannot transition further.`
     );
   }
 }
@@ -146,12 +146,15 @@ export function invariantTerminalStateImmutable(status: OrderStatus): void {
  * @param pickerId - The assigned picker ID
  * @throws Error if invariant is violated
  */
-export function invariantPickerRequiredForPickingStates(status: OrderStatus, pickerId?: string): void {
+export function invariantPickerRequiredForPickingStates(
+  status: OrderStatus,
+  pickerId?: string
+): void {
   const pickerRequiredStates = [OrderStatus.PICKING, OrderStatus.PICKED];
   if (pickerRequiredStates.includes(status) && !pickerId) {
     throw new Error(
       `INVARIANT VIOLATION: Order is in ${status} state but no picker is assigned. ` +
-      `A picker must be assigned before order enters PICKING state.`
+        `A picker must be assigned before order enters PICKING state.`
     );
   }
 }
@@ -167,12 +170,15 @@ export function invariantPickerRequiredForPickingStates(status: OrderStatus, pic
  * @param packerId - The assigned packer ID
  * @throws Error if invariant is violated
  */
-export function invariantPackerRequiredForPackingStates(status: OrderStatus, packerId?: string): void {
+export function invariantPackerRequiredForPackingStates(
+  status: OrderStatus,
+  packerId?: string
+): void {
   const packerRequiredStates = [OrderStatus.PACKING, OrderStatus.PACKED];
   if (packerRequiredStates.includes(status) && !packerId) {
     throw new Error(
       `INVARIANT VIOLATION: Order is in ${status} state but no packer is assigned. ` +
-      `A packer must be assigned before order enters PACKING state.`
+        `A packer must be assigned before order enters PACKING state.`
     );
   }
 }
@@ -192,7 +198,7 @@ export function invariantBinLocationFormatValid(binId: string): void {
   if (!pattern.test(binId)) {
     throw new Error(
       `INVARIANT VIOLATION: Bin location ID "${binId}" has invalid format. ` +
-      `Expected format: Z-A-S (Zone-Aisle-Shelf), e.g., "A-12-03".`
+        `Expected format: Z-A-S (Zone-Aisle-Shelf), e.g., "A-12-03".`
     );
   }
 }
@@ -208,11 +214,14 @@ export function invariantBinLocationFormatValid(binId: string): void {
  * @param remainingReservations - Count of remaining reservations after cancellation attempt
  * @throws Error if invariant is violated
  */
-export function invariantReservationsReleasedOnCancellation(orderId: string, remainingReservations: number): void {
+export function invariantReservationsReleasedOnCancellation(
+  orderId: string,
+  remainingReservations: number
+): void {
   if (remainingReservations > 0) {
     throw new Error(
       `INVARIANT VIOLATION: Order ${orderId} was cancelled but ${remainingReservations} reservations remain. ` +
-      `All inventory reservations must be released when order is cancelled.`
+        `All inventory reservations must be released when order is cancelled.`
     );
   }
 }
@@ -229,7 +238,7 @@ export function invariantReservationsReleasedOnCancellation(orderId: string, rem
 export function invariantAuditTrailImmutable(): never {
   throw new Error(
     `INVARIANT VIOLATION: Attempt to delete audit trail entries. ` +
-    `Audit trails must be preserved permanently. This operation is forbidden.`
+      `Audit trails must be preserved permanently. This operation is forbidden.`
   );
 }
 
@@ -245,7 +254,7 @@ export function invariantAuditTrailImmutable(): never {
 export function invariantForeignKeysNeverDisabled(): never {
   throw new Error(
     `INVARIANT VIOLATION: Attempt to disable foreign key constraints. ` +
-    `Foreign key constraints must remain enabled at all times. This operation is forbidden.`
+      `Foreign key constraints must remain enabled at all times. This operation is forbidden.`
   );
 }
 
@@ -264,7 +273,7 @@ export function invariantOrderIdUnique(existingOrder: unknown, orderId: string):
   if (existingOrder) {
     throw new Error(
       `INVARIANT VIOLATION: Order ID ${orderId} already exists. ` +
-      `Order IDs must be unique. This indicates a generation algorithm collision.`
+        `Order IDs must be unique. This indicates a generation algorithm collision.`
     );
   }
 }
@@ -281,11 +290,15 @@ export function invariantOrderIdUnique(existingOrder: unknown, orderId: string):
  * @param sku - The SKU for error message
  * @throws Error if invariant is violated
  */
-export function invariantAvailableInventorySufficient(available: number, requested: number, sku: string): void {
+export function invariantAvailableInventorySufficient(
+  available: number,
+  requested: number,
+  sku: string
+): void {
   if (available < requested) {
     throw new Error(
       `INVARIANT VIOLATION: Attempting to reserve ${requested} units of ${sku} but only ${available} available. ` +
-      `Insufficient inventory for reservation.`
+        `Insufficient inventory for reservation.`
     );
   }
 }
@@ -383,17 +396,17 @@ export const INVARIANT_SUMMARY = {
   inventory: [
     'Inventory quantity can never be negative',
     'Reserved quantity can never exceed total quantity',
-    'Available quantity (quantity - reserved) must be non-negative'
+    'Available quantity (quantity - reserved) must be non-negative',
   ],
   orders: [
     'Order progress must be between 0 and 100',
     'Terminal states (SHIPPED, CANCELLED) cannot transition',
     'Picker required for PICKING and PICKED states',
-    'Packer required for PACKING and PACKED states'
+    'Packer required for PACKING and PACKED states',
   ],
   orderItems: [
     'Ordered quantity must always be positive',
-    'Picked quantity can never exceed ordered quantity'
+    'Picked quantity can never exceed ordered quantity',
   ],
   operations: [
     'Bin location format must be Z-A-S (e.g., A-12-03)',
@@ -401,8 +414,8 @@ export const INVARIANT_SUMMARY = {
     'Audit trail entries never deleted',
     'Foreign key constraints never disabled',
     'Order IDs must be unique',
-    'Available inventory sufficient before reservation'
-  ]
+    'Available inventory sufficient before reservation',
+  ],
 } as const;
 
 // ============================================================================
@@ -461,7 +474,7 @@ export class InvariantChecker {
     if (this.hasViolations()) {
       throw new Error(
         `INVARIANT VIOLATIONS DETECTED:\n${this.violations.join('\n')}\n` +
-        `These violations indicate data corruption or logic errors.`
+          `These violations indicate data corruption or logic errors.`
       );
     }
   }

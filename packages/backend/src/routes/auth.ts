@@ -184,7 +184,18 @@ router.post(
     }
 
     // Validate role (including new roles)
-    const validRoles = ['PICKER', 'PACKER', 'STOCK_CONTROLLER', 'ADMIN', 'SUPERVISOR', 'PRODUCTION', 'INWARDS', 'SALES', 'MAINTENANCE', 'RMA'];
+    const validRoles = [
+      'PICKER',
+      'PACKER',
+      'STOCK_CONTROLLER',
+      'ADMIN',
+      'SUPERVISOR',
+      'PRODUCTION',
+      'INWARDS',
+      'SALES',
+      'MAINTENANCE',
+      'RMA',
+    ];
     if (!validRoles.includes(role)) {
       return res.status(400).json({
         error: 'Invalid role',
@@ -225,7 +236,18 @@ router.post(
     }
 
     // Validate role (including new roles)
-    const validRoles = ['PICKER', 'PACKER', 'STOCK_CONTROLLER', 'ADMIN', 'SUPERVISOR', 'PRODUCTION', 'INWARDS', 'SALES', 'MAINTENANCE', 'RMA'];
+    const validRoles = [
+      'PICKER',
+      'PACKER',
+      'STOCK_CONTROLLER',
+      'ADMIN',
+      'SUPERVISOR',
+      'PRODUCTION',
+      'INWARDS',
+      'SALES',
+      'MAINTENANCE',
+      'RMA',
+    ];
     if (!validRoles.includes(role)) {
       return res.status(400).json({
         error: 'Invalid role',

@@ -56,7 +56,6 @@ async function fixOrder() {
       [orderId]
     );
     console.log('Updated order state:', verifyResult.rows[0]);
-
   } catch (error) {
     console.error('Error:', error);
   } finally {

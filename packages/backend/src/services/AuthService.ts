@@ -74,10 +74,7 @@ export class AuthService {
     logger.info('Login attempt', { email: credentials.email });
 
     // Verify credentials
-    const user = await userRepository.verifyPassword(
-      credentials.email,
-      credentials.password
-    );
+    const user = await userRepository.verifyPassword(credentials.email, credentials.password);
 
     if (!user) {
       logger.warn('Login failed - invalid credentials', { email: credentials.email });
@@ -85,7 +82,10 @@ export class AuthService {
     }
 
     if (!user.active) {
-      logger.warn('Login failed - inactive user', { email: credentials.email, userId: user.userId });
+      logger.warn('Login failed - inactive user', {
+        email: credentials.email,
+        userId: user.userId,
+      });
       throw new UnauthorizedError('User account is inactive');
     }
 
@@ -229,7 +229,10 @@ export class AuthService {
     // Orders remain assigned to the picker/packer so they can resume work when they log back in
     // This prevents orders from being stolen by other pickers/packers when someone logs out
 
-    logger.info('User logged out - location cleared to None, orders remain assigned for resumption', { userId });
+    logger.info(
+      'User logged out - location cleared to None, orders remain assigned for resumption',
+      { userId }
+    );
   }
 
   // --------------------------------------------------------------------------

@@ -10,7 +10,7 @@ const pool = new Pool({
   port: 5432,
   database: 'wms_db',
   user: 'wms_user',
-  password: 'wms_password'
+  password: 'wms_password',
 });
 
 async function checkAndFixPickingOrders() {
@@ -59,10 +59,9 @@ async function checkAndFixPickingOrders() {
         console.log(`  → Need to generate pick_tasks from order_items\n`);
 
         // Get order items
-        const itemsResult = await client.query(
-          'SELECT * FROM order_items WHERE order_id = $1',
-          [orderId]
-        );
+        const itemsResult = await client.query('SELECT * FROM order_items WHERE order_id = $1', [
+          orderId,
+        ]);
 
         // Generate pick tasks for each order item
         for (const item of itemsResult.rows) {
@@ -70,7 +69,15 @@ async function checkAndFixPickingOrders() {
           await client.query(
             `INSERT INTO pick_tasks (pick_task_id, order_id, order_item_id, sku, name, target_bin, quantity, picked_quantity, status)
              VALUES ($1, $2, $3, $4, $5, $6, $7, 0, 'PENDING')`,
-            [pickTaskId, orderId, item.order_item_id, item.sku, item.name, item.bin_location, item.quantity]
+            [
+              pickTaskId,
+              orderId,
+              item.order_item_id,
+              item.sku,
+              item.name,
+              item.bin_location,
+              item.quantity,
+            ]
           );
           console.log(`    Created pick_task: ${pickTaskId} for ${item.sku}`);
         }
@@ -84,7 +91,6 @@ async function checkAndFixPickingOrders() {
 
     await client.query('COMMIT');
     console.log('=== Check complete ===');
-
   } catch (error) {
     await client.query('ROLLBACK');
     console.error('Error:', error);

@@ -192,7 +192,7 @@ export function setupPortLockCleanup(port: number): void {
   });
 
   // Clean up on uncaught exceptions
-  process.on('uncaughtException', async (error) => {
+  process.on('uncaughtException', async error => {
     if (error.message.includes('EADDRINUSE')) {
       logger.error('Port already in use - exiting');
       await cleanup();
@@ -210,9 +210,10 @@ export async function checkPortAvailable(port: number): Promise<boolean> {
   }
 
   // Try to create a server to test the port
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     const net = require('net');
-    const tester = net.createServer()
+    const tester = net
+      .createServer()
       .once('error', () => {
         resolve(false);
       })

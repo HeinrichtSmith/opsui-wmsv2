@@ -5,6 +5,7 @@ All MCP servers are now configured with automatic restart capabilities. If any s
 ## What Was Implemented
 
 ### 1. WMS Dev Accelerator (Custom Server)
+
 - **File**: `tools/mcp-server/watch-and-reload.bat`
 - **Features**:
   - Monitors the WMS MCP server process
@@ -13,6 +14,7 @@ All MCP servers are now configured with automatic restart capabilities. If any s
   - Built-in connection loss detection via stdin close events
 
 ### 2. Universal Auto-Restart Wrapper
+
 - **File**: `tools/mcp-server/mcp-autorestart.bat`
 - **Purpose**: Works with ANY MCP server (npx, python, custom)
 - **Features**:
@@ -22,7 +24,9 @@ All MCP servers are now configured with automatic restart capabilities. If any s
   - 3-second delay between restart attempts
 
 ### 3. Server-Side Improvements (WMS MCP v2.0)
+
 Updated `tools/mcp-server/src/index.ts` with:
+
 - **Stdio close detection**: Detects when Cline disconnects
 - **Uncaught exception handler**: Catches unexpected errors and restarts
 - **Unhandled rejection handler**: Catches promise rejections and restarts
@@ -58,6 +62,7 @@ Updated `tools/mcp-server/src/index.ts` with:
 ### Disconnection Detection
 
 The WMS MCP server monitors:
+
 - `process.stdin.on('close')` → Stdio pipe closed (Cline disconnected)
 - `uncaughtException` → Unexpected errors
 - `unhandledRejection` → Unhandled promise rejections
@@ -66,19 +71,20 @@ All trigger exit code 1 → Auto-restart
 
 ## Configured Servers
 
-| Server | Wrapper | Status |
-|--------|---------|--------|
+| Server              | Wrapper                | Status                  |
+| ------------------- | ---------------------- | ----------------------- |
 | WMS Dev Accelerator | `watch-and-reload.bat` | ✅ Auto-restart enabled |
-| Upstash Context7 | `mcp-autorestart.bat` | ✅ Auto-restart enabled |
-| Firecrawl | `mcp-autorestart.bat` | ✅ Auto-restart enabled |
-| Sequential Thinking | `mcp-autorestart.bat` | ✅ Auto-restart enabled |
-| Browserbase | `mcp-autorestart.bat` | ✅ Auto-restart enabled |
-| Filesystem | `mcp-autorestart.bat` | ✅ Auto-restart enabled |
-| Git Repo Research | `mcp-autorestart.bat` | ✅ Auto-restart enabled |
+| Upstash Context7    | `mcp-autorestart.bat`  | ✅ Auto-restart enabled |
+| Firecrawl           | `mcp-autorestart.bat`  | ✅ Auto-restart enabled |
+| Sequential Thinking | `mcp-autorestart.bat`  | ✅ Auto-restart enabled |
+| Browserbase         | `mcp-autorestart.bat`  | ✅ Auto-restart enabled |
+| Filesystem          | `mcp-autorestart.bat`  | ✅ Auto-restart enabled |
+| Git Repo Research   | `mcp-autorestart.bat`  | ✅ Auto-restart enabled |
 
 ## Logs
 
 View restart logs:
+
 ```bash
 # WMS MCP server
 type %TEMP%\wms-mcp-reload.log
@@ -90,17 +96,20 @@ dir %TEMP%\mcp-autorestart-*.log
 ## Troubleshooting
 
 ### Server Won't Start
+
 1. Check the log file for errors
 2. Verify the MCP server path is correct
 3. Ensure dependencies are installed
 
 ### Server Keeps Restarting
+
 1. **Immediate restart** (no 3s delay) = Not using wrapper
 2. **Continuous restart loop** = Server crash on startup
    - Check logs for error messages
    - May have dependency or configuration issues
 
 ### Server Shows Red Icon in Cline
+
 1. Wait 3-5 seconds for auto-restart
 2. If still red, check Cline's developer console
 3. Verify server is running in Task Manager

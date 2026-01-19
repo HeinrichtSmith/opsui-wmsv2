@@ -113,7 +113,6 @@ async function fixTimezoneColumn(): Promise<void> {
       console.log(`\n⚠️  Still seeing ${secondsAgo}s difference`);
       console.log('   Further investigation may be needed.');
     }
-
   } catch (error) {
     console.error('\n❌ Failed to fix timezone:', error);
     throw error;
@@ -127,7 +126,7 @@ fixTimezoneColumn()
     console.log('\n✅ Script completed successfully');
     process.exit(0);
   })
-  .catch((error) => {
+  .catch(error => {
     console.error('\n❌ Script failed:', error);
     process.exit(1);
   });

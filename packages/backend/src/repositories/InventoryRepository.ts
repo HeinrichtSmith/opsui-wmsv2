@@ -91,7 +91,7 @@ export class InventoryRepository extends BaseRepository<InventoryUnit> {
     quantity: number,
     orderId: string
   ): Promise<InventoryUnit> {
-    return this.withTransaction(async (client) => {
+    return this.withTransaction(async client => {
       // Check availability
       const checkResult = await client.query(
         `SELECT available FROM inventory_units
@@ -172,7 +172,7 @@ export class InventoryRepository extends BaseRepository<InventoryUnit> {
     quantity: number,
     orderId: string
   ): Promise<InventoryUnit> {
-    return this.withTransaction(async (client) => {
+    return this.withTransaction(async client => {
       // Check sufficient quantity
       const checkResult = await client.query(
         `SELECT quantity, reserved FROM inventory_units
@@ -225,7 +225,7 @@ export class InventoryRepository extends BaseRepository<InventoryUnit> {
     userId: string,
     reason: string
   ): Promise<InventoryUnit> {
-    return this.withTransaction(async (client) => {
+    return this.withTransaction(async client => {
       const result = await client.query(
         `INSERT INTO inventory_units (unit_id, sku, bin_location, quantity, reserved, last_updated)
          VALUES ($1, $2, $3, $4, 0, NOW())
@@ -252,13 +252,15 @@ export class InventoryRepository extends BaseRepository<InventoryUnit> {
   // GET TRANSACTION HISTORY
   // --------------------------------------------------------------------------
 
-  async getTransactionHistory(filters: {
-    sku?: string;
-    orderId?: string;
-    type?: TransactionType;
-    limit?: number;
-    offset?: number;
-  } = {}): Promise<{ transactions: InventoryTransaction[]; total: number }> {
+  async getTransactionHistory(
+    filters: {
+      sku?: string;
+      orderId?: string;
+      type?: TransactionType;
+      limit?: number;
+      offset?: number;
+    } = {}
+  ): Promise<{ transactions: InventoryTransaction[]; total: number }> {
     const conditions: string[] = [];
     const params: any[] = [];
     let paramIndex = 1;
@@ -373,7 +375,7 @@ export class InventoryRepository extends BaseRepository<InventoryUnit> {
     return {
       expected,
       actual,
-      discrepancies: discrepanciesResult.rows.map((row) => ({
+      discrepancies: discrepanciesResult.rows.map(row => ({
         binLocation: row.bin_location,
         expected: parseInt(row.expected, 10),
         actual: parseInt(row.actual, 10),

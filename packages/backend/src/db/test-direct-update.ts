@@ -64,7 +64,6 @@ async function testDirectUpdate(): Promise<void> {
     } else {
       console.log(`\n⚠️  Update is ${secondsAgo}s old, which is unexpected.\n`);
     }
-
   } catch (error) {
     console.error('\n❌ Test failed:', error);
     throw error;

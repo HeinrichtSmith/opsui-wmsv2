@@ -28,7 +28,7 @@ root.render(
 
 if (import.meta.env.DEV && import.meta.hot) {
   // Accept hot updates for the App component
-  import.meta.hot.accept('./App', (newApp) => {
+  import.meta.hot.accept('./App', newApp => {
     // Preserve component state during HMR
     const App = newApp?.default || newApp;
     if (App) {
@@ -41,7 +41,7 @@ if (import.meta.env.DEV && import.meta.hot) {
   });
 
   // Handle HMR errors gracefully
-  import.meta.hot.accept((err) => {
+  import.meta.hot.accept(err => {
     if (err) {
       console.error('HMR error:', err);
       // Force full reload on HMR error

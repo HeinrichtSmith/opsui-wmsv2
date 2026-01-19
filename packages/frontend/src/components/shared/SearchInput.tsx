@@ -30,7 +30,11 @@ interface SearchInputProps {
 // COMPONENT
 // ============================================================================
 
-export function SearchInput({ onSelect, placeholder = 'Search products...', className = '' }: SearchInputProps) {
+export function SearchInput({
+  onSelect,
+  placeholder = 'Search products...',
+  className = '',
+}: SearchInputProps) {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -106,11 +110,11 @@ export function SearchInput({ onSelect, placeholder = 'Search products...', clas
     switch (e.key) {
       case 'ArrowDown':
         e.preventDefault();
-        setSelectedIndex((prev) => (prev < results.length - 1 ? prev + 1 : prev));
+        setSelectedIndex(prev => (prev < results.length - 1 ? prev + 1 : prev));
         break;
       case 'ArrowUp':
         e.preventDefault();
-        setSelectedIndex((prev) => (prev > 0 ? prev - 1 : -1));
+        setSelectedIndex(prev => (prev > 0 ? prev - 1 : -1));
         break;
       case 'Enter':
         e.preventDefault();
@@ -143,7 +147,7 @@ export function SearchInput({ onSelect, placeholder = 'Search products...', clas
           ref={inputRef}
           type="text"
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={e => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
           onFocus={() => {
             if (results.length > 0) setIsOpen(true);
@@ -175,8 +179,12 @@ export function SearchInput({ onSelect, placeholder = 'Search products...', clas
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1 min-w-0">
-                  <div className="font-medium dark:text-white text-gray-900 truncate">{result.name}</div>
-                  <div className="text-sm dark:text-gray-400 text-gray-600 mt-0.5">SKU: {result.sku}</div>
+                  <div className="font-medium dark:text-white text-gray-900 truncate">
+                    {result.name}
+                  </div>
+                  <div className="text-sm dark:text-gray-400 text-gray-600 mt-0.5">
+                    SKU: {result.sku}
+                  </div>
                 </div>
                 <div className="flex-shrink-0">
                   <span className="px-2 py-1 text-xs font-medium dark:bg-primary-500/20 dark:text-primary-400 bg-primary-100 text-primary-700 rounded">

@@ -16,14 +16,14 @@ export enum RuleType {
   INVENTORY = 'INVENTORY',
   PRICING = 'PRICING',
   VALIDATION = 'VALIDATION',
-  NOTIFICATION = 'NOTIFICATION'
+  NOTIFICATION = 'NOTIFICATION',
 }
 
 export enum RuleStatus {
   DRAFT = 'DRAFT',
   ACTIVE = 'ACTIVE',
   INACTIVE = 'INACTIVE',
-  ARCHIVED = 'ARCHIVED'
+  ARCHIVED = 'ARCHIVED',
 }
 
 export enum ConditionOperator {
@@ -42,12 +42,12 @@ export enum ConditionOperator {
   BETWEEN = 'BETWEEN',
   IS_NULL = 'IS_NULL',
   IS_NOT_NULL = 'IS_NOT_NULL',
-  MATCHES_REGEX = 'MATCHES_REGEX'
+  MATCHES_REGEX = 'MATCHES_REGEX',
 }
 
 export enum LogicalOperator {
   AND = 'AND',
-  OR = 'OR'
+  OR = 'OR',
 }
 
 export enum ActionType {
@@ -60,7 +60,7 @@ export enum ActionType {
   REQUIRE_APPROVAL = 'REQUIRE_APPROVAL',
   UPDATE_INVENTORY = 'UPDATE_INVENTORY',
   CREATE_TASK = 'CREATE_TASK',
-  MODIFY_FIELD = 'MODIFY_FIELD'
+  MODIFY_FIELD = 'MODIFY_FIELD',
 }
 
 export enum RuleEventType {
@@ -71,7 +71,7 @@ export enum RuleEventType {
   LOCATION_CAPACITY_CHANGED = 'LOCATION_CAPACITY_CHANGED',
   USER_ASSIGNED = 'USER_ASSIGNED',
   SHIPMENT_CREATED = 'SHIPMENT_CREATED',
-  PICK_TASK_COMPLETED = 'PICK_TASK_COMPLETED'
+  PICK_TASK_COMPLETED = 'PICK_TASK_COMPLETED',
 }
 
 // ============================================================================
@@ -181,7 +181,7 @@ export enum AllocationStrategy {
   LEAST_PICKS = 'LEAST_PICKS', // Minimize picks per location
   ZONE_PICKING = 'ZONE_PICKING', // Zone-based picking
   WAVE_PICKING = 'WAVE_PICKING', // Batch/wave picking
-  BULK_PICKING = 'BULK_PICKING' // Bulk/batch picking
+  BULK_PICKING = 'BULK_PICKING', // Bulk/batch picking
 }
 
 export interface AllocationRule {

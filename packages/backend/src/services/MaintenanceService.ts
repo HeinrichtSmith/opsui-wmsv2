@@ -18,7 +18,7 @@ import {
   AddMeterReadingDTO,
   AssetStatus,
   MaintenanceStatus,
-  NotFoundError
+  NotFoundError,
 } from '@opsui/shared';
 
 export class MaintenanceService {
@@ -39,7 +39,7 @@ export class MaintenanceService {
     const asset = await maintenanceRepository.createAsset({
       ...dto,
       status: 'OPERATIONAL',
-      createdBy
+      createdBy,
     });
 
     return asset;
@@ -70,7 +70,7 @@ export class MaintenanceService {
 
     const updated = await maintenanceRepository.updateAsset(assetId, {
       ...dto,
-      updatedBy: userId
+      updatedBy: userId,
     });
 
     return updated as Asset;
@@ -85,7 +85,7 @@ export class MaintenanceService {
 
     const updated = await maintenanceRepository.updateAsset(assetId, {
       status: 'RETIRED',
-      updatedBy: userId
+      updatedBy: userId,
     });
 
     return updated as Asset;
@@ -95,7 +95,10 @@ export class MaintenanceService {
   // MAINTENANCE SCHEDULES
   // ========================================================================
 
-  async createSchedule(dto: CreateMaintenanceScheduleDTO, createdBy: string): Promise<MaintenanceSchedule> {
+  async createSchedule(
+    dto: CreateMaintenanceScheduleDTO,
+    createdBy: string
+  ): Promise<MaintenanceSchedule> {
     // Validate schedule
     if (!dto.name || dto.name.trim() === '') {
       throw new Error('Schedule name is required');
@@ -121,7 +124,7 @@ export class MaintenanceService {
 
     const schedule = await maintenanceRepository.createSchedule({
       ...dto,
-      createdBy
+      createdBy,
     });
 
     return schedule;
@@ -166,14 +169,14 @@ export class MaintenanceService {
 
     const workOrder = await maintenanceRepository.createWorkOrder({
       ...dto,
-      createdBy
+      createdBy,
     });
 
     // Update asset status if maintenance type is not preventive
     if (dto.maintenanceType !== 'PREVENTIVE') {
       await maintenanceRepository.updateAsset(dto.assetId, {
         status: 'IN_MAINTENANCE',
-        updatedBy: createdBy
+        updatedBy: createdBy,
       });
     }
 
@@ -208,13 +211,17 @@ export class MaintenanceService {
     const updated = await maintenanceRepository.updateWorkOrder(workOrderId, {
       status: 'IN_PROGRESS',
       actualStartDate: new Date(),
-      performedBy: userId
+      performedBy: userId,
     } as any);
 
     return updated as MaintenanceWorkOrder;
   }
 
-  async completeWorkOrder(workOrderId: string, dto: CompleteWorkOrderDTO, userId: string): Promise<MaintenanceWorkOrder> {
+  async completeWorkOrder(
+    workOrderId: string,
+    dto: CompleteWorkOrderDTO,
+    userId: string
+  ): Promise<MaintenanceWorkOrder> {
     const workOrder = await this.getWorkOrderById(workOrderId);
 
     if (workOrder.status !== 'IN_PROGRESS') {
@@ -227,13 +234,13 @@ export class MaintenanceService {
 
     const completed = await maintenanceRepository.completeWorkOrder(workOrderId, {
       ...dto,
-      completedBy: userId
+      completedBy: userId,
     });
 
     // Update asset back to operational
     await maintenanceRepository.updateAsset(workOrder.assetId, {
       status: 'OPERATIONAL',
-      updatedBy: userId
+      updatedBy: userId,
     });
 
     // Create service log entry
@@ -247,7 +254,7 @@ export class MaintenanceService {
       cost: completed.totalCost,
       notes: dto.notes,
       createdBy: userId,
-      createdAt: new Date()
+      createdAt: new Date(),
     });
 
     return completed;
@@ -275,13 +282,13 @@ export class MaintenanceService {
 
     const serviceLog = await maintenanceRepository.createServiceLog({
       ...log,
-      createdAt: new Date()
+      createdAt: new Date(),
     });
 
     // Update asset last maintenance date
     await maintenanceRepository.updateAsset(log.assetId, {
       lastMaintenanceDate: log.serviceDate,
-      updatedBy: log.createdBy
+      updatedBy: log.createdBy,
     });
 
     return serviceLog;
@@ -312,7 +319,7 @@ export class MaintenanceService {
 
     const reading = await maintenanceRepository.addMeterReading({
       ...dto,
-      readBy: userId
+      readBy: userId,
     });
 
     // Check if reading triggers maintenance
@@ -330,7 +337,11 @@ export class MaintenanceService {
   // PRIVATE HELPERS
   // ========================================================================
 
-  private async checkMeterReadingForMaintenance(assetId: string, meterType: string, value: number): Promise<void> {
+  private async checkMeterReadingForMaintenance(
+    assetId: string,
+    meterType: string,
+    value: number
+  ): Promise<void> {
     // Check if this reading exceeds any thresholds that should trigger maintenance
     // This would integrate with the maintenance schedule and alert system
 

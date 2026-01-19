@@ -9,7 +9,7 @@ const pool = new Pool({
   port: 5432,
   database: 'wms_db',
   user: 'wms_user',
-  password: 'wms_password'
+  password: 'wms_password',
 });
 
 async function testQuery() {
@@ -21,18 +21,14 @@ async function testQuery() {
     console.log(`=== Testing pick_tasks query for order ${orderId} ===\n`);
 
     // Test 1: Check if order exists
-    const orderResult = await client.query(
-      'SELECT * FROM orders WHERE order_id = $1',
-      [orderId]
-    );
+    const orderResult = await client.query('SELECT * FROM orders WHERE order_id = $1', [orderId]);
     console.log('Order exists:', orderResult.rows.length > 0);
     console.log('Order status:', orderResult.rows[0]?.status);
 
     // Test 2: Check pick_tasks directly
-    const pickTasksDirect = await client.query(
-      'SELECT * FROM pick_tasks WHERE order_id = $1',
-      [orderId]
-    );
+    const pickTasksDirect = await client.query('SELECT * FROM pick_tasks WHERE order_id = $1', [
+      orderId,
+    ]);
     console.log('\nPick tasks (direct query):', pickTasksDirect.rows.length);
     console.log('First pick task:', JSON.stringify(pickTasksDirect.rows[0], null, 2));
 
@@ -71,7 +67,6 @@ async function testQuery() {
         console.log('First item:', JSON.stringify(result.orders[0].items[0], null, 2));
       }
     }
-
   } catch (error) {
     console.error('Error:', error);
   } finally {

@@ -20,7 +20,7 @@ import {
   CustomerStatus,
   LeadStatus,
   OpportunityStage,
-  QuoteStatus
+  QuoteStatus,
 } from '@opsui/shared';
 
 export class SalesRepository {
@@ -28,7 +28,9 @@ export class SalesRepository {
   // CUSTOMERS
   // ========================================================================
 
-  async createCustomer(customer: Omit<Customer, 'customerId' | 'createdAt' | 'updatedAt' | 'lastContactDate'>): Promise<Customer> {
+  async createCustomer(
+    customer: Omit<Customer, 'customerId' | 'createdAt' | 'updatedAt' | 'lastContactDate'>
+  ): Promise<Customer> {
     const client = await getPool();
 
     // Generate customer ID and number
@@ -57,7 +59,7 @@ export class SalesRepository {
         customer.creditLimit || null,
         customer.notes || null,
         customer.assignedTo || null,
-        customer.createdBy
+        customer.createdBy,
       ]
     );
 
@@ -68,10 +70,9 @@ export class SalesRepository {
   async findCustomerById(customerId: string): Promise<Customer | null> {
     const client = await getPool();
 
-    const result = await client.query(
-      `SELECT * FROM customers WHERE customer_id = $1`,
-      [customerId]
-    );
+    const result = await client.query(`SELECT * FROM customers WHERE customer_id = $1`, [
+      customerId,
+    ]);
 
     if (result.rows.length === 0) {
       return null;
@@ -83,10 +84,9 @@ export class SalesRepository {
   async findCustomerByNumber(customerNumber: string): Promise<Customer | null> {
     const client = await getPool();
 
-    const result = await client.query(
-      `SELECT * FROM customers WHERE customer_number = $1`,
-      [customerNumber]
-    );
+    const result = await client.query(`SELECT * FROM customers WHERE customer_number = $1`, [
+      customerNumber,
+    ]);
 
     if (result.rows.length === 0) {
       return null;
@@ -222,7 +222,9 @@ export class SalesRepository {
   // LEADS
   // ========================================================================
 
-  async createLead(lead: Omit<Lead, 'leadId' | 'createdAt' | 'updatedAt' | 'lastContactDate' | 'nextFollowUpDate'>): Promise<Lead> {
+  async createLead(
+    lead: Omit<Lead, 'leadId' | 'createdAt' | 'updatedAt' | 'lastContactDate' | 'nextFollowUpDate'>
+  ): Promise<Lead> {
     const client = await getPool();
 
     const leadId = `LEAD-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -248,7 +250,7 @@ export class SalesRepository {
         lead.description || null,
         lead.assignedTo,
         lead.expectedCloseDate || null,
-        lead.createdBy
+        lead.createdBy,
       ]
     );
 
@@ -259,10 +261,7 @@ export class SalesRepository {
   async findLeadById(leadId: string): Promise<Lead | null> {
     const client = await getPool();
 
-    const result = await client.query(
-      `SELECT * FROM leads WHERE lead_id = $1`,
-      [leadId]
-    );
+    const result = await client.query(`SELECT * FROM leads WHERE lead_id = $1`, [leadId]);
 
     if (result.rows.length === 0) {
       return null;
@@ -368,7 +367,12 @@ export class SalesRepository {
   // OPPORTUNITIES
   // ========================================================================
 
-  async createOpportunity(opp: Omit<Opportunity, 'opportunityId' | 'opportunityNumber' | 'createdAt' | 'updatedAt' | 'closedAt' | 'closedBy'>): Promise<Opportunity> {
+  async createOpportunity(
+    opp: Omit<
+      Opportunity,
+      'opportunityId' | 'opportunityNumber' | 'createdAt' | 'updatedAt' | 'closedAt' | 'closedBy'
+    >
+  ): Promise<Opportunity> {
     const client = await getPool();
 
     const opportunityId = `OPP-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -393,7 +397,7 @@ export class SalesRepository {
         opp.assignedTo,
         opp.source,
         opp.competitor || null,
-        opp.createdBy
+        opp.createdBy,
       ]
     );
 
@@ -404,10 +408,9 @@ export class SalesRepository {
   async findOpportunityById(opportunityId: string): Promise<Opportunity | null> {
     const client = await getPool();
 
-    const result = await client.query(
-      `SELECT * FROM opportunities WHERE opportunity_id = $1`,
-      [opportunityId]
-    );
+    const result = await client.query(`SELECT * FROM opportunities WHERE opportunity_id = $1`, [
+      opportunityId,
+    ]);
 
     if (result.rows.length === 0) {
       return null;
@@ -472,7 +475,12 @@ export class SalesRepository {
   // QUOTES
   // ========================================================================
 
-  async createQuote(quote: Omit<Quote, 'quoteId' | 'quoteNumber' | 'createdAt' | 'updatedAt' | 'sentAt' | 'acceptedAt' | 'rejectedAt'>): Promise<Quote> {
+  async createQuote(
+    quote: Omit<
+      Quote,
+      'quoteId' | 'quoteNumber' | 'createdAt' | 'updatedAt' | 'sentAt' | 'acceptedAt' | 'rejectedAt'
+    >
+  ): Promise<Quote> {
     const client = await getPool();
 
     const quoteId = `QT-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -512,7 +520,7 @@ export class SalesRepository {
           totalAmount,
           quote.notes || null,
           quote.termsAndConditions || null,
-          quote.createdBy
+          quote.createdBy,
         ]
       );
 
@@ -532,7 +540,7 @@ export class SalesRepository {
             item.discount,
             item.taxRate,
             item.lineNumber,
-            item.total
+            item.total,
           ]
         );
       }
@@ -540,7 +548,7 @@ export class SalesRepository {
       await client.query('COMMIT');
 
       logger.info('Quote created', { quoteId, quoteNumber });
-      return await this.findQuoteById(quoteId) as Quote;
+      return (await this.findQuoteById(quoteId)) as Quote;
     } catch (error) {
       await client.query('ROLLBACK');
       logger.error('Error creating quote', error);
@@ -551,10 +559,7 @@ export class SalesRepository {
   async findQuoteById(quoteId: string): Promise<Quote | null> {
     const client = await getPool();
 
-    const result = await client.query(
-      `SELECT * FROM quotes WHERE quote_id = $1`,
-      [quoteId]
-    );
+    const result = await client.query(`SELECT * FROM quotes WHERE quote_id = $1`, [quoteId]);
 
     if (result.rows.length === 0) {
       return null;
@@ -578,7 +583,7 @@ export class SalesRepository {
       discount: parseFloat(row.discount),
       taxRate: parseFloat(row.tax_rate),
       lineNumber: row.line_number,
-      total: parseFloat(row.total)
+      total: parseFloat(row.total),
     }));
 
     return this.mapRowToQuote(quoteRow, lineItems);
@@ -640,7 +645,9 @@ export class SalesRepository {
   // CUSTOMER INTERACTIONS
   // ========================================================================
 
-  async createInteraction(interaction: Omit<CustomerInteraction, 'interactionId' | 'createdAt'>): Promise<CustomerInteraction> {
+  async createInteraction(
+    interaction: Omit<CustomerInteraction, 'interactionId' | 'createdAt'>
+  ): Promise<CustomerInteraction> {
     const client = await getPool();
 
     const interactionId = `INT-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -660,7 +667,7 @@ export class SalesRepository {
         interaction.notes,
         interaction.durationMinutes || null,
         interaction.nextFollowUpDate || null,
-        interaction.createdBy
+        interaction.createdBy,
       ]
     );
 
@@ -668,11 +675,14 @@ export class SalesRepository {
 
     return {
       interactionId,
-      ...interaction
+      ...interaction,
     };
   }
 
-  async findInteractionsByCustomer(customerId: string, limit: number = 50): Promise<CustomerInteraction[]> {
+  async findInteractionsByCustomer(
+    customerId: string,
+    limit: number = 50
+  ): Promise<CustomerInteraction[]> {
     const client = await getPool();
 
     const result = await client.query(
@@ -691,7 +701,7 @@ export class SalesRepository {
       durationMinutes: row.duration_minutes,
       nextFollowUpDate: row.next_follow_up_date,
       createdAt: row.created_at,
-      createdBy: row.created_by
+      createdBy: row.created_by,
     }));
   }
 
@@ -720,7 +730,7 @@ export class SalesRepository {
       createdBy: row.created_by,
       updatedAt: row.updated_at,
       updatedBy: row.updated_by,
-      lastContactDate: row.last_contact_date
+      lastContactDate: row.last_contact_date,
     };
   }
 
@@ -744,7 +754,7 @@ export class SalesRepository {
       updatedAt: row.updated_at,
       updatedBy: row.updated_by,
       lastContactDate: row.last_contact_date,
-      nextFollowUpDate: row.next_follow_up_date
+      nextFollowUpDate: row.next_follow_up_date,
     };
   }
 
@@ -768,7 +778,7 @@ export class SalesRepository {
       updatedAt: row.updated_at,
       updatedBy: row.updated_by,
       closedAt: row.closed_at,
-      closedBy: row.closed_by
+      closedBy: row.closed_by,
     };
   }
 
@@ -794,7 +804,7 @@ export class SalesRepository {
       sentAt: row.sent_at,
       acceptedAt: row.accepted_at,
       rejectedAt: row.rejected_at,
-      convertedToOrderId: row.converted_to_order_id
+      convertedToOrderId: row.converted_to_order_id,
     };
   }
 }

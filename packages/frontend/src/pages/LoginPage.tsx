@@ -18,7 +18,7 @@ import { showSuccess, showError } from '@/stores/uiStore';
 
 export function LoginPage() {
   const navigate = useNavigate();
-  const login = useAuthStore((state) => state.login);
+  const login = useAuthStore(state => state.login);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -29,7 +29,7 @@ export function LoginPage() {
     onMutate: () => {
       setIsLoading(true);
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       // Check if user data exists
       if (!data || !data.user) {
         showError('Login response missing user data');
@@ -84,7 +84,7 @@ export function LoginPage() {
                 id="email"
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={e => setEmail(e.target.value)}
                 autoComplete="email"
                 required
                 className="mobile-input block w-full px-4 py-3 border rounded-xl bg-white/[0.05] border-white/[0.08] text-white placeholder:text-gray-500 focus:border-primary-500/50 focus:bg-white/[0.08] focus:shadow-glow transition-all duration-300"
@@ -100,7 +100,7 @@ export function LoginPage() {
                 id="password"
                 type="password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={e => setPassword(e.target.value)}
                 autoComplete="current-password"
                 required
                 className="mobile-input block w-full px-4 py-3 border rounded-xl bg-white/[0.05] border-white/[0.08] text-white placeholder:text-gray-500 focus:border-primary-500/50 focus:bg-white/[0.08] focus:shadow-glow transition-all duration-300"
@@ -124,9 +124,7 @@ export function LoginPage() {
 
         {/* Mobile-specific help text */}
         <div className="text-center sm:hidden">
-          <p className="text-xs text-gray-500">
-            Use your warehouse credentials to sign in
-          </p>
+          <p className="text-xs text-gray-500">Use your warehouse credentials to sign in</p>
         </div>
       </div>
     </div>

@@ -84,9 +84,14 @@ export class OrderService {
   // --------------------------------------------------------------------------
 
   async pickItem(orderId: string, dto: PickItemDTO, pickerId: string): Promise<PickActionResponse> {
-    logger.info('Processing pick', { orderId, sku: dto.sku, quantity: dto.quantity, pickTaskId: dto.pickTaskId });
+    logger.info('Processing pick', {
+      orderId,
+      sku: dto.sku,
+      quantity: dto.quantity,
+      pickTaskId: dto.pickTaskId,
+    });
 
-    return orderRepository.withTransaction(async (client) => {
+    return orderRepository.withTransaction(async client => {
       // Get order
       const orderResult = await client.query(
         `SELECT * FROM orders WHERE order_id = $1 FOR UPDATE`,
@@ -100,7 +105,9 @@ export class OrderService {
       const order = orderResult.rows[0];
 
       if (order.status !== OrderStatus.PICKING) {
-        throw new ValidationError(`Order is not in PICKING status. Current status: ${order.status}`);
+        throw new ValidationError(
+          `Order is not in PICKING status. Current status: ${order.status}`
+        );
       }
 
       if (order.picker_id !== pickerId) {
@@ -149,7 +156,9 @@ export class OrderService {
 
       // Validate bin location
       if (dto.binLocation !== pickTask.target_bin) {
-        throw new ValidationError(`Wrong bin location. Expected: ${pickTask.target_bin}, scanned: ${dto.binLocation}`);
+        throw new ValidationError(
+          `Wrong bin location. Expected: ${pickTask.target_bin}, scanned: ${dto.binLocation}`
+        );
       }
 
       // Validate quantity
@@ -170,9 +179,12 @@ export class OrderService {
 
       // Update order item - sync with pick_tasks to avoid constraint violations
       // Also update status based on picked_quantity (trigger only updates order progress)
-      const itemStatus = newPickedQuantity >= pickTask.quantity 
-        ? 'FULLY_PICKED' 
-        : newPickedQuantity > 0 ? 'PARTIAL_PICKED' : 'PENDING';
+      const itemStatus =
+        newPickedQuantity >= pickTask.quantity
+          ? 'FULLY_PICKED'
+          : newPickedQuantity > 0
+            ? 'PARTIAL_PICKED'
+            : 'PENDING';
 
       await client.query(
         `UPDATE order_items
@@ -202,7 +214,13 @@ export class OrderService {
       await client.query(
         `INSERT INTO inventory_transactions (transaction_id, type, sku, quantity, order_id, reason, bin_location)
          VALUES ($1, 'RESERVATION', $2, $3, $4, 'Pick confirmed', $5)`,
-        [`TXN-PICK-${dto.pickTaskId}-${Date.now()}`, dto.sku, dto.quantity, orderId, dto.binLocation]
+        [
+          `TXN-PICK-${dto.pickTaskId}-${Date.now()}`,
+          dto.sku,
+          dto.quantity,
+          orderId,
+          dto.binLocation,
+        ]
       );
 
       // Fetch updated order
@@ -224,7 +242,9 @@ export class OrderService {
           pickedQuantity: newPickedQuantity,
           status: isComplete ? 'COMPLETED' : 'IN_PROGRESS',
         },
-        message: isComplete ? 'Item fully picked' : `Picked ${dto.quantity} of ${pickTask.quantity}`,
+        message: isComplete
+          ? 'Item fully picked'
+          : `Picked ${dto.quantity} of ${pickTask.quantity}`,
       };
     });
   }
@@ -258,16 +278,13 @@ export class OrderService {
     pickedQuantity: number;
   } | null> {
     logger.info(`[getNextPickTask] Called for order: ${orderId}`);
-    
+
     const pickTask = await pickTaskRepository.getNextPickTask(orderId);
 
     // ALWAYS update order.updated_at regardless of whether pick task exists
     // This ensures admin dashboard shows correct current order even if order has no pending tasks
     const { query } = await import('../db/client');
-    await query(
-      `UPDATE orders SET updated_at = NOW() WHERE order_id = $1`,
-      [orderId]
-    );
+    await query(`UPDATE orders SET updated_at = NOW() WHERE order_id = $1`, [orderId]);
     logger.info(`[getNextPickTask] Updated order.updated_at for: ${orderId}`);
 
     if (!pickTask) {
@@ -304,11 +321,7 @@ export class OrderService {
   // UNDO PICK (DECREMENT PICKED QUANTITY)
   // --------------------------------------------------------------------------
 
-  async undoPick(
-    pickTaskId: string,
-    quantity: number = 1,
-    reason: string
-  ): Promise<Order> {
+  async undoPick(pickTaskId: string, quantity: number = 1, reason: string): Promise<Order> {
     logger.info('Undoing pick', { pickTaskId, quantity, reason });
 
     // Import query function directly
@@ -328,18 +341,18 @@ export class OrderService {
 
     const beforeState = beforeResult.rows[0];
     logger.info('Full beforeState object', beforeState);
-    
+
     // Database returns camelCase keys
     const wasCompletedBeforeUndo = beforeState.status === 'COMPLETED';
     const orderId = beforeState.orderId;
 
-    logger.info('Task state before undo', { 
+    logger.info('Task state before undo', {
       pickTaskId,
       orderId,
       pickedQuantity: beforeState.pickedQuantity,
       quantity: beforeState.quantity,
       status: beforeState.status,
-      wasCompletedBeforeUndo
+      wasCompletedBeforeUndo,
     });
 
     if (!orderId) {
@@ -347,10 +360,7 @@ export class OrderService {
     }
 
     // Decrement picked quantity
-    const pickTask = await pickTaskRepository.decrementPickedQuantity(
-      pickTaskId,
-      quantity
-    );
+    const pickTask = await pickTaskRepository.decrementPickedQuantity(pickTaskId, quantity);
 
     // Access properties correctly - query() converts to camelCase
     const newPickedQuantity = pickTask.pickedQuantity;
@@ -358,12 +368,12 @@ export class OrderService {
     const taskStatus = pickTask.status;
     const orderItemId = pickTask.orderItemId;
 
-    logger.info('Undo pick - task state after decrement', { 
+    logger.info('Undo pick - task state after decrement', {
       pickTaskId,
       newPickedQuantity,
       taskQuantity,
       taskStatus,
-      orderItemId
+      orderItemId,
     });
 
     // If task was completed before undo and is now incomplete, update status to IN_PROGRESS
@@ -375,14 +385,17 @@ export class OrderService {
     }
 
     // Update order item status AND picked quantity (both needed for progress trigger)
-    const itemStatus = newPickedQuantity >= taskQuantity 
-      ? 'FULLY_PICKED' 
-      : newPickedQuantity > 0 ? 'PARTIAL_PICKED' : 'PENDING';
+    const itemStatus =
+      newPickedQuantity >= taskQuantity
+        ? 'FULLY_PICKED'
+        : newPickedQuantity > 0
+          ? 'PARTIAL_PICKED'
+          : 'PENDING';
 
     logger.info('Updating order_items after undo', {
       orderItemId,
       newPickedQuantity,
-      itemStatus
+      itemStatus,
     });
 
     const updateResult = await query(
@@ -397,7 +410,7 @@ export class OrderService {
     logger.info('order_items update result', {
       orderItemId,
       rowsUpdated: updateResult.rowCount,
-      returnedPickedQuantity: updateResult.rows[0]?.picked_quantity
+      returnedPickedQuantity: updateResult.rows[0]?.picked_quantity,
     });
 
     // Recalculate and update order progress in database
@@ -420,7 +433,7 @@ export class OrderService {
       pickTaskId,
       quantity,
       newPickedQuantity,
-      reason
+      reason,
     });
 
     // Return updated order - use orderId from beforeState since it's guaranteed to exist
@@ -446,13 +459,15 @@ export class OrderService {
   // GET ORDER QUEUE
   // --------------------------------------------------------------------------
 
-  async getOrderQueue(filters: {
-    status?: OrderStatus;
-    priority?: OrderPriority;
-    pickerId?: string;
-    page?: number;
-    limit?: number;
-  } = {}): Promise<{ orders: Order[]; total: number }> {
+  async getOrderQueue(
+    filters: {
+      status?: OrderStatus;
+      priority?: OrderPriority;
+      pickerId?: string;
+      page?: number;
+      limit?: number;
+    } = {}
+  ): Promise<{ orders: Order[]; total: number }> {
     return orderRepository.getOrderQueue({
       ...filters,
       offset: filters.page && filters.limit ? (filters.page - 1) * filters.limit : undefined,
@@ -463,10 +478,12 @@ export class OrderService {
   // GET ORDERS WITH ITEMS BY STATUS
   // --------------------------------------------------------------------------
 
-  async getOrdersWithItemsByStatus(filters: {
-    status?: OrderStatus;
-    packerId?: string;
-  } = {}): Promise<{ orders: Order[] }> {
+  async getOrdersWithItemsByStatus(
+    filters: {
+      status?: OrderStatus;
+      packerId?: string;
+    } = {}
+  ): Promise<{ orders: Order[] }> {
     return orderRepository.getOrdersWithItemsByStatus(filters);
   }
 
@@ -509,7 +526,7 @@ export class OrderService {
   async unclaimOrder(orderId: string, userId: string, reason: string): Promise<Order> {
     logger.info('Unclaiming order', { orderId, userId, reason });
 
-    return orderRepository.withTransaction(async (client) => {
+    return orderRepository.withTransaction(async client => {
       // Get current order
       const orderResult = await client.query(
         `SELECT * FROM orders WHERE order_id = $1 FOR UPDATE`,
@@ -531,9 +548,7 @@ export class OrderService {
 
       // Check if order is assigned to user
       if (order.picker_id !== userId) {
-        throw new ValidationError(
-          'Order is not assigned to this picker'
-        );
+        throw new ValidationError('Order is not assigned to this picker');
       }
 
       // Reset all order_items to base state:
@@ -549,10 +564,7 @@ export class OrderService {
 
       // Delete pick tasks associated with this order
       // They will be recreated when order is claimed again
-      await client.query(
-        `DELETE FROM pick_tasks WHERE order_id = $1`,
-        [orderId]
-      );
+      await client.query(`DELETE FROM pick_tasks WHERE order_id = $1`, [orderId]);
 
       // Reset order to PENDING status
       await client.query(
@@ -580,7 +592,7 @@ export class OrderService {
         orderId,
         userId,
         reason,
-        itemsReset: 'All order_items reset to PENDING with 0 picked_quantity'
+        itemsReset: 'All order_items reset to PENDING with 0 picked_quantity',
       });
 
       return this.getOrder(orderId);
@@ -598,7 +610,9 @@ export class OrderService {
 
     // Validate order is in PICKED status
     if (order.status !== OrderStatus.PICKED) {
-      throw new ConflictError(`Order cannot be claimed for packing (current status: ${order.status})`);
+      throw new ConflictError(
+        `Order cannot be claimed for packing (current status: ${order.status})`
+      );
     }
 
     // Check if order is already claimed by another packer
@@ -655,7 +669,11 @@ export class OrderService {
     return result.orders;
   }
 
-  async verifyPackingItem(orderId: string, orderItemId: string, quantity: number = 1): Promise<Order> {
+  async verifyPackingItem(
+    orderId: string,
+    orderItemId: string,
+    quantity: number = 1
+  ): Promise<Order> {
     logger.info('Verifying packing item', { orderId, orderItemId, quantity });
 
     const order = await this.getOrder(orderId);
@@ -681,7 +699,9 @@ export class OrderService {
     // Note: The query client maps snake_case DB columns to camelCase (verified_quantity -> verifiedQuantity)
     const currentVerified = item.verifiedQuantity || 0;
     if (currentVerified + quantity > item.quantity) {
-      throw new ConflictError(`Cannot verify more items than ordered (max: ${item.quantity}, already verified: ${currentVerified}, trying to add: ${quantity})`);
+      throw new ConflictError(
+        `Cannot verify more items than ordered (max: ${item.quantity}, already verified: ${currentVerified}, trying to add: ${quantity})`
+      );
     }
 
     // Update verified quantity
@@ -716,7 +736,12 @@ export class OrderService {
     return this.getOrder(orderId);
   }
 
-  async undoPackingVerification(orderId: string, orderItemId: string, quantity: number = 1, reason: string): Promise<Order> {
+  async undoPackingVerification(
+    orderId: string,
+    orderItemId: string,
+    quantity: number = 1,
+    reason: string
+  ): Promise<Order> {
     logger.info('Undoing packing verification', { orderId, orderItemId, quantity, reason });
 
     const order = await this.getOrder(orderId);
@@ -748,11 +773,13 @@ export class OrderService {
       rawVerifiedQuantity: item.verifiedQuantity,
       currentVerified,
       quantityToUndo: quantity,
-      itemFullData: item
+      itemFullData: item,
     });
 
     if (currentVerified < quantity) {
-      throw new ConflictError(`Cannot undo more items than verified (verified: ${currentVerified}, trying to undo: ${quantity})`);
+      throw new ConflictError(
+        `Cannot undo more items than verified (verified: ${currentVerified}, trying to undo: ${quantity})`
+      );
     }
 
     // Update verified quantity
@@ -777,7 +804,7 @@ export class OrderService {
   async unclaimPackingOrder(orderId: string, packerId: string, reason: string): Promise<Order> {
     logger.info('Unclaiming packing order', { orderId, packerId, reason });
 
-    return orderRepository.withTransaction(async (client) => {
+    return orderRepository.withTransaction(async client => {
       // Get current order
       const orderResult = await client.query(
         `SELECT * FROM orders WHERE order_id = $1 FOR UPDATE`,
@@ -799,9 +826,7 @@ export class OrderService {
 
       // Check if order is assigned to this packer
       if (order.packer_id !== packerId) {
-        throw new ValidationError(
-          'Order is not assigned to this packer'
-        );
+        throw new ValidationError('Order is not assigned to this packer');
       }
 
       // Reset all order_items verified_quantity to 0 and clear skip reasons
@@ -839,7 +864,8 @@ export class OrderService {
         orderId,
         packerId,
         reason,
-        itemsReset: 'All order_items reset (verified_quantity=0, skip_reason cleared, status=PENDING)'
+        itemsReset:
+          'All order_items reset (verified_quantity=0, skip_reason cleared, status=PENDING)',
       });
 
       return this.getOrder(orderId);

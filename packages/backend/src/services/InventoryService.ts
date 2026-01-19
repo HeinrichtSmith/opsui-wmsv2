@@ -189,13 +189,15 @@ export class InventoryService {
   // GET TRANSACTION HISTORY
   // --------------------------------------------------------------------------
 
-  async getTransactionHistory(filters: {
-    sku?: string;
-    orderId?: string;
-    type?: TransactionType;
-    limit?: number;
-    offset?: number;
-  } = {}): Promise<{ transactions: InventoryTransaction[]; total: number }> {
+  async getTransactionHistory(
+    filters: {
+      sku?: string;
+      orderId?: string;
+      type?: TransactionType;
+      limit?: number;
+      offset?: number;
+    } = {}
+  ): Promise<{ transactions: InventoryTransaction[]; total: number }> {
     return inventoryRepository.getTransactionHistory(filters);
   }
 
@@ -286,7 +288,7 @@ export class InventoryService {
   > {
     const results = await skuRepository.search(searchTerm);
 
-    return results.map((sku) => ({
+    return results.map(sku => ({
       sku: sku.sku,
       name: sku.name,
       category: sku.category,

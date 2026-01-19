@@ -86,10 +86,9 @@ export class OrderExceptionService {
   async getException(exceptionId: string): Promise<OrderException> {
     const client = await getPool();
 
-    const result = await client.query(
-      `SELECT * FROM order_exceptions WHERE exception_id = $1`,
-      [exceptionId]
-    );
+    const result = await client.query(`SELECT * FROM order_exceptions WHERE exception_id = $1`, [
+      exceptionId,
+    ]);
 
     if (result.rows.length === 0) {
       throw new Error(`Exception ${exceptionId} not found`);

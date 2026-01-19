@@ -24,13 +24,14 @@ import {
   RMAPage,
   SalesPage,
   AdminSettingsPage,
+  UserRolesPage,
   ExceptionsPage,
   CycleCountingPage,
   LocationCapacityPage,
   QualityControlPage,
   BusinessRulesPage,
   ReportsPage,
-  IntegrationsPage
+  IntegrationsPage,
 } from '@/pages';
 import { UserRole } from '@opsui/shared';
 
@@ -61,16 +62,25 @@ function ProtectedRoute({
   children: React.ReactNode;
   requiredRoles?: UserRole[];
 }) {
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-  const user = useAuthStore((state) => state.user);
-  const userRole = useAuthStore((state) => state.user?.role);
-  const getEffectiveRole = useAuthStore((state) => state.getEffectiveRole);
+  const isAuthenticated = useAuthStore(state => state.isAuthenticated);
+  const user = useAuthStore(state => state.user);
+  const userRole = useAuthStore(state => state.user?.role);
+  const getEffectiveRole = useAuthStore(state => state.getEffectiveRole);
   const location = useLocation();
 
   // Use effective role (active role if set, otherwise base role) for authorization
   const effectiveRole = getEffectiveRole();
 
-  console.log('[ProtectedRoute] Path:', location.pathname, 'baseRole:', userRole, 'effectiveRole:', effectiveRole, 'requiredRoles:', requiredRoles);
+  console.log(
+    '[ProtectedRoute] Path:',
+    location.pathname,
+    'baseRole:',
+    userRole,
+    'effectiveRole:',
+    effectiveRole,
+    'requiredRoles:',
+    requiredRoles
+  );
 
   // Not authenticated - redirect to login
   if (!isAuthenticated || !user) {
@@ -96,23 +106,23 @@ function ProtectedRoute({
         console.log('[ProtectedRoute] Redirecting STOCK_CONTROLLER to /stock-control');
         return <Navigate to="/stock-control" replace />;
       }
-      if (effectiveRole === 'INWARDS' as UserRole) {
+      if (effectiveRole === ('INWARDS' as UserRole)) {
         console.log('[ProtectedRoute] Redirecting INWARDS to /inwards');
         return <Navigate to="/inwards" replace />;
       }
-      if (effectiveRole === 'PRODUCTION' as UserRole) {
+      if (effectiveRole === ('PRODUCTION' as UserRole)) {
         console.log('[ProtectedRoute] Redirecting PRODUCTION to /production');
         return <Navigate to="/production" replace />;
       }
-      if (effectiveRole === 'MAINTENANCE' as UserRole) {
+      if (effectiveRole === ('MAINTENANCE' as UserRole)) {
         console.log('[ProtectedRoute] Redirecting MAINTENANCE to /maintenance');
         return <Navigate to="/maintenance" replace />;
       }
-      if (effectiveRole === 'SALES' as UserRole) {
+      if (effectiveRole === ('SALES' as UserRole)) {
         console.log('[ProtectedRoute] Redirecting SALES to /sales');
         return <Navigate to="/sales" replace />;
       }
-      if (effectiveRole === 'RMA' as UserRole) {
+      if (effectiveRole === ('RMA' as UserRole)) {
         console.log('[ProtectedRoute] Redirecting RMA to /rma');
         return <Navigate to="/rma" replace />;
       }
@@ -129,13 +139,9 @@ function ProtectedRoute({
 // PUBLIC ROUTE COMPONENT (for login page)
 // ============================================================================
 
-function PublicRoute({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-  const userRole = useAuthStore((state) => state.user?.role);
+function PublicRoute({ children }: { children: React.ReactNode }) {
+  const isAuthenticated = useAuthStore(state => state.isAuthenticated);
+  const userRole = useAuthStore(state => state.user?.role);
 
   // Already authenticated - redirect to appropriate page
   if (isAuthenticated) {
@@ -148,16 +154,16 @@ function PublicRoute({
     if (userRole === 'STOCK_CONTROLLER') {
       return <Navigate to="/stock-control" replace />;
     }
-    if (userRole === 'INWARDS' as UserRole) {
+    if (userRole === ('INWARDS' as UserRole)) {
       return <Navigate to="/inwards" replace />;
     }
-    if (userRole === 'PRODUCTION' as UserRole) {
+    if (userRole === ('PRODUCTION' as UserRole)) {
       return <Navigate to="/production" replace />;
     }
-    if (userRole === 'MAINTENANCE' as UserRole) {
+    if (userRole === ('MAINTENANCE' as UserRole)) {
       return <Navigate to="/maintenance" replace />;
     }
-    if (userRole === 'SALES' as UserRole) {
+    if (userRole === ('SALES' as UserRole)) {
       return <Navigate to="/sales" replace />;
     }
     return <Navigate to="/dashboard" replace />;
@@ -172,9 +178,9 @@ function PublicRoute({
 
 function NavigationTracker() {
   const location = useLocation();
-  const userId = useAuthStore((state) => state.user?.userId);
-  const userRole = useAuthStore((state) => state.user?.role);
-  const accessToken = useAuthStore((state) => state.accessToken);
+  const userId = useAuthStore(state => state.user?.userId);
+  const userRole = useAuthStore(state => state.user?.role);
+  const accessToken = useAuthStore(state => state.accessToken);
 
   // Store the last known view for workers (persists across tab switches)
   const [lastKnownView, setLastKnownView] = useState<string>('');
@@ -189,14 +195,23 @@ function NavigationTracker() {
       setIsPageVisible(isVisible);
 
       // Update idle status when visibility changes for workers (picker, packer, stock controller, inwards, production, maintenance, sales)
-      if (userId && (userRole === 'PICKER' || userRole === 'PACKER' || userRole === 'STOCK_CONTROLLER' || userRole === 'INWARDS' as UserRole || userRole === 'PRODUCTION' as UserRole || userRole === 'MAINTENANCE' as UserRole || userRole === 'SALES' as UserRole)) {
+      if (
+        userId &&
+        (userRole === 'PICKER' ||
+          userRole === 'PACKER' ||
+          userRole === 'STOCK_CONTROLLER' ||
+          userRole === ('INWARDS' as UserRole) ||
+          userRole === ('PRODUCTION' as UserRole) ||
+          userRole === ('MAINTENANCE' as UserRole) ||
+          userRole === ('SALES' as UserRole))
+      ) {
         const updateIdleStatus = async () => {
           try {
             await fetch('/api/auth/set-idle', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${accessToken}`,
+                Authorization: `Bearer ${accessToken}`,
               },
             });
           } catch (error) {
@@ -215,7 +230,7 @@ function NavigationTracker() {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${accessToken}`,
+              Authorization: `Bearer ${accessToken}`,
             },
             body: JSON.stringify({ view: lastKnownView }),
           }).catch(() => {
@@ -247,17 +262,26 @@ function NavigationTracker() {
     const tabParam = searchParams.get('tab');
 
     // Check if user is on their primary work page
-    const isPickerOnPage = userRole === 'PICKER' && (location.pathname === '/orders' || location.pathname === '/orders/');
-    const isPackerOnPage = userRole === 'PACKER' && (location.pathname === '/packing' || location.pathname === '/packing/');
-    const isStockControllerOnPage = userRole === 'STOCK_CONTROLLER' &&
+    const isPickerOnPage =
+      userRole === 'PICKER' &&
+      (location.pathname === '/orders' || location.pathname === '/orders/');
+    const isPackerOnPage =
+      userRole === 'PACKER' &&
+      (location.pathname === '/packing' || location.pathname === '/packing/');
+    const isStockControllerOnPage =
+      userRole === 'STOCK_CONTROLLER' &&
       (location.pathname === '/stock-control' || location.pathname === '/stock-control/');
-    const isInwardsOnPage = userRole === 'INWARDS' as UserRole &&
+    const isInwardsOnPage =
+      userRole === ('INWARDS' as UserRole) &&
       (location.pathname === '/inwards' || location.pathname === '/inwards/');
-    const isProductionOnPage = userRole === 'PRODUCTION' as UserRole &&
+    const isProductionOnPage =
+      userRole === ('PRODUCTION' as UserRole) &&
       (location.pathname === '/production' || location.pathname === '/production/');
-    const isMaintenanceOnPage = userRole === 'MAINTENANCE' as UserRole &&
+    const isMaintenanceOnPage =
+      userRole === ('MAINTENANCE' as UserRole) &&
       (location.pathname === '/maintenance' || location.pathname === '/maintenance/');
-    const isSalesOnPage = userRole === 'SALES' as UserRole &&
+    const isSalesOnPage =
+      userRole === ('SALES' as UserRole) &&
       (location.pathname === '/sales' || location.pathname === '/sales/');
 
     if (location.pathname === '/orders' || location.pathname === '/orders/') {
@@ -322,7 +346,15 @@ function NavigationTracker() {
       displayView = tabViewMap[tabParam || 'dashboard'] || 'Sales Dashboard';
     } else if (location.pathname === '/login') {
       displayView = 'Login';
-    } else if (userRole === 'PICKER' || userRole === 'PACKER' || userRole === 'STOCK_CONTROLLER' || userRole === 'INWARDS' as UserRole || userRole === 'PRODUCTION' as UserRole || userRole === 'MAINTENANCE' as UserRole || userRole === 'SALES' as UserRole) {
+    } else if (
+      userRole === 'PICKER' ||
+      userRole === 'PACKER' ||
+      userRole === 'STOCK_CONTROLLER' ||
+      userRole === ('INWARDS' as UserRole) ||
+      userRole === ('PRODUCTION' as UserRole) ||
+      userRole === ('MAINTENANCE' as UserRole) ||
+      userRole === ('SALES' as UserRole)
+    ) {
       // Worker on any other page - use last known view if available
       displayView = lastKnownView || '';
     } else {
@@ -331,7 +363,16 @@ function NavigationTracker() {
     }
 
     // For workers, store the view when on their primary work page
-    if ((isPickerOnPage || isPackerOnPage || isStockControllerOnPage || isInwardsOnPage || isProductionOnPage || isMaintenanceOnPage || isSalesOnPage) && displayView) {
+    if (
+      (isPickerOnPage ||
+        isPackerOnPage ||
+        isStockControllerOnPage ||
+        isInwardsOnPage ||
+        isProductionOnPage ||
+        isMaintenanceOnPage ||
+        isSalesOnPage) &&
+      displayView
+    ) {
       setLastKnownView(displayView);
     }
 
@@ -342,7 +383,7 @@ function NavigationTracker() {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${accessToken}`,
+            Authorization: `Bearer ${accessToken}`,
           },
           body: JSON.stringify({ view: displayView }),
         });
@@ -362,8 +403,8 @@ function NavigationTracker() {
 // ============================================================================
 
 function AppInner() {
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-  const userRole = useAuthStore((state) => state.user?.role);
+  const isAuthenticated = useAuthStore(state => state.isAuthenticated);
+  const userRole = useAuthStore(state => state.user?.role);
 
   // Auto-switch admin users back to ADMIN role when visiting admin pages
   useAdminRoleAutoSwitch();
@@ -380,10 +421,10 @@ function AppInner() {
     if (userRole === 'PICKER') return '/orders';
     if (userRole === 'PACKER') return '/packing';
     if (userRole === 'STOCK_CONTROLLER') return '/stock-control';
-    if (userRole === 'INWARDS' as UserRole) return '/inwards';
-    if (userRole === 'PRODUCTION' as UserRole) return '/production';
-    if (userRole === 'MAINTENANCE' as UserRole) return '/maintenance';
-    if (userRole === 'SALES' as UserRole) return '/sales';
+    if (userRole === ('INWARDS' as UserRole)) return '/inwards';
+    if (userRole === ('PRODUCTION' as UserRole)) return '/production';
+    if (userRole === ('MAINTENANCE' as UserRole)) return '/maintenance';
+    if (userRole === ('SALES' as UserRole)) return '/sales';
     return '/dashboard';
   };
 
@@ -459,7 +500,9 @@ function AppInner() {
         <Route
           path="/stock-control"
           element={
-            <ProtectedRoute requiredRoles={['STOCK_CONTROLLER' as UserRole, UserRole.ADMIN, UserRole.SUPERVISOR]}>
+            <ProtectedRoute
+              requiredRoles={['STOCK_CONTROLLER' as UserRole, UserRole.ADMIN, UserRole.SUPERVISOR]}
+            >
               <StockControlPage />
             </ProtectedRoute>
           }
@@ -469,7 +512,9 @@ function AppInner() {
         <Route
           path="/inwards"
           element={
-            <ProtectedRoute requiredRoles={['INWARDS' as UserRole, UserRole.ADMIN, UserRole.SUPERVISOR]}>
+            <ProtectedRoute
+              requiredRoles={['INWARDS' as UserRole, UserRole.ADMIN, UserRole.SUPERVISOR]}
+            >
               <InwardsGoodsPage />
             </ProtectedRoute>
           }
@@ -479,7 +524,9 @@ function AppInner() {
         <Route
           path="/production"
           element={
-            <ProtectedRoute requiredRoles={['PRODUCTION' as UserRole, UserRole.ADMIN, UserRole.SUPERVISOR]}>
+            <ProtectedRoute
+              requiredRoles={['PRODUCTION' as UserRole, UserRole.ADMIN, UserRole.SUPERVISOR]}
+            >
               <ProductionPage />
             </ProtectedRoute>
           }
@@ -489,7 +536,9 @@ function AppInner() {
         <Route
           path="/maintenance"
           element={
-            <ProtectedRoute requiredRoles={['MAINTENANCE' as UserRole, UserRole.ADMIN, UserRole.SUPERVISOR]}>
+            <ProtectedRoute
+              requiredRoles={['MAINTENANCE' as UserRole, UserRole.ADMIN, UserRole.SUPERVISOR]}
+            >
               <MaintenancePage />
             </ProtectedRoute>
           }
@@ -497,7 +546,9 @@ function AppInner() {
         <Route
           path="/rma"
           element={
-            <ProtectedRoute requiredRoles={['RMA' as UserRole, UserRole.ADMIN, UserRole.SUPERVISOR]}>
+            <ProtectedRoute
+              requiredRoles={['RMA' as UserRole, UserRole.ADMIN, UserRole.SUPERVISOR]}
+            >
               <RMAPage />
             </ProtectedRoute>
           }
@@ -507,7 +558,9 @@ function AppInner() {
         <Route
           path="/sales"
           element={
-            <ProtectedRoute requiredRoles={['SALES' as UserRole, UserRole.ADMIN, UserRole.SUPERVISOR]}>
+            <ProtectedRoute
+              requiredRoles={['SALES' as UserRole, UserRole.ADMIN, UserRole.SUPERVISOR]}
+            >
               <SalesPage />
             </ProtectedRoute>
           }
@@ -561,6 +614,16 @@ function AppInner() {
           element={
             <ProtectedRoute requiredRoles={[UserRole.ADMIN, UserRole.SUPERVISOR]}>
               <IntegrationsPage />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* User Roles route */}
+        <Route
+          path="/user-roles"
+          element={
+            <ProtectedRoute requiredRoles={[UserRole.ADMIN]}>
+              <UserRolesPage />
             </ProtectedRoute>
           }
         />

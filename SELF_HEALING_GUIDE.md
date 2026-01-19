@@ -32,6 +32,7 @@ The **Self-Healing System** gives Cline the ability to automatically detect, dia
 ### Layer 1: Syntactic Immunity (Real-time)
 
 **What it catches:**
+
 - TypeScript compilation errors
 - Syntax violations
 - Import/dependency issues
@@ -43,13 +44,13 @@ The **Self-Healing System** gives Cline the ability to automatically detect, dia
 **Auto-fix:** ✅ Yes (98% confidence)
 
 **Example:**
+
 ```typescript
 // ❌ DETECTED
-const getUser = (id) => db.findUser(id)
+const getUser = id => db.findUser(id);
 
 // ✅ AUTO-HEALED
-const getUser = (id: string): Promise<User | null> =>
-  db.findUser(id)
+const getUser = (id: string): Promise<User | null> => db.findUser(id);
 ```
 
 ---
@@ -57,6 +58,7 @@ const getUser = (id: string): Promise<User | null> =>
 ### Layer 2: Logical Integrity (On-change)
 
 **What it catches:**
+
 - Null/undefined reference risks
 - Race conditions
 - Deadlocks
@@ -68,17 +70,18 @@ const getUser = (id: string): Promise<User | null> =>
 **Auto-fix:** ❌ No (requires approval)
 
 **Example:**
+
 ```typescript
 // ❌ DETECTED: Potential null reference
-const user = await getUser(id)
-console.log(user.name) // Could crash
+const user = await getUser(id);
+console.log(user.name); // Could crash
 
 // ✅ HEALED (with approval)
-const user = await getUser(id)
+const user = await getUser(id);
 if (!user) {
-  return { success: false, error: 'User not found' }
+  return { success: false, error: 'User not found' };
 }
-console.log(user.name)
+console.log(user.name);
 ```
 
 ---
@@ -86,6 +89,7 @@ console.log(user.name)
 ### Layer 3: Architectural Consistency (Periodic)
 
 **What it catches:**
+
 - Pattern violations
 - Coupling issues
 - Abstraction leaks
@@ -97,6 +101,7 @@ console.log(user.name)
 **Auto-fix:** ❌ No (suggests refactoring)
 
 **Example:**
+
 ```
 DETECTED: Duplicated order validation logic in 5 files
 SUGGESTION: Extract to shared OrderValidator utility
@@ -108,6 +113,7 @@ BENEFIT: Single source of truth, easier maintenance
 ### Layer 4: Systemic Health (Continuous)
 
 **What it catches:**
+
 - Performance degradation
 - Security vulnerabilities
 - Technical debt accumulation
@@ -119,6 +125,7 @@ BENEFIT: Single source of truth, easier maintenance
 **Auto-fix:** ⚠️ Context-dependent
 
 **Example:**
+
 ```
 ALERT: Performance degradation detected (35% slower)
 ANALYSIS: N+1 query pattern in OrderService
@@ -199,6 +206,7 @@ RESULT: Query count reduced from 100 to 1
 **Risk Level:** 🟢 Low
 
 **Fixes:**
+
 - Type annotations
 - Import paths
 - Syntax errors
@@ -214,6 +222,7 @@ RESULT: Query count reduced from 100 to 1
 **Risk Level:** 🟡 Medium
 
 **Fixes:**
+
 - Null checks
 - Error handling
 - Bound checking
@@ -229,6 +238,7 @@ RESULT: Query count reduced from 100 to 1
 **Risk Level:** 🟡 Medium
 
 **Fixes:**
+
 - N+1 queries
 - Missing indexes
 - Inefficient algorithms
@@ -244,6 +254,7 @@ RESULT: Query count reduced from 100 to 1
 **Risk Level:** 🔴 Critical
 
 **Fixes:**
+
 - SQL injection
 - XSS vulnerabilities
 - CSRF protection
@@ -259,6 +270,7 @@ RESULT: Query count reduced from 100 to 1
 **Risk Level:** 🔴 Critical
 
 **Fixes:**
+
 - Race conditions
 - Deadlocks
 - Atomic operations
@@ -281,6 +293,7 @@ Auto-healing will rollback if:
 ```
 
 **Rollback Process:**
+
 1. Detect failure condition
 2. Revert all changes
 3. Notify user of failure
@@ -302,6 +315,7 @@ Issues are escalated to you if:
 ```
 
 **Escalation Response:**
+
 ```
 🔍 ANALYSIS
 Issue detected: [description]
@@ -326,14 +340,14 @@ or would you prefer we explore Option B?
 
 ## 📊 Health Scan Schedule
 
-| Scan Type | Frequency | Auto-Fix | Scope |
-|-----------|-----------|----------|-------|
-| **Syntactic** | On-save | ✅ Yes | Current file |
-| **Logical** | On-change | ❌ No | Changed files |
-| **Architectural** | Every 5 min | ❌ No | Entire codebase |
-| **Security** | Every hour | ✅ Yes | Entire codebase |
-| **Performance** | On-demand | ❌ No | Selected paths |
-| **Dependencies** | Daily | ❌ No | package.json |
+| Scan Type         | Frequency   | Auto-Fix | Scope           |
+| ----------------- | ----------- | -------- | --------------- |
+| **Syntactic**     | On-save     | ✅ Yes   | Current file    |
+| **Logical**       | On-change   | ❌ No    | Changed files   |
+| **Architectural** | Every 5 min | ❌ No    | Entire codebase |
+| **Security**      | Every hour  | ✅ Yes   | Entire codebase |
+| **Performance**   | On-demand   | ❌ No    | Selected paths  |
+| **Dependencies**  | Daily       | ❌ No    | package.json    |
 
 ---
 
@@ -373,6 +387,7 @@ To detect issues without fixing:
 ```
 
 This mode will:
+
 - ✅ Detect all issues
 - ✅ Report findings
 - ❌ Not apply any fixes
@@ -402,24 +417,26 @@ The self-healing system maintains a library of fix patterns:
 
 ```typescript
 interface HealingPattern {
-  category: 'syntactic' | 'logical' | 'performance' | 'security'
-  symptom: string           // What was detected
-  diagnosis: string         // Root cause
-  prescription: CodeFix     // The fix
-  test: TestCase            // Verification test
-  confidence: number        // 0-1 success rate
-  occurrences: number       // Times seen
-  lastApplied: Date         // Last used
+  category: 'syntactic' | 'logical' | 'performance' | 'security';
+  symptom: string; // What was detected
+  diagnosis: string; // Root cause
+  prescription: CodeFix; // The fix
+  test: TestCase; // Verification test
+  confidence: number; // 0-1 success rate
+  occurrences: number; // Times seen
+  lastApplied: Date; // Last used
 }
 ```
 
 **Pattern Evolution:**
+
 1. **New Issue** → Added to library
 2. **Recurrence** → Confidence increases
 3. **Success** → Auto-apply threshold reached
 4. **Failure** → Confidence decreases
 
 **View Pattern Library:**
+
 ```bash
 # View all learned patterns
 :pattern-library
@@ -438,6 +455,7 @@ interface HealingPattern {
 ### Example 1: Race Condition Fix
 
 **Detection:**
+
 ```
 🔍 DETECTED: Race condition in inventory reservation
 Location: packages/backend/src/services/inventory.service.ts:45
@@ -445,6 +463,7 @@ Risk: HIGH - Could oversell inventory
 ```
 
 **Diagnosis:**
+
 ```
 🔬 DIAGNOSIS:
 Read-modify-write pattern without atomicity
@@ -453,6 +472,7 @@ Result: Inventory can go negative
 ```
 
 **Prescription:**
+
 ```
 💡 PRESCRIPTION:
 Wrap reservation in database transaction
@@ -461,38 +481,38 @@ Verify quantity before decrement
 ```
 
 **Execution:**
+
 ```typescript
 // Before
 async function reserveInventory(itemId: string, qty: number) {
-  const item = await db.items.findById(itemId)
+  const item = await db.items.findById(itemId);
   if (item.quantity >= qty) {
     await db.items.update(itemId, {
-      quantity: item.quantity - qty
-    })
+      quantity: item.quantity - qty,
+    });
   }
 }
 
 // After
 async function reserveInventory(itemId: string, qty: number) {
-  return await db.transaction(async (trx) => {
-    const item = await trx.items
-      .findById(itemId)
-      .forUpdate() // Lock row
+  return await db.transaction(async trx => {
+    const item = await trx.items.findById(itemId).forUpdate(); // Lock row
 
     if (item.quantity < qty) {
-      throw new InsufficientInventoryError(itemId, qty)
+      throw new InsufficientInventoryError(itemId, qty);
     }
 
     await trx.items.update(itemId, {
-      quantity: item.quantity - qty
-    })
+      quantity: item.quantity - qty,
+    });
 
-    return { success: true, reserved: qty }
-  })
+    return { success: true, reserved: qty };
+  });
 }
 ```
 
 **Verification:**
+
 ```
 ✅ Test added: test/concurrency/inventory-reservation.test.ts
 ✅ 100 concurrent reservations: No overselling
@@ -505,6 +525,7 @@ async function reserveInventory(itemId: string, qty: number) {
 ### Example 2: Memory Leak Fix
 
 **Detection:**
+
 ```
 🔍 DETECTED: Memory leak in useEffect
 Location: packages/frontend/src/components/OrderList.tsx:78
@@ -512,6 +533,7 @@ Risk: MEDIUM - Memory grows with each mount/unmount
 ```
 
 **Diagnosis:**
+
 ```
 🔬 DIAGNOSIS:
 Event listener added in useEffect but never removed
@@ -520,6 +542,7 @@ Old listeners persist after component unmounts
 ```
 
 **Prescription:**
+
 ```
 💡 PRESCRIPTION:
 Add cleanup function to useEffect
@@ -527,24 +550,26 @@ Return function that removes listener
 ```
 
 **Execution:**
+
 ```typescript
 // Before
 useEffect(() => {
-  window.addEventListener('resize', handleResize)
-}, [])
+  window.addEventListener('resize', handleResize);
+}, []);
 
 // After
 useEffect(() => {
-  window.addEventListener('resize', handleResize)
+  window.addEventListener('resize', handleResize);
 
   // Cleanup function
   return () => {
-    window.removeEventListener('resize', handleResize)
-  }
-}, [])
+    window.removeEventListener('resize', handleResize);
+  };
+}, []);
 ```
 
 **Verification:**
+
 ```
 ✅ Test added: mount/unmount cycle
 ✅ Memory profile: No leak detected
@@ -556,6 +581,7 @@ useEffect(() => {
 ### Example 3: Security Vulnerability Fix
 
 **Detection:**
+
 ```
 🔍 DETECTED: SQL injection vulnerability
 Location: packages/backend/src/repositories/user.repository.ts:23
@@ -563,6 +589,7 @@ Risk: CRITICAL - Allows arbitrary SQL execution
 ```
 
 **Diagnosis:**
+
 ```
 🔬 DIAGNOSIS:
 User input directly interpolated into SQL query
@@ -571,6 +598,7 @@ Result: Data breach, data loss, authentication bypass
 ```
 
 **Prescription:**
+
 ```
 💡 PRESCRIPTION:
 Use parameterized query
@@ -578,24 +606,22 @@ Bind user input as parameter
 ```
 
 **Execution:**
+
 ```typescript
 // Before
 async function searchUsers(query: string) {
-  return await db.query(
-    `SELECT * FROM users WHERE name = '${query}'`
-  )
+  return await db.query(`SELECT * FROM users WHERE name = '${query}'`);
 }
 
 // After
 async function searchUsers(query: string): Promise<User[]> {
-  const stmt = await db.prepare(
-    'SELECT * FROM users WHERE name = ?'
-  )
-  return await stmt.execute(query)
+  const stmt = await db.prepare('SELECT * FROM users WHERE name = ?');
+  return await stmt.execute(query);
 }
 ```
 
 **Verification:**
+
 ```
 ✅ Test added: SQL injection attempts
 ✅ All injection attempts blocked
@@ -675,12 +701,14 @@ Security Issues Fixed:    45
 ### Self-Healing Not Working
 
 **Check:**
+
 1. Is `selfHealingEnabled` set to `true`?
 2. Is the file in `.gitignore`?
 3. Is the file too large (>10,000 lines)?
 4. Are you in detect-only mode?
 
 **Fix:**
+
 ```json
 {
   "cline.supreme.selfHealingEnabled": true,
@@ -691,10 +719,11 @@ Security Issues Fixed:    45
 ### Too Many False Positives
 
 **Adjust confidence thresholds:**
+
 ```json
 {
-  "cline.supreme.selfHealing.syntasticConfidence": 0.95,  // Was 0.98
-  "cline.supreme.selfHealing.logicalConfidence": 0.90,   // Was 0.85
+  "cline.supreme.selfHealing.syntasticConfidence": 0.95, // Was 0.98
+  "cline.supreme.selfHealing.logicalConfidence": 0.9, // Was 0.85
   "cline.supreme.selfHealing.performanceConfidence": 0.75 // Was 0.80
 }
 ```
@@ -702,6 +731,7 @@ Security Issues Fixed:    45
 ### Healing Too Slow
 
 **Optimize scan schedule:**
+
 ```json
 {
   "cline.supreme.selfHealing.healthScanArchitectural": "every-30-minutes",
@@ -726,11 +756,11 @@ export const customPatterns: HealingPattern[] = [
     diagnosis: 'State transition not logged',
     prescription: 'Add audit log entry',
     test: 'Verify audit log entry created',
-    confidence: 0.90,
+    confidence: 0.9,
     occurrences: 0,
-    lastApplied: new Date()
-  }
-]
+    lastApplied: new Date(),
+  },
+];
 ```
 
 ### Healing Hooks
@@ -741,17 +771,17 @@ Respond to healing events:
 // .cline-healing-hooks.ts
 export const healingHooks = {
   onBeforeHeal: (issue: DetectedIssue) => {
-    console.log(`Healing: ${issue.symptom}`)
+    console.log(`Healing: ${issue.symptom}`);
   },
   onAfterHeal: (result: HealingResult) => {
     if (result.success) {
-      metrics.track('healing.success', result)
+      metrics.track('healing.success', result);
     }
   },
   onHealFailed: (error: Error) => {
-    metrics.track('healing.failed', { error })
-  }
-}
+    metrics.track('healing.failed', { error });
+  },
+};
 ```
 
 ---

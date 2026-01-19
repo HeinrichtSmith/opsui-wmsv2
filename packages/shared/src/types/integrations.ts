@@ -15,7 +15,7 @@ export enum IntegrationType {
   CARRIER = 'CARRIER',
   PAYMENT = 'PAYMENT',
   WAREHOUSE = 'WAREHOUSE',
-  CUSTOM = 'CUSTOM'
+  CUSTOM = 'CUSTOM',
 }
 
 export enum IntegrationStatus {
@@ -23,13 +23,13 @@ export enum IntegrationStatus {
   CONNECTING = 'CONNECTING',
   CONNECTED = 'CONNECTED',
   ERROR = 'ERROR',
-  PAUSED = 'PAUSED'
+  PAUSED = 'PAUSED',
 }
 
 export enum SyncDirection {
   INBOUND = 'INBOUND', // External -> WMS
   OUTBOUND = 'OUTBOUND', // WMS -> External
-  BIDIRECTIONAL = 'BIDIRECTIONAL'
+  BIDIRECTIONAL = 'BIDIRECTIONAL',
 }
 
 export enum SyncFrequency {
@@ -41,7 +41,7 @@ export enum SyncFrequency {
   EVERY_2_HOURS = 'EVERY_2_HOURS',
   EVERY_6_HOURS = 'EVERY_6_HOURS',
   DAILY = 'DAILY',
-  CUSTOM = 'CUSTOM'
+  CUSTOM = 'CUSTOM',
 }
 
 export enum WebhookEventType {
@@ -53,7 +53,7 @@ export enum WebhookEventType {
   PRODUCT_UPDATED = 'PRODUCT_UPDATED',
   SHIPMENT_CREATED = 'SHIPMENT_CREATED',
   SHIPMENT_DELIVERED = 'SHIPMENT_DELIVERED',
-  TRACKING_UPDATED = 'TRACKING_UPDATED'
+  TRACKING_UPDATED = 'TRACKING_UPDATED',
 }
 
 export enum ApiAuthType {
@@ -62,7 +62,7 @@ export enum ApiAuthType {
   BASIC_AUTH = 'BASIC_AUTH',
   BEARER_TOKEN = 'BEARER_TOKEN',
   HMAC = 'HMAC',
-  NONE = 'NONE'
+  NONE = 'NONE',
 }
 
 export enum SyncStatus {
@@ -71,7 +71,7 @@ export enum SyncStatus {
   COMPLETED = 'COMPLETED',
   FAILED = 'FAILED',
   CANCELLED = 'CANCELLED',
-  PARTIAL = 'PARTIAL'
+  PARTIAL = 'PARTIAL',
 }
 
 // ============================================================================
@@ -134,7 +134,7 @@ export enum IntegrationProvider {
   SQUARE = 'SQUARE',
 
   // Custom
-  CUSTOM = 'CUSTOM'
+  CUSTOM = 'CUSTOM',
 }
 
 /**

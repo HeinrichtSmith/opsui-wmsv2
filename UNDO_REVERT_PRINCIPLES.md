@@ -12,6 +12,7 @@
 **"Every Action Must Be Reversible"**
 
 Users make mistakes. The system must gracefully handle:
+
 - Wrong item selected
 - Wrong quantity entered
 - Accidental skip
@@ -59,21 +60,17 @@ async function deletePickTask(taskId: string) {
 
 // ✅ CORRECT - Soft delete
 async function deletePickTask(taskId: string) {
-  await db('pick_tasks')
-    .where({ task_id: taskId })
-    .update({
-      deleted_at: new Date(),
-      deleted_by: currentUser.id
-    });
+  await db('pick_tasks').where({ task_id: taskId }).update({
+    deleted_at: new Date(),
+    deleted_by: currentUser.id,
+  });
 }
 
 async function restorePickTask(taskId: string) {
-  await db('pick_tasks')
-    .where({ task_id: taskId })
-    .update({
-      deleted_at: null,
-      deleted_by: null
-    });
+  await db('pick_tasks').where({ task_id: taskId }).update({
+    deleted_at: null,
+    deleted_by: null,
+  });
 }
 ```
 
@@ -96,6 +93,7 @@ PENDING → PICKING → PICKED → PACKING → PACKED → SHIPPED
 ```
 
 **Valid Undo Transitions**:
+
 - `PICKING → PENDING` (unclaim order)
 - `PICKED → PICKING` (reopen for picking)
 - `PACKING → PICKED` (return to picked)
@@ -195,6 +193,7 @@ function ActionComplete({ action, onUndo }) {
 #### Problem: Accidentally Skipped Item
 
 **❌ WRONG**:
+
 ```typescript
 // Skip is permanent
 async function skipPickTask(taskId: string) {
@@ -203,6 +202,7 @@ async function skipPickTask(taskId: string) {
 ```
 
 **✅ CORRECT**:
+
 ```typescript
 // Skip can be undone
 async function skipPickTask(taskId: string) {
@@ -216,6 +216,7 @@ async function unskipPickTask(taskId: string) {
 ```
 
 **UI Pattern**:
+
 ```typescript
 function PickTaskItem({ task }) {
   const [skipped, setSkipped] = useState(task.status === TaskStatus.SKIPPED);
@@ -236,6 +237,7 @@ function PickTaskItem({ task }) {
 #### Problem: Wrong Quantity Entered
 
 **✅ CORRECT**:
+
 ```typescript
 function PickTaskItem({ task }) {
   const [quantity, setQuantity] = useState(task.quantity);
@@ -271,6 +273,7 @@ function PickTaskItem({ task }) {
 #### Problem: Wrong Bin Location
 
 **✅ CORRECT**:
+
 ```typescript
 function BinLocationScanner({ task }) {
   const [currentBin, setCurrentBin] = useState(task.bin_location);
@@ -302,6 +305,7 @@ function BinLocationScanner({ task }) {
 #### Problem: Wrong Item Added to Shipment
 
 **✅ CORRECT**:
+
 ```typescript
 function PackingList({ order }) {
   const [packedItems, setPackedItems] = useState(order.items);
@@ -332,6 +336,7 @@ function PackingList({ order }) {
 #### Problem: Wrong Weight Entered
 
 **✅ CORRECT**:
+
 ```typescript
 function WeightInput({ shipment }) {
   const [weight, setWeight] = useState(shipment.weight);
@@ -370,6 +375,7 @@ function WeightInput({ shipment }) {
 #### Problem: Wrong Settings Applied
 
 **✅ CORRECT**:
+
 ```typescript
 function SettingsPanel({ settings }) {
   const [currentSettings, setCurrentSettings] = useState(settings);
@@ -466,7 +472,7 @@ export class UndoService {
 
     // Verify user owns this action
     if (history.changed_by !== userId) {
-      throw new ForbiddenError('Cannot undo another user\'s action');
+      throw new ForbiddenError("Cannot undo another user's action");
     }
 
     // Restore previous state
@@ -495,7 +501,7 @@ export class UndoService {
       new_status: action.newStatus,
       changed_by: action.userId,
       changed_at: new Date(),
-      undoable: true
+      undoable: true,
     });
   }
 }
@@ -711,6 +717,7 @@ describe('Undo Functionality', () => {
 AI agents MUST ensure:
 
 1. **Every state change is undoable**
+
    ```typescript
    // ❌ WRONG
    await updateStatus(id, newStatus);
@@ -721,11 +728,12 @@ AI agents MUST ensure:
      entity: 'order',
      entityId: id,
      oldStatus: currentStatus,
-     newStatus: newStatus
+     newStatus: newStatus,
    });
    ```
 
 2. **Every deletion is soft delete**
+
    ```typescript
    // ❌ WRONG
    await db.delete().where({ id });
@@ -735,11 +743,12 @@ AI agents MUST ensure:
    ```
 
 3. **Every mutation shows undo option**
+
    ```typescript
    // ✅ CORRECT
    function onActionComplete() {
      showToast('Action complete', {
-       undo: () => undoLastAction()
+       undo: () => undoLastAction(),
      });
    }
    ```

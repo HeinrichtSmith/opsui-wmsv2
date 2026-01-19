@@ -34,8 +34,8 @@ const colorMap = {
 };
 
 export function NotificationCenter() {
-  const notifications = useUIStore((state) => state.notifications);
-  const removeNotification = useUIStore((state) => state.removeNotification);
+  const notifications = useUIStore(state => state.notifications);
+  const removeNotification = useUIStore(state => state.removeNotification);
 
   // Auto-focus notifications when they appear (for accessibility)
   useEffect(() => {
@@ -57,7 +57,7 @@ export function NotificationCenter() {
       aria-label="Notifications"
       aria-live="polite"
     >
-      {notifications.map((notification) => {
+      {notifications.map(notification => {
         const Icon = iconMap[notification.type];
         const colors = colorMap[notification.type];
 
@@ -77,9 +77,7 @@ export function NotificationCenter() {
             </div>
 
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-white">
-                {notification.message}
-              </p>
+              <p className="text-sm font-semibold text-white">{notification.message}</p>
             </div>
 
             <button

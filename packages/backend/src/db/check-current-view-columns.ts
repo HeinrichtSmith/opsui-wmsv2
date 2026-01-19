@@ -101,7 +101,6 @@ async function checkAndApplyMigration(): Promise<void> {
     console.log('   1. Start the backend server');
     console.log('   2. Login as a picker and navigate to Order Queue');
     console.log('   3. Check admin dashboard to see real-time activity');
-
   } catch (error) {
     console.error('\n❌ Migration failed:', error);
     throw error;
@@ -117,7 +116,7 @@ if (require.main === module) {
       console.log('\n✅ Script completed successfully');
       process.exit(0);
     })
-    .catch((error) => {
+    .catch(error => {
       console.error('\n❌ Script failed:', error);
       process.exit(1);
     });

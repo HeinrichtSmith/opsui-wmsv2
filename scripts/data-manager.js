@@ -55,11 +55,11 @@ async function checkDatabase() {
     });
 
     let output = '';
-    check.stdout.on('data', (data) => {
+    check.stdout.on('data', data => {
       output += data.toString();
     });
 
-    check.on('close', (code) => {
+    check.on('close', code => {
       if (code === 0) {
         log('✅ Database is accessible', 'green');
         resolve();
@@ -90,7 +90,7 @@ async function runMigrations() {
       stdio: 'inherit',
     });
 
-    migrate.on('close', (code) => {
+    migrate.on('close', code => {
       if (code === 0) {
         log('✅ Migrations completed', 'green');
         resolve();
@@ -122,7 +122,7 @@ async function runSeed(options = {}) {
       stdio: 'inherit',
     });
 
-    seed.on('close', (code) => {
+    seed.on('close', code => {
       if (code === 0) {
         log('✅ Seed completed', 'green');
         resolve();
@@ -152,7 +152,7 @@ async function runBackup(name) {
       stdio: 'inherit',
     });
 
-    backup.on('close', (code) => {
+    backup.on('close', code => {
       if (code === 0) {
         log('✅ Backup created', 'green');
         resolve();
@@ -183,7 +183,7 @@ async function runReset() {
       stdio: 'inherit',
     });
 
-    reset.on('close', (code) => {
+    reset.on('close', code => {
       if (code === 0) {
         log('✅ Database reset completed', 'green');
         resolve();
@@ -210,7 +210,7 @@ async function runClean() {
       stdio: 'inherit',
     });
 
-    clean.on('close', (code) => {
+    clean.on('close', code => {
       if (code === 0) {
         log('✅ Data cleaned', 'green');
         resolve();
@@ -282,7 +282,7 @@ async function fixStuckOrders(orderId) {
       stdio: 'inherit',
     });
 
-    fix.on('close', (code) => {
+    fix.on('close', code => {
       if (code === 0) {
         log('✅ Stuck orders fixed', 'green');
         resolve();
@@ -309,7 +309,7 @@ async function activateUsers() {
       stdio: 'inherit',
     });
 
-    activate.on('close', (code) => {
+    activate.on('close', code => {
       if (code === 0) {
         log('✅ All users activated', 'green');
         resolve();
@@ -351,9 +351,7 @@ async function validateData() {
     }
 
     // Check for inactive users
-    const inactiveUsers = await pool.query(
-      "SELECT COUNT(*) FROM users WHERE active = false"
-    );
+    const inactiveUsers = await pool.query('SELECT COUNT(*) FROM users WHERE active = false');
     if (parseInt(inactiveUsers.rows[0].count) > 0) {
       issues.push(`${inactiveUsers.rows[0].count} inactive users`);
     }
@@ -408,7 +406,7 @@ async function exportData(filename) {
       stdio: 'inherit',
     });
 
-    backup.on('close', (code) => {
+    backup.on('close', code => {
       if (code === 0) {
         log(`✅ Exported to ${exportName}`, 'green');
         resolve();
@@ -440,7 +438,7 @@ async function importData(filename) {
       stdio: 'inherit',
     });
 
-    backup.on('close', (code) => {
+    backup.on('close', code => {
       if (code === 0) {
         log('✅ Import completed', 'green');
         resolve();
@@ -467,7 +465,7 @@ async function listBackups() {
       stdio: 'inherit',
     });
 
-    backup.on('close', (code) => {
+    backup.on('close', code => {
       if (code === 0) {
         resolve();
       } else {
@@ -652,7 +650,11 @@ async function commandStatus() {
 
     const { inactive_users, picking_orders, negative_inventory } = issues.rows[0];
 
-    if (parseInt(inactive_users) > 0 || parseInt(picking_orders) > 0 || parseInt(negative_inventory) > 0) {
+    if (
+      parseInt(inactive_users) > 0 ||
+      parseInt(picking_orders) > 0 ||
+      parseInt(negative_inventory) > 0
+    ) {
       log('\n⚠️  Issues:', 'yellow');
       if (parseInt(inactive_users) > 0) {
         log(`  • ${inactive_users} inactive users`, 'reset');
@@ -882,7 +884,10 @@ async function commandHelp() {
   log('  "Clean the database"             → node scripts/data-manager.js clean', 'reset');
   log('  "Show database status"           → node scripts/data-manager.js status', 'reset');
   log('  "Validate data"                  → node scripts/data-manager.js validate', 'reset');
-  log('  "Fix stuck orders"               → node scripts/data-manager.js fix stuck-orders', 'reset');
+  log(
+    '  "Fix stuck orders"               → node scripts/data-manager.js fix stuck-orders',
+    'reset'
+  );
   log('  "Create backup"                  → node scripts/data-manager.js backup', 'reset');
   log('  "List backups"                   → node scripts/data-manager.js restore list', 'reset');
   log('');

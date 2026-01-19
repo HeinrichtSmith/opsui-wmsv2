@@ -46,7 +46,7 @@ router.get(
       status: status as CustomerStatus,
       assignedTo: assignedTo as string,
       limit: limit ? parseInt(limit as string) : undefined,
-      offset: offset ? parseInt(offset as string) : undefined
+      offset: offset ? parseInt(offset as string) : undefined,
     });
     res.json(result);
   })
@@ -112,7 +112,7 @@ router.get(
       status: status as LeadStatus,
       assignedTo: assignedTo as string,
       limit: limit ? parseInt(limit as string) : undefined,
-      offset: offset ? parseInt(offset as string) : undefined
+      offset: offset ? parseInt(offset as string) : undefined,
     });
     res.json(result);
   })
@@ -194,7 +194,7 @@ router.get(
       customerId: customerId as string,
       assignedTo: assignedTo as string,
       limit: limit ? parseInt(limit as string) : undefined,
-      offset: offset ? parseInt(offset as string) : undefined
+      offset: offset ? parseInt(offset as string) : undefined,
     });
     res.json(result);
   })
@@ -265,7 +265,7 @@ router.get(
       customerId: customerId as string,
       status: status as QuoteStatus,
       limit: limit ? parseInt(limit as string) : undefined,
-      offset: offset ? parseInt(offset as string) : undefined
+      offset: offset ? parseInt(offset as string) : undefined,
     });
     res.json(result);
   })
@@ -330,7 +330,7 @@ router.post(
   asyncHandler(async (req: AuthenticatedRequest, res) => {
     const interaction = await salesService.logInteraction({
       ...req.body,
-      createdAt: new Date()
+      createdAt: new Date(),
     });
     res.status(201).json(interaction);
   })

@@ -13,7 +13,7 @@ import {
   ServiceLog,
   MeterReading,
   AssetStatus,
-  MaintenanceStatus
+  MaintenanceStatus,
 } from '@opsui/shared';
 
 export class MaintenanceRepository {
@@ -53,7 +53,7 @@ export class MaintenanceRepository {
         asset.warrantyExpiry || null,
         asset.expectedLifespanYears || null,
         asset.notes || null,
-        asset.createdBy
+        asset.createdBy,
       ]
     );
 
@@ -64,10 +64,7 @@ export class MaintenanceRepository {
   async findAssetById(assetId: string): Promise<Asset | null> {
     const client = await getPool();
 
-    const result = await client.query(
-      `SELECT * FROM assets WHERE asset_id = $1`,
-      [assetId]
-    );
+    const result = await client.query(`SELECT * FROM assets WHERE asset_id = $1`, [assetId]);
 
     if (result.rows.length === 0) {
       return null;
@@ -177,7 +174,12 @@ export class MaintenanceRepository {
   // MAINTENANCE SCHEDULES
   // ========================================================================
 
-  async createSchedule(schedule: Omit<MaintenanceSchedule, 'scheduleId' | 'createdAt' | 'updatedAt' | 'lastPerformedDate'>): Promise<MaintenanceSchedule> {
+  async createSchedule(
+    schedule: Omit<
+      MaintenanceSchedule,
+      'scheduleId' | 'createdAt' | 'updatedAt' | 'lastPerformedDate'
+    >
+  ): Promise<MaintenanceSchedule> {
     const client = await getPool();
 
     const scheduleId = `SCH-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -204,7 +206,7 @@ export class MaintenanceRepository {
         schedule.instructions || null,
         schedule.isActive,
         schedule.createdBy,
-        schedule.nextDueDate
+        schedule.nextDueDate,
       ]
     );
 
@@ -240,7 +242,19 @@ export class MaintenanceRepository {
   // WORK ORDERS
   // ========================================================================
 
-  async createWorkOrder(workOrder: Omit<MaintenanceWorkOrder, 'workOrderId' | 'workOrderNumber' | 'createdAt' | 'updatedAt' | 'actualStartDate' | 'actualEndDate' | 'completedAt' | 'completedBy'>): Promise<MaintenanceWorkOrder> {
+  async createWorkOrder(
+    workOrder: Omit<
+      MaintenanceWorkOrder,
+      | 'workOrderId'
+      | 'workOrderNumber'
+      | 'createdAt'
+      | 'updatedAt'
+      | 'actualStartDate'
+      | 'actualEndDate'
+      | 'completedAt'
+      | 'completedBy'
+    >
+  ): Promise<MaintenanceWorkOrder> {
     const client = await getPool();
 
     const workOrderId = `WO-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -268,7 +282,7 @@ export class MaintenanceRepository {
         workOrder.estimatedDurationHours,
         workOrder.assignedTo || null,
         workOrder.partsRequired ? JSON.stringify(workOrder.partsRequired) : null,
-        workOrder.createdBy
+        workOrder.createdBy,
       ]
     );
 
@@ -336,15 +350,18 @@ export class MaintenanceRepository {
     return { workOrders, total };
   }
 
-  async completeWorkOrder(workOrderId: string, completionData: {
-    workPerformed: string;
-    partsUsed?: any[];
-    actualDurationHours?: number;
-    laborCost?: number;
-    partsCost?: number;
-    notes?: string;
-    completedBy: string;
-  }): Promise<MaintenanceWorkOrder | null> {
+  async completeWorkOrder(
+    workOrderId: string,
+    completionData: {
+      workPerformed: string;
+      partsUsed?: any[];
+      actualDurationHours?: number;
+      laborCost?: number;
+      partsCost?: number;
+      notes?: string;
+      completedBy: string;
+    }
+  ): Promise<MaintenanceWorkOrder | null> {
     const client = await getPool();
 
     const totalCost = (completionData.laborCost || 0) + (completionData.partsCost || 0);
@@ -374,7 +391,7 @@ export class MaintenanceRepository {
         totalCost,
         completionData.notes || null,
         completionData.completedBy,
-        workOrderId
+        workOrderId,
       ]
     );
 
@@ -386,7 +403,7 @@ export class MaintenanceRepository {
     const workOrder = this.mapRowToWorkOrder(result.rows[0]);
     await this.updateAsset(workOrder.assetId, {
       lastMaintenanceDate: new Date(),
-      updatedBy: completionData.completedBy
+      updatedBy: completionData.completedBy,
     } as any);
 
     logger.info('Work order completed', { workOrderId });
@@ -418,7 +435,7 @@ export class MaintenanceRepository {
         log.cost || null,
         log.notes || null,
         log.attachments ? JSON.stringify(log.attachments) : null,
-        log.createdBy
+        log.createdBy,
       ]
     );
 
@@ -426,7 +443,7 @@ export class MaintenanceRepository {
 
     return {
       logId,
-      ...log
+      ...log,
     };
   }
 
@@ -450,7 +467,7 @@ export class MaintenanceRepository {
       notes: row.notes,
       attachments: row.attachments ? JSON.parse(row.attachments) : undefined,
       createdAt: row.created_at,
-      createdBy: row.created_by
+      createdBy: row.created_by,
     }));
   }
 
@@ -475,7 +492,7 @@ export class MaintenanceRepository {
         reading.unit,
         reading.readingDate,
         reading.readBy,
-        reading.notes || null
+        reading.notes || null,
       ]
     );
 
@@ -483,7 +500,7 @@ export class MaintenanceRepository {
 
     return {
       readingId,
-      ...reading
+      ...reading,
     };
   }
 
@@ -503,7 +520,7 @@ export class MaintenanceRepository {
       unit: row.unit,
       readingDate: row.reading_date,
       readBy: row.read_by,
-      notes: row.notes
+      notes: row.notes,
     }));
   }
 
@@ -536,7 +553,7 @@ export class MaintenanceRepository {
       createdAt: row.created_at,
       createdBy: row.created_by,
       updatedAt: row.updated_at,
-      updatedBy: row.updated_by
+      updatedBy: row.updated_by,
     };
   }
 
@@ -560,7 +577,7 @@ export class MaintenanceRepository {
       updatedAt: row.updated_at,
       updatedBy: row.updated_by,
       lastPerformedDate: row.last_performed_date,
-      nextDueDate: row.next_due_date
+      nextDueDate: row.next_due_date,
     };
   }
 
@@ -581,7 +598,9 @@ export class MaintenanceRepository {
       assignedTo: row.assigned_to,
       actualStartDate: row.actual_start_date,
       actualEndDate: row.actual_end_date,
-      actualDurationHours: row.actual_duration_hours ? parseFloat(row.actual_duration_hours) : undefined,
+      actualDurationHours: row.actual_duration_hours
+        ? parseFloat(row.actual_duration_hours)
+        : undefined,
       workPerformed: row.work_performed,
       partsUsed: row.parts_used ? JSON.parse(row.parts_used) : undefined,
       laborCost: row.labor_cost ? parseFloat(row.labor_cost) : undefined,
@@ -594,7 +613,7 @@ export class MaintenanceRepository {
       createdAt: row.created_at,
       createdBy: row.created_by,
       updatedAt: row.updated_at,
-      updatedBy: row.updated_by
+      updatedBy: row.updated_by,
     };
   }
 }

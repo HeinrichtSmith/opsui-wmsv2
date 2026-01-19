@@ -81,12 +81,7 @@ export function Badge({
 
   return (
     <span
-      className={cn(
-        baseStyles,
-        variantStyles[variant],
-        sizeStyles[size],
-        className
-      )}
+      className={cn(baseStyles, variantStyles[variant], sizeStyles[size], className)}
       {...props}
     >
       {children}

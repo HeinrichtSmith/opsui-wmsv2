@@ -62,7 +62,7 @@ class MetricsCollector {
   }
 
   async checkBackendHealth() {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       const start = Date.now();
       const options = {
         method: 'GET',
@@ -72,7 +72,7 @@ class MetricsCollector {
         path: '/health',
       };
 
-      const req = http.request(options, (res) => {
+      const req = http.request(options, res => {
         const duration = Date.now() - start;
         this.metrics.api.responseTimes.push(duration);
         if (this.metrics.api.responseTimes.length > 100) {
@@ -107,7 +107,7 @@ class MetricsCollector {
   }
 
   async checkFrontendHealth() {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       const start = Date.now();
       const options = {
         method: 'GET',
@@ -117,7 +117,7 @@ class MetricsCollector {
         path: '/',
       };
 
-      const req = http.request(options, (res) => {
+      const req = http.request(options, res => {
         const duration = Date.now() - start;
         this.metrics.frontend.responseTimes.push(duration);
         if (this.metrics.frontend.responseTimes.length > 100) {
@@ -152,7 +152,7 @@ class MetricsCollector {
   }
 
   async checkBackendStats() {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       const options = {
         method: 'GET',
         timeout: 5000,
@@ -161,9 +161,11 @@ class MetricsCollector {
         path: '/health',
       };
 
-      const req = http.request(options, (res) => {
+      const req = http.request(options, res => {
         let data = '';
-        res.on('data', chunk => { data += chunk; });
+        res.on('data', chunk => {
+          data += chunk;
+        });
         res.on('end', () => {
           try {
             const body = JSON.parse(data);
@@ -179,7 +181,10 @@ class MetricsCollector {
       });
 
       req.on('error', () => resolve({}));
-      req.on('timeout', () => { req.destroy(); resolve({}); });
+      req.on('timeout', () => {
+        req.destroy();
+        resolve({});
+      });
       req.end();
     });
   }
@@ -260,41 +265,72 @@ class Dashboard {
 
     // Backend Status
     this.renderSection('🔧 BACKEND API', 'blue');
-    log(`Status:      ${apiMetrics.lastCheck ? (apiMetrics.responseTimes[apiMetrics.responseTimes.length - 1] < 1000 ? '✅ UP' : '⚠️ SLOW') : '❓ UNKNOWN'}`,
-      apiMetrics.responseTimes[apiMetrics.responseTimes.length - 1] < 1000 ? 'green' : 'yellow');
+    log(
+      `Status:      ${apiMetrics.lastCheck ? (apiMetrics.responseTimes[apiMetrics.responseTimes.length - 1] < 1000 ? '✅ UP' : '⚠️ SLOW') : '❓ UNKNOWN'}`,
+      apiMetrics.responseTimes[apiMetrics.responseTimes.length - 1] < 1000 ? 'green' : 'yellow'
+    );
     log(`Avg:        ${this.collector.getAverage(apiMetrics.responseTimes)}ms`, 'reset');
     log(`Median:     ${this.collector.getMedian(apiMetrics.responseTimes)}ms`, 'reset');
     log(`P95:        ${this.collector.getP95(apiMetrics.responseTimes)}ms`, 'reset');
-    log(`Error Rate:  ${this.collector.getErrorRate('api')}%`,
-      parseFloat(this.collector.getErrorRate('api')) > 5 ? 'red' : 'green');
+    log(
+      `Error Rate:  ${this.collector.getErrorRate('api')}%`,
+      parseFloat(this.collector.getErrorRate('api')) > 5 ? 'red' : 'green'
+    );
     log(`Requests:   ${apiMetrics.successCount} success, ${apiMetrics.errorCount} errors`, 'reset');
 
     // Frontend Status
     this.renderSection('\n⚛️  FRONTEND', 'cyan');
-    log(`Status:      ${frontendMetrics.lastCheck ? (frontendMetrics.responseTimes[frontendMetrics.responseTimes.length - 1] < 1000 ? '✅ UP' : '⚠️ SLOW') : '❓ UNKNOWN'}`,
-      frontendMetrics.responseTimes[frontendMetrics.responseTimes.length - 1] < 1000 ? 'green' : 'yellow');
+    log(
+      `Status:      ${frontendMetrics.lastCheck ? (frontendMetrics.responseTimes[frontendMetrics.responseTimes.length - 1] < 1000 ? '✅ UP' : '⚠️ SLOW') : '❓ UNKNOWN'}`,
+      frontendMetrics.responseTimes[frontendMetrics.responseTimes.length - 1] < 1000
+        ? 'green'
+        : 'yellow'
+    );
     log(`Avg:        ${this.collector.getAverage(frontendMetrics.responseTimes)}ms`, 'reset');
     log(`Median:     ${this.collector.getMedian(frontendMetrics.responseTimes)}ms`, 'reset');
     log(`P95:        ${this.collector.getP95(frontendMetrics.responseTimes)}ms`, 'reset');
-    log(`Error Rate:  ${this.collector.getErrorRate('frontend')}%`,
-      parseFloat(this.collector.getErrorRate('frontend')) > 5 ? 'red' : 'green');
-    log(`Requests:   ${frontendMetrics.successCount} success, ${frontendMetrics.errorCount} errors`, 'reset');
+    log(
+      `Error Rate:  ${this.collector.getErrorRate('frontend')}%`,
+      parseFloat(this.collector.getErrorRate('frontend')) > 5 ? 'red' : 'green'
+    );
+    log(
+      `Requests:   ${frontendMetrics.successCount} success, ${frontendMetrics.errorCount} errors`,
+      'reset'
+    );
 
     // System Status
     this.renderSection('\n💻 SYSTEM', 'magenta');
-    log(`Memory:     ${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(1)} MB / ${(process.memoryUsage().heapTotal / 1024 / 1024).toFixed(1)} MB`, 'reset');
-    log(`Active:     ${systemMetrics.activeConnections[systemMetrics.activeConnections.length - 1] || 0} connections`, 'reset');
+    log(
+      `Memory:     ${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(1)} MB / ${(process.memoryUsage().heapTotal / 1024 / 1024).toFixed(1)} MB`,
+      'reset'
+    );
+    log(
+      `Active:     ${systemMetrics.activeConnections[systemMetrics.activeConnections.length - 1] || 0} connections`,
+      'reset'
+    );
 
     // Health Indicators
     this.renderSection('\n❤️  HEALTH', 'green');
 
-    const apiHealthy = apiMetrics.lastCheck && apiMetrics.responseTimes[apiMetrics.responseTimes.length - 1] < 1000;
-    const frontendHealthy = frontendMetrics.lastCheck && frontendMetrics.responseTimes[frontendMetrics.responseTimes.length - 1] < 1000;
+    const apiHealthy =
+      apiMetrics.lastCheck && apiMetrics.responseTimes[apiMetrics.responseTimes.length - 1] < 1000;
+    const frontendHealthy =
+      frontendMetrics.lastCheck &&
+      frontendMetrics.responseTimes[frontendMetrics.responseTimes.length - 1] < 1000;
     const errorRateHealthy = parseFloat(this.collector.getErrorRate('api')) < 5;
 
-    log(`API Response:    ${apiHealthy ? '✅ Good' : '⚠️ Degraded'}`, apiHealthy ? 'green' : 'yellow');
-    log(`Error Rate:      ${errorRateHealthy ? '✅ Normal' : '⚠️ Elevated'}`, errorRateHealthy ? 'green' : 'yellow');
-    log(`Frontend:        ${frontendHealthy ? '✅ Good' : '⚠️ Degraded'}`, frontendHealthy ? 'green' : 'yellow');
+    log(
+      `API Response:    ${apiHealthy ? '✅ Good' : '⚠️ Degraded'}`,
+      apiHealthy ? 'green' : 'yellow'
+    );
+    log(
+      `Error Rate:      ${errorRateHealthy ? '✅ Normal' : '⚠️ Elevated'}`,
+      errorRateHealthy ? 'green' : 'yellow'
+    );
+    log(
+      `Frontend:        ${frontendHealthy ? '✅ Good' : '⚠️ Degraded'}`,
+      frontendHealthy ? 'green' : 'yellow'
+    );
 
     // Performance Tips
     if (this.collector.getAverage(apiMetrics.responseTimes) > 500) {
@@ -357,7 +393,7 @@ process.on('SIGTERM', () => {
 });
 
 // Start dashboard
-dashboard.start().catch((err) => {
+dashboard.start().catch(err => {
   console.error('Failed to start performance monitor:', err);
   process.exit(1);
 });

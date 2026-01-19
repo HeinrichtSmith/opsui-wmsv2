@@ -13,14 +13,16 @@ async function login() {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Origin': 'http://localhost:5173',
-        'Referer': 'http://localhost:5173/'
-      }
+        Origin: 'http://localhost:5173',
+        Referer: 'http://localhost:5173/',
+      },
     };
 
-    const loginReq = http.request(loginOptions, (res) => {
+    const loginReq = http.request(loginOptions, res => {
       let data = '';
-      res.on('data', (chunk) => { data += chunk; });
+      res.on('data', chunk => {
+        data += chunk;
+      });
       res.on('end', () => {
         try {
           const response = JSON.parse(data);
@@ -36,10 +38,12 @@ async function login() {
     });
 
     loginReq.on('error', reject);
-    loginReq.write(JSON.stringify({
-      email: 'admin@wms.local',
-      password: 'admin123'
-    }));
+    loginReq.write(
+      JSON.stringify({
+        email: 'admin@wms.local',
+        password: 'admin123',
+      })
+    );
     loginReq.end();
   });
 }
@@ -54,16 +58,16 @@ async function testOrderQueue() {
       path: '/api/orders?status=PICKING',
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${token}`,
-        'Origin': 'http://localhost:5173',
-        'Referer': 'http://localhost:5173/'
-      }
+        Authorization: `Bearer ${token}`,
+        Origin: 'http://localhost:5173',
+        Referer: 'http://localhost:5173/',
+      },
     };
 
-    const req = http.request(options, (res) => {
+    const req = http.request(options, res => {
       let data = '';
 
-      res.on('data', (chunk) => {
+      res.on('data', chunk => {
         data += chunk;
       });
 
@@ -101,7 +105,7 @@ async function testOrderQueue() {
       });
     });
 
-    req.on('error', (e) => {
+    req.on('error', e => {
       console.error(`Request error: ${e.message}`);
       reject(e);
     });

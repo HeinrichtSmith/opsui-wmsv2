@@ -14,7 +14,7 @@ import {
   RuleEventType,
   ConditionOperator,
   ActionType,
-  LogicalOperator
+  LogicalOperator,
 } from '@opsui/shared';
 
 // ============================================================================
@@ -83,7 +83,7 @@ export class BusinessRulesService {
         triggeredBy: context.userId,
         conditionsMet: evaluationResult.conditionsMet,
         executionTimeMs: Date.now() - startTime,
-        executionResults: []
+        executionResults: [],
       };
 
       // If conditions are met, execute actions
@@ -95,14 +95,14 @@ export class BusinessRulesService {
               actionId: action.actionId,
               actionType: action.actionType,
               success: true,
-              result
+              result,
             });
           } catch (error: any) {
             executionResults.push({
               actionId: action.actionId,
               actionType: action.actionType,
               success: false,
-              errorMessage: error.message
+              errorMessage: error.message,
             });
           }
         }
@@ -122,7 +122,7 @@ export class BusinessRulesService {
         conditionsMet: false,
         executionTimeMs: Date.now() - startTime,
         executionResults: [],
-        errorMessage: error.message
+        errorMessage: error.message,
       });
     }
   }
@@ -137,7 +137,7 @@ export class BusinessRulesService {
         rule,
         conditionsMet: true,
         conditionResults: [],
-        shouldExecute: true
+        shouldExecute: true,
       };
     }
 
@@ -171,7 +171,7 @@ export class BusinessRulesService {
       rule,
       conditionsMet,
       conditionResults,
-      shouldExecute: finalResult
+      shouldExecute: finalResult,
     };
   }
 
@@ -220,7 +220,9 @@ export class BusinessRulesService {
           break;
 
         case ConditionOperator.STARTS_WITH:
-          result = String(actualValue).toLowerCase().startsWith(String(expectedValue).toLowerCase());
+          result = String(actualValue)
+            .toLowerCase()
+            .startsWith(String(expectedValue).toLowerCase());
           break;
 
         case ConditionOperator.ENDS_WITH:
@@ -238,7 +240,8 @@ export class BusinessRulesService {
         case ConditionOperator.BETWEEN:
           const min = expectedValue;
           const max = condition.value2;
-          result = this.compareValues(actualValue, min) >= 0 && this.compareValues(actualValue, max) <= 0;
+          result =
+            this.compareValues(actualValue, min) >= 0 && this.compareValues(actualValue, max) <= 0;
           break;
 
         case ConditionOperator.IS_NULL:
@@ -264,13 +267,13 @@ export class BusinessRulesService {
 
       return {
         condition,
-        result
+        result,
       };
     } catch (error: any) {
       return {
         condition,
         result: false,
-        error: error.message
+        error: error.message,
       };
     }
   }
@@ -311,7 +314,7 @@ export class BusinessRulesService {
     return {
       type: 'SET_PRIORITY',
       field: field || 'priority',
-      value
+      value,
     };
   }
 
@@ -320,7 +323,7 @@ export class BusinessRulesService {
     return {
       type: 'ASSIGN_USER',
       userId,
-      role
+      role,
     };
   }
 
@@ -331,7 +334,7 @@ export class BusinessRulesService {
       type: 'SEND_NOTIFICATION',
       message,
       recipients,
-      notificationType: type
+      notificationType: type,
     };
   }
 
@@ -341,7 +344,7 @@ export class BusinessRulesService {
     return {
       type: 'BLOCK_ACTION',
       blocked: true,
-      reason
+      reason,
     };
   }
 
@@ -360,7 +363,7 @@ export class BusinessRulesService {
     return {
       type: 'MODIFY_FIELD',
       field,
-      value: finalValue
+      value: finalValue,
     };
   }
 

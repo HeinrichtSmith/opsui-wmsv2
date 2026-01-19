@@ -97,7 +97,7 @@ class ServerMonitor {
       this.isRunning = true;
 
       // Handle stdout
-      this.process.stdout.on('data', (data) => {
+      this.process.stdout.on('data', data => {
         const output = data.toString().trim();
         if (output) {
           log(`[${this.config.displayName}] ${output}`, 'debug');
@@ -105,7 +105,7 @@ class ServerMonitor {
       });
 
       // Handle stderr (MCP servers use stderr for logging)
-      this.process.stderr.on('data', (data) => {
+      this.process.stderr.on('data', data => {
         const output = data.toString().trim();
         if (output) {
           log(`[${this.config.displayName}] ${output}`, 'debug');
@@ -126,7 +126,7 @@ class ServerMonitor {
       });
 
       // Handle process error
-      this.process.on('error', (error) => {
+      this.process.on('error', error => {
         this.isRunning = false;
         this.lastError = error.message;
 
@@ -142,7 +142,6 @@ class ServerMonitor {
           this.restartCount = 0; // Reset restart count on successful start
         }
       }, this.config.startupTimeout);
-
     } catch (error) {
       this.isRunning = false;
       this.lastError = error.message;
@@ -174,7 +173,7 @@ class ServerMonitor {
 
     log(
       `Scheduling restart ${this.restartCount}/${this.config.maxRestarts} ` +
-      `for ${this.config.displayName} in ${delay / 1000}s...`,
+        `for ${this.config.displayName} in ${delay / 1000}s...`,
       'warning'
     );
 
@@ -272,14 +271,12 @@ function renderDashboard(monitors) {
 
   let allHealthy = true;
 
-  monitors.forEach((monitor) => {
+  monitors.forEach(monitor => {
     const status = monitor.getStatus();
     const statusColor = status.isRunning ? colors.green : colors.red;
     const statusText = status.isRunning ? '● RUNNING' : '● DOWN';
     const uptime = formatUptime(status.uptime);
-    const lastCheck = status.lastHealthCheck
-      ? formatTimeAgo(status.lastHealthCheck)
-      : 'Never';
+    const lastCheck = status.lastHealthCheck ? formatTimeAgo(status.lastHealthCheck) : 'Never';
 
     console.log(`${colors.bright}${status.name}${colors.reset}`);
     console.log(`  Status: ${statusColor}${statusText}${colors.reset}`);
@@ -362,7 +359,7 @@ async function shutdown(monitors) {
   }
 
   // Wait for processes to exit
-  await new Promise((resolve) => setTimeout(resolve, 2000));
+  await new Promise(resolve => setTimeout(resolve, 2000));
 
   log('Shutdown complete. Goodbye!', 'success');
   process.exit(0);
@@ -373,7 +370,7 @@ async function main() {
   log('Starting MCP Health Monitor...', 'info');
 
   // Initialize monitors
-  const monitors = mcpServers.map((config) => new ServerMonitor(config));
+  const monitors = mcpServers.map(config => new ServerMonitor(config));
 
   // Start all servers
   log('Starting all MCP servers...', 'info');
@@ -382,7 +379,7 @@ async function main() {
   }
 
   // Wait for initial startup
-  await new Promise((resolve) => setTimeout(resolve, 3000));
+  await new Promise(resolve => setTimeout(resolve, 3000));
 
   // Health check interval (5 seconds)
   const healthCheckInterval = 5000;
@@ -403,12 +400,12 @@ async function main() {
   process.on('SIGINT', () => shutdown(monitors));
 
   // Handle uncaught errors
-  process.on('uncaughtException', (error) => {
+  process.on('uncaughtException', error => {
     log(`Uncaught exception: ${error.message}`, 'error');
     console.error(error);
   });
 
-  process.on('unhandledRejection', (reason) => {
+  process.on('unhandledRejection', reason => {
     log(`Unhandled rejection: ${reason}`, 'error');
   });
 
@@ -420,7 +417,7 @@ async function main() {
 }
 
 // Run the monitor
-main().catch((error) => {
+main().catch(error => {
   log(`Fatal error: ${error.message}`, 'error');
   console.error(error);
   process.exit(1);

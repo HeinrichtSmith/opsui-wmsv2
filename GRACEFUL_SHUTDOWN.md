@@ -9,6 +9,7 @@ Both backend and frontend now have **comprehensive graceful shutdown** handling 
 ### Backend (Port 3001)
 
 **7-Step Shutdown Process:**
+
 1. 🔒 Stop accepting new HTTP connections
 2. 🔓 Release port lock (allows new instances to start)
 3. 🧹 Run cleanup tasks:
@@ -21,12 +22,14 @@ Both backend and frontend now have **comprehensive graceful shutdown** handling 
 7. 🧼 Final cleanup + port lock release
 
 **Triggers:**
+
 - `Ctrl+C` (SIGINT)
 - Terminate signals (SIGTERM)
 - Process manager commands (PM2, Docker, etc.)
 - Windows shutdown messages
 
 **Timeout:**
+
 - 30 second force timeout
 - If shutdown takes longer, process exits with code 1
 - Prevents zombie processes
@@ -34,17 +37,20 @@ Both backend and frontend now have **comprehensive graceful shutdown** handling 
 ### Frontend (Port 5173)
 
 **4-Step Shutdown Process:**
+
 1. 🔒 Stop accepting new HMR connections
 2. 🔌 Close all WebSocket connections
 3. 🧹 Run custom cleanup tasks
 4. 🚪 Close HTTP server
 
 **Triggers:**
+
 - `Ctrl+C` (SIGINT)
 - Terminate signals (SIGTERM)
 - Process manager commands
 
 **Timeout:**
+
 - 10 second force timeout
 - Faster than backend (no database to close)
 
@@ -53,6 +59,7 @@ Both backend and frontend now have **comprehensive graceful shutdown** handling 
 ### Normal Shutdown (Recommended)
 
 **Backend:**
+
 ```bash
 # Press Ctrl+C in the terminal running the server
 # Server will:
@@ -63,6 +70,7 @@ Both backend and frontend now have **comprehensive graceful shutdown** handling 
 ```
 
 **Frontend:**
+
 ```bash
 # Press Ctrl+C in the terminal running Vite
 # Vite will:
@@ -75,6 +83,7 @@ Both backend and frontend now have **comprehensive graceful shutdown** handling 
 ### Scripted Shutdown
 
 **Shutdown All Services:**
+
 ```bash
 # Run the shutdown script
 shutdown-all.bat
@@ -91,6 +100,7 @@ shutdown-all.bat
 ### Force Quit (If Needed)
 
 **Backend:**
+
 ```bash
 # Find PID
 netstat -ano | findstr :3001
@@ -100,6 +110,7 @@ taskkill /F /PID <PID>
 ```
 
 **Frontend:**
+
 ```bash
 # Vite will force quit after 10s timeout
 # Or force kill:
@@ -110,36 +121,37 @@ taskkill /F /PID <PID>
 
 ### Backend Cleanup
 
-| Resource | Method | Fallback |
-|----------|--------|----------|
-| HTTP Server | `server.close()` | Wait + force |
-| Port Lock | Delete lock file | Auto on restart |
-| Database | `closePool()` | Force close |
-| WebSockets | Close all connections | Drop connections |
-| Logs | Flush buffers | Auto on exit |
-| Timers | Clear intervals | Process exit |
-| Cache | No persistence needed | N/A |
+| Resource    | Method                | Fallback         |
+| ----------- | --------------------- | ---------------- |
+| HTTP Server | `server.close()`      | Wait + force     |
+| Port Lock   | Delete lock file      | Auto on restart  |
+| Database    | `closePool()`         | Force close      |
+| WebSockets  | Close all connections | Drop connections |
+| Logs        | Flush buffers         | Auto on exit     |
+| Timers      | Clear intervals       | Process exit     |
+| Cache       | No persistence needed | N/A              |
 
 ### Frontend Cleanup
 
-| Resource | Method | Fallback |
-|----------|--------|----------|
-| HMR Socket | Close all clients | Force close |
-| HTTP Server | `server.close()` | Wait + force |
-| Build Cache | No cleanup needed | N/A |
-| Watchers | Close file watchers | Process exit |
+| Resource    | Method              | Fallback     |
+| ----------- | ------------------- | ------------ |
+| HMR Socket  | Close all clients   | Force close  |
+| HTTP Server | `server.close()`    | Wait + force |
+| Build Cache | No cleanup needed   | N/A          |
+| Watchers    | Close file watchers | Process exit |
 
 ## Health Check During Shutdown
 
 Backend health endpoint returns `503 Service Unavailable` during shutdown:
 
 ```typescript
-GET /health
+GET / health;
 // Normal: { status: 'healthy', uptime: 123 }
 // Shutdown: { status: 'shutting_down', uptime: 123 }
 ```
 
 This allows load balancers to:
+
 - Stop sending new requests
 - Wait for existing requests to complete
 - Remove instance from rotation
@@ -212,6 +224,7 @@ This allows load balancers to:
 ### "Process won't shut down"
 
 **Backend stuck:**
+
 ```bash
 # Check what it's waiting for
 netstat -ano | findstr :3001
@@ -223,6 +236,7 @@ type packages\backend\logs\wms.log
 ```
 
 **Frontend stuck:**
+
 ```bash
 # Check HMR connections
 netstat -ano | findstr :5173
@@ -233,6 +247,7 @@ netstat -ano | findstr :5173
 ### "Port still in use after shutdown"
 
 **Stale port lock:**
+
 ```bash
 # Remove lock files
 rmdir packages\backend\.port-locks
@@ -241,6 +256,7 @@ rmdir packages\backend\.port-locks
 ```
 
 **Process still running:**
+
 ```bash
 # Find and kill
 netstat -ano | findstr :3001
@@ -250,16 +266,19 @@ taskkill /F /PID <PID>
 ### "Database connection errors during shutdown"
 
 **Normal if:**
+
 - Database is down
 - Network issue exists
 - Connection was already stale
 
 **Not normal if:**
+
 - Happens every time
 - See timeout errors
 - See "connection lost" errors
 
 **Solution:**
+
 ```bash
 # Check database status
 # Increase shutdown timeout
@@ -298,9 +317,9 @@ module.exports = {
       shutdown_with_message: true, // Enable graceful shutdown
       wait_ready: true,
       autorestart: false, // Don't auto-restart on shutdown
-    }
-  ]
-}
+    },
+  ],
+};
 ```
 
 ### Docker
@@ -309,10 +328,10 @@ module.exports = {
 # docker-compose.yml
 services:
   backend:
-    stop_grace_period: 30s  # Time for graceful shutdown
+    stop_grace_period: 30s # Time for graceful shutdown
     stop_signal: SIGTERM
     ports:
-      - "3001:3001"
+      - '3001:3001'
 ```
 
 ### Kubernetes
@@ -320,18 +339,19 @@ services:
 ```yaml
 # deployment.yaml
 spec:
-  terminationGracePeriodSeconds: 30  # 30s for graceful shutdown
+  terminationGracePeriodSeconds: 30 # 30s for graceful shutdown
   containers:
-  - name: backend
-    lifecycle:
-      preStop:
-        exec:
-          command: ["/bin/sh", "-c", "curl http://localhost:3001/health"]
+    - name: backend
+      lifecycle:
+        preStop:
+          exec:
+            command: ['/bin/sh', '-c', 'curl http://localhost:3001/health']
 ```
 
 ## Summary
 
 ✅ **Complete graceful shutdown implemented**
+
 - Backend: 7-step cleanup with 30s timeout
 - Frontend: 4-step cleanup with 10s timeout
 - Port locks automatically released

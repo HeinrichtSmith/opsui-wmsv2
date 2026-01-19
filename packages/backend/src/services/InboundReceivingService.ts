@@ -49,12 +49,28 @@ export class InboundReceivingService {
     const client = await getPool();
 
     // Get counts
-    const [pendingASNResult, inTransitASNResult, activeReceiptResult, pendingPutawayResult, inProgressPutawayResult] = await Promise.all([
-      client.query(`SELECT COUNT(*) as count FROM advance_shipping_notices WHERE status = $1`, [ASNStatus.PENDING]),
-      client.query(`SELECT COUNT(*) as count FROM advance_shipping_notices WHERE status = $1`, [ASNStatus.IN_TRANSIT]),
-      client.query(`SELECT COUNT(*) as count FROM receipts WHERE status = $1`, [ReceiptStatus.RECEIVING]),
-      client.query(`SELECT COUNT(*) as count FROM putaway_tasks WHERE status = $1`, [PutawayStatus.PENDING]),
-      client.query(`SELECT COUNT(*) as count FROM putaway_tasks WHERE status = $1`, [PutawayStatus.IN_PROGRESS]),
+    const [
+      pendingASNResult,
+      inTransitASNResult,
+      activeReceiptResult,
+      pendingPutawayResult,
+      inProgressPutawayResult,
+    ] = await Promise.all([
+      client.query(`SELECT COUNT(*) as count FROM advance_shipping_notices WHERE status = $1`, [
+        ASNStatus.PENDING,
+      ]),
+      client.query(`SELECT COUNT(*) as count FROM advance_shipping_notices WHERE status = $1`, [
+        ASNStatus.IN_TRANSIT,
+      ]),
+      client.query(`SELECT COUNT(*) as count FROM receipts WHERE status = $1`, [
+        ReceiptStatus.RECEIVING,
+      ]),
+      client.query(`SELECT COUNT(*) as count FROM putaway_tasks WHERE status = $1`, [
+        PutawayStatus.PENDING,
+      ]),
+      client.query(`SELECT COUNT(*) as count FROM putaway_tasks WHERE status = $1`, [
+        PutawayStatus.IN_PROGRESS,
+      ]),
     ]);
 
     // Get today's completed putaway count
@@ -153,10 +169,9 @@ export class InboundReceivingService {
   async getASN(asnId: string): Promise<AdvanceShippingNotice> {
     const client = await getPool();
 
-    const result = await client.query(
-      `SELECT * FROM advance_shipping_notices WHERE asn_id = $1`,
-      [asnId]
-    );
+    const result = await client.query(`SELECT * FROM advance_shipping_notices WHERE asn_id = $1`, [
+      asnId,
+    ]);
 
     if (result.rows.length === 0) {
       throw new Error(`ASN ${asnId} not found`);
@@ -224,7 +239,7 @@ export class InboundReceivingService {
     );
 
     const asns = await Promise.all(
-      result.rows.map(async (row) => {
+      result.rows.map(async row => {
         const asn = this.mapRowToASN(row);
         // Get line items for each ASN
         const lineItemsResult = await client.query(
@@ -316,7 +331,12 @@ export class InboundReceivingService {
         // Create putaway task for received goods
         const quantityToPutaway = item.quantityReceived - item.quantityDamaged;
         if (quantityToPutaway > 0) {
-          await this.createPutawayTasksForReceiptLine(client, receiptLineId, item.sku, quantityToPutaway);
+          await this.createPutawayTasksForReceiptLine(
+            client,
+            receiptLineId,
+            item.sku,
+            quantityToPutaway
+          );
         }
       }
 
@@ -337,10 +357,7 @@ export class InboundReceivingService {
   async getReceipt(receiptId: string): Promise<Receipt> {
     const client = await getPool();
 
-    const result = await client.query(
-      `SELECT * FROM receipts WHERE receipt_id = $1`,
-      [receiptId]
-    );
+    const result = await client.query(`SELECT * FROM receipts WHERE receipt_id = $1`, [receiptId]);
 
     if (result.rows.length === 0) {
       throw new Error(`Receipt ${receiptId} not found`);
@@ -415,7 +432,7 @@ export class InboundReceivingService {
     );
 
     const receipts = await Promise.all(
-      result.rows.map(async (row) => {
+      result.rows.map(async row => {
         const receipt = this.mapRowToReceipt(row);
         // Get line items for each receipt
         const lineItemsResult = await client.query(
@@ -444,10 +461,7 @@ export class InboundReceivingService {
     quantity: number
   ): Promise<void> {
     // Get SKU's default bin location
-    const skuResult = await client.query(
-      `SELECT bin_locations FROM skus WHERE sku = $1`,
-      [sku]
-    );
+    const skuResult = await client.query(`SELECT bin_locations FROM skus WHERE sku = $1`, [sku]);
 
     if (skuResult.rows.length === 0) {
       throw new Error(`SKU ${sku} not found`);
@@ -603,7 +617,7 @@ export class InboundReceivingService {
       logger.info('Putaway task updated', {
         putawayTaskId: dto.putawayTaskId,
         quantityPutaway: dto.quantityPutaway,
-        userId: dto.userId
+        userId: dto.userId,
       });
 
       return updatedTask;

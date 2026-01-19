@@ -14,7 +14,7 @@ import {
   ReportStatus,
   ReportFormat,
   AggregationType,
-  ExportJob
+  ExportJob,
 } from '@opsui/shared';
 
 // ============================================================================
@@ -45,7 +45,7 @@ export class ReportsService {
       executedBy,
       status: ReportStatus.RUNNING,
       format,
-      parameters
+      parameters,
     };
 
     try {
@@ -65,7 +65,7 @@ export class ReportsService {
         status: ReportStatus.COMPLETED,
         rowCount: result.rowCount,
         executionTimeMs,
-        fileUrl: this.generateFileUrl(reportId, format)
+        fileUrl: this.generateFileUrl(reportId, format),
       });
 
       return { execution: completedExecution, data };
@@ -77,7 +77,7 @@ export class ReportsService {
         ...execution,
         status: ReportStatus.FAILED,
         executionTimeMs,
-        errorMessage: error.message
+        errorMessage: error.message,
       });
 
       throw error;
@@ -87,7 +87,10 @@ export class ReportsService {
   /**
    * Build SQL query from report definition
    */
-  private buildReportQuery(report: Report, parameters: Record<string, any>): { sql: string; params: any[] } {
+  private buildReportQuery(
+    report: Report,
+    parameters: Record<string, any>
+  ): { sql: string; params: any[] } {
     const { fields, filters, groups } = report;
 
     // Build SELECT clause
@@ -151,7 +154,7 @@ export class ReportsService {
       [ReportType.CYCLE_COUNTS]: 'cycle_counts',
       [ReportType.LOCATION_UTILIZATION]: 'locations',
       [ReportType.USER_PERFORMANCE]: 'users',
-      [ReportType.CUSTOM]: 'custom_data'
+      [ReportType.CUSTOM]: 'custom_data',
     };
 
     return sources[reportType] || 'data';
@@ -160,7 +163,11 @@ export class ReportsService {
   /**
    * Apply filter to query
    */
-  private applyFilter(filter: any, parameters: Record<string, any>, startIndex: number): { sql: string; params: any[] } | null {
+  private applyFilter(
+    filter: any,
+    parameters: Record<string, any>,
+    startIndex: number
+  ): { sql: string; params: any[] } | null {
     const paramValue = parameters[filter.field];
 
     if (paramValue === undefined || paramValue === null) {
@@ -246,7 +253,7 @@ export class ReportsService {
       filters,
       fields,
       status: ReportStatus.PENDING,
-      createdBy
+      createdBy,
     });
 
     // Start async export (in production, this would be a background job)

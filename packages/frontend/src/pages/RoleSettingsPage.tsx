@@ -43,13 +43,49 @@ const STORAGE_KEY = 'admin-role-visibility';
 // ============================================================================
 
 const DEFAULT_ROLES: RoleConfig[] = [
-  { key: 'picking', label: 'Picking View', role: UserRole.PICKER, icon: ClipboardDocumentListIcon, visible: true },
+  {
+    key: 'picking',
+    label: 'Picking View',
+    role: UserRole.PICKER,
+    icon: ClipboardDocumentListIcon,
+    visible: true,
+  },
   { key: 'packing', label: 'Packing View', role: UserRole.PACKER, icon: CubeIcon, visible: true },
-  { key: 'stock-control', label: 'Stock Control View', role: UserRole.STOCK_CONTROLLER, icon: ScaleIcon, visible: true },
-  { key: 'inwards', label: 'Inwards View', role: 'INWARDS' as UserRole, icon: InboxIcon, visible: true },
-  { key: 'sales', label: 'Sales View', role: 'SALES' as UserRole, icon: CurrencyDollarIcon, visible: true },
-  { key: 'production', label: 'Production View', role: 'PRODUCTION' as UserRole, icon: CogIcon, visible: true },
-  { key: 'maintenance', label: 'Maintenance View', role: 'MAINTENANCE' as UserRole, icon: WrenchScrewdriverIcon, visible: true },
+  {
+    key: 'stock-control',
+    label: 'Stock Control View',
+    role: UserRole.STOCK_CONTROLLER,
+    icon: ScaleIcon,
+    visible: true,
+  },
+  {
+    key: 'inwards',
+    label: 'Inwards View',
+    role: 'INWARDS' as UserRole,
+    icon: InboxIcon,
+    visible: true,
+  },
+  {
+    key: 'sales',
+    label: 'Sales View',
+    role: 'SALES' as UserRole,
+    icon: CurrencyDollarIcon,
+    visible: true,
+  },
+  {
+    key: 'production',
+    label: 'Production View',
+    role: 'PRODUCTION' as UserRole,
+    icon: CogIcon,
+    visible: true,
+  },
+  {
+    key: 'maintenance',
+    label: 'Maintenance View',
+    role: 'MAINTENANCE' as UserRole,
+    icon: WrenchScrewdriverIcon,
+    visible: true,
+  },
   { key: 'rma', label: 'RMA View', role: 'RMA' as UserRole, icon: ArrowPathIcon, visible: true },
 ];
 
@@ -67,7 +103,10 @@ function loadRoleVisibility(): Record<string, boolean> {
     console.error('Failed to load role visibility settings:', error);
   }
   // Return default: all roles visible
-  return DEFAULT_ROLES.reduce((acc, role) => ({ ...acc, [role.key]: true }), {} as Record<string, boolean>);
+  return DEFAULT_ROLES.reduce(
+    (acc, role) => ({ ...acc, [role.key]: true }),
+    {} as Record<string, boolean>
+  );
 }
 
 function saveRoleVisibility(settings: Record<string, boolean>) {
@@ -109,24 +148,30 @@ function RoleSettingCard({ config, onToggleVisibility }: RoleSettingCardProps) {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             {/* Role Icon */}
-            <div className={`p-3 rounded-xl transition-all duration-300 ${
-              config.visible
-                ? 'bg-primary-500/20 text-primary-400'
-                : 'bg-gray-700/50 text-gray-500'
-            }`}>
+            <div
+              className={`p-3 rounded-xl transition-all duration-300 ${
+                config.visible
+                  ? 'bg-primary-500/20 text-primary-400'
+                  : 'bg-gray-700/50 text-gray-500'
+              }`}
+            >
               <Icon className="h-6 w-6" />
             </div>
 
             {/* Role Info */}
             <div>
-              <h3 className={`text-lg font-semibold transition-colors ${
-                config.visible ? 'text-white' : 'text-gray-400'
-              }`}>
+              <h3
+                className={`text-lg font-semibold transition-colors ${
+                  config.visible ? 'text-white' : 'text-gray-400'
+                }`}
+              >
                 {config.label}
               </h3>
-              <p className={`text-sm transition-colors ${
-                config.visible ? 'text-gray-400' : 'text-gray-500'
-              }`}>
+              <p
+                className={`text-sm transition-colors ${
+                  config.visible ? 'text-gray-400' : 'text-gray-500'
+                }`}
+              >
                 Role: {config.role}
               </p>
             </div>
@@ -151,11 +196,11 @@ function RoleSettingCard({ config, onToggleVisibility }: RoleSettingCardProps) {
         </div>
 
         {/* Status Indicator */}
-        <div className={`mt-4 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-300 ${
-          config.visible
-            ? 'bg-success-500/20 text-success-300'
-            : 'bg-gray-700/50 text-gray-500'
-        }`}>
+        <div
+          className={`mt-4 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-300 ${
+            config.visible ? 'bg-success-500/20 text-success-300' : 'bg-gray-700/50 text-gray-500'
+          }`}
+        >
           {config.visible ? (
             <span className="flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-success-400 animate-pulse" />
@@ -186,24 +231,27 @@ function RoleSettingsPage() {
 
   const handleToggleVisibility = (key: string) => {
     setRoles(prev =>
-      prev.map(role =>
-        role.key === key ? { ...role, visible: !role.visible } : role
-      )
+      prev.map(role => (role.key === key ? { ...role, visible: !role.visible } : role))
     );
     setHasChanges(true);
   };
 
   const handleSave = () => {
-    const visibilitySettings = roles.reduce((acc, role) => ({
-      ...acc,
-      [role.key]: role.visible
-    }), {} as Record<string, boolean>);
+    const visibilitySettings = roles.reduce(
+      (acc, role) => ({
+        ...acc,
+        [role.key]: role.visible,
+      }),
+      {} as Record<string, boolean>
+    );
 
     saveRoleVisibility(visibilitySettings);
     setHasChanges(false);
 
     // Dispatch custom event to notify other components (like Header) of the change
-    window.dispatchEvent(new CustomEvent('role-visibility-changed', { detail: visibilitySettings }));
+    window.dispatchEvent(
+      new CustomEvent('role-visibility-changed', { detail: visibilitySettings })
+    );
 
     // Navigate back to dashboard
     navigate('/dashboard');
@@ -211,10 +259,13 @@ function RoleSettingsPage() {
 
   const handleReset = () => {
     // Reset to all visible
-    const defaultVisibility = DEFAULT_ROLES.reduce((acc, role) => ({
-      ...acc,
-      [role.key]: true
-    }), {} as Record<string, boolean>);
+    const defaultVisibility = DEFAULT_ROLES.reduce(
+      (acc, role) => ({
+        ...acc,
+        [role.key]: true,
+      }),
+      {} as Record<string, boolean>
+    );
 
     saveRoleVisibility(defaultVisibility);
     setRoles(getInitialRoles());
@@ -245,7 +296,9 @@ function RoleSettingsPage() {
               <CogIcon className="h-8 w-8 text-primary-400" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-white tracking-tight">Role Switcher Settings</h1>
+              <h1 className="text-3xl font-bold text-white tracking-tight">
+                Role Switcher Settings
+              </h1>
               <p className="mt-2 text-gray-400">
                 Customize which roles appear in your role view dropdown
               </p>
@@ -277,7 +330,7 @@ function RoleSettingsPage() {
 
         {/* Role Settings Grid */}
         <div className="space-y-4 mb-8">
-          {roles.map((role) => (
+          {roles.map(role => (
             <RoleSettingCard
               key={role.key}
               config={role}
@@ -330,8 +383,14 @@ function RoleSettingsPage() {
               <div>
                 <h4 className="text-white font-semibold mb-2">How it works</h4>
                 <ul className="text-sm text-gray-400 space-y-1">
-                  <li>• <strong className="text-gray-300">Visible roles</strong> appear in the role switcher dropdown in the header</li>
-                  <li>• <strong className="text-gray-300">Hidden roles</strong> won't clutter your dropdown but remain accessible via direct URL</li>
+                  <li>
+                    • <strong className="text-gray-300">Visible roles</strong> appear in the role
+                    switcher dropdown in the header
+                  </li>
+                  <li>
+                    • <strong className="text-gray-300">Hidden roles</strong> won't clutter your
+                    dropdown but remain accessible via direct URL
+                  </li>
                   <li>• Settings are saved locally in your browser and persist across sessions</li>
                   <li>• Changes only affect your view - other admins have their own settings</li>
                 </ul>

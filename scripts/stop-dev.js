@@ -24,7 +24,7 @@ function log(message, color = 'reset') {
 }
 
 async function killProcessOnPort(port) {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     const isWindows = process.platform === 'win32';
 
     if (isWindows) {
@@ -51,13 +51,14 @@ async function killProcessOnPort(port) {
         }
 
         let killed = 0;
-        const killPromises = Array.from(pids).map(pid =>
-          new Promise(killResolve => {
-            exec(`taskkill /F /PID ${pid}`, { windowsHide: true }, () => {
-              killed++;
-              killResolve();
-            });
-          })
+        const killPromises = Array.from(pids).map(
+          pid =>
+            new Promise(killResolve => {
+              exec(`taskkill /F /PID ${pid}`, { windowsHide: true }, () => {
+                killed++;
+                killResolve();
+              });
+            })
         );
 
         Promise.all(killPromises).then(() => {

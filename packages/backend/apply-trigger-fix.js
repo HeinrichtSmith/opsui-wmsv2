@@ -19,24 +19,24 @@ const pool = new Pool({
 
 async function applyMigration() {
   const client = await pool.connect();
-  
+
   try {
     console.log('🔧 Applying order_items status trigger fix...\n');
-    
+
     // Read the migration SQL file
     const migrationPath = path.join(__dirname, 'fix-order-item-status-trigger.sql');
     const migrationSQL = fs.readFileSync(migrationPath, 'utf8');
-    
+
     // Execute the migration
     await client.query(migrationSQL);
-    
+
     console.log('✅ Migration applied successfully!\n');
     console.log('Changes made:');
     console.log('  - Dropped old trigger and function');
     console.log('  - Recreated update_order_progress() function with explicit enum casting');
     console.log('  - Recreated trigger_update_order_progress trigger\n');
     console.log('The database trigger will now correctly handle order_item_status enum values.');
-    
+
     // Verify the fix
     const result = await client.query(`
       SELECT 
@@ -46,13 +46,12 @@ async function applyMigration() {
       WHERE routine_name = 'update_order_progress'
         AND routine_schema = 'public'
     `);
-    
+
     if (result.rows.length > 0) {
       console.log('✅ Trigger function verified in database');
     } else {
       console.log('⚠️  Warning: Could not verify function in database');
     }
-    
   } catch (error) {
     console.error('❌ Error applying migration:', error.message);
     throw error;
@@ -68,7 +67,7 @@ applyMigration()
     console.log('\n✨ Fix completed successfully!');
     process.exit(0);
   })
-  .catch((error) => {
+  .catch(error => {
     console.error('\n❌ Migration failed:', error.message);
     process.exit(1);
   });

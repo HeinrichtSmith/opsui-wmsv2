@@ -49,22 +49,12 @@ export function ProgressBar({
     <div className={cn('w-full', className)} {...props}>
       <div className="flex items-center justify-between mb-1">
         {showLabel && (
-          <span className="text-sm font-medium text-gray-700">
-            {percentage.toFixed(0)}%
-          </span>
+          <span className="text-sm font-medium text-gray-700">{percentage.toFixed(0)}%</span>
         )}
       </div>
-      <div
-        className={cn(
-          'w-full bg-gray-200 rounded-full overflow-hidden',
-          sizeStyles[size]
-        )}
-      >
+      <div className={cn('w-full bg-gray-200 rounded-full overflow-hidden', sizeStyles[size])}>
         <div
-          className={cn(
-            'h-full transition-all duration-300 ease-out',
-            colorStyles[color]
-          )}
+          className={cn('h-full transition-all duration-300 ease-out', colorStyles[color])}
           style={{ width: `${percentage}%` }}
           role="progressbar"
           aria-valuenow={value}

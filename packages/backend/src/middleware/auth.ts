@@ -119,7 +119,11 @@ export function requireAdmin(req: AuthenticatedRequest, res: Response, next: Nex
 /**
  * Check if user is supervisor or admin
  */
-export function requireSupervisor(req: AuthenticatedRequest, res: Response, next: NextFunction): void {
+export function requireSupervisor(
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+): void {
   if (!req.user) {
     return next(new UnauthorizedError('User not authenticated'));
   }
@@ -153,7 +157,12 @@ export function requirePicker(req: AuthenticatedRequest, res: Response, next: Ne
 /**
  * Generate JWT token for user
  */
-export function generateToken(user: { userId: string; email: string; role: UserRole; activeRole?: UserRole | null }): string {
+export function generateToken(user: {
+  userId: string;
+  email: string;
+  role: UserRole;
+  activeRole?: UserRole | null;
+}): string {
   const payload: JWTPayload = {
     userId: user.userId,
     email: user.email,
@@ -169,7 +178,12 @@ export function generateToken(user: { userId: string; email: string; role: UserR
 /**
  * Generate refresh token (longer-lived)
  */
-export function generateRefreshToken(user: { userId: string; email: string; role: UserRole; activeRole?: UserRole | null }): string {
+export function generateRefreshToken(user: {
+  userId: string;
+  email: string;
+  role: UserRole;
+  activeRole?: UserRole | null;
+}): string {
   const payload: JWTPayload = {
     userId: user.userId,
     email: user.email,

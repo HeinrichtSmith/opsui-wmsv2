@@ -3,6 +3,7 @@
 ## Problem
 
 You're seeing:
+
 ```
 This site can't be reached
 localhost refused to connect
@@ -12,6 +13,7 @@ ERR_CONNECTION_REFUSED
 ## Root Cause
 
 This happens when:
+
 1. Services crash silently
 2. Ports aren't properly cleaned up
 3. Services start but fail to become ready
@@ -30,26 +32,31 @@ npm run dev:guaranteed
 ### What It Does That's Different:
 
 #### 1. Aggressive Port Cleanup
+
 - Kills ALL processes on ports 3001, 5173, 5174, 3000, 8000, 8080
 - Waits for ports to be fully released
 - Prevents "port already in use" errors
 
 #### 2. Service Health Monitoring
+
 - Checks if services are ACTUALLY responding (not just running)
 - Health checks every 5 seconds
 - Shows green/red status indicators
 
 #### 3. Auto-Restart on Crashes
+
 - Detects when a service crashes
 - Automatically restarts it
 - Tracks restart count (max 5 before giving up)
 
 #### 4. Ready State Detection
+
 - Waits for "ready" signal in logs
 - Doesn't mark as ready until actually responding
 - Shows clear "waiting for X to be ready" messages
 
 #### 5. Clear Status Dashboard
+
 ```
 ╔════════════════════════════════════════════════════════════╗
 ║                    STATUS DASHBOARD                            ║
@@ -64,7 +71,9 @@ Frontend:
 ```
 
 #### 6. Helpful Error Messages
+
 Instead of generic errors, you get:
+
 ```
 ❌ Backend failed to start. Checking logs...
    • Check if PostgreSQL is running
@@ -77,11 +86,13 @@ Instead of generic errors, you get:
 ## Complete Workflow
 
 ### Option 1: Robust Mode (Recommended)
+
 ```bash
 npm run dev:robust
 ```
 
 ### Option 2: Manual Checklist
+
 If you still have issues, run this diagnostic:
 
 ```bash
@@ -115,6 +126,7 @@ npm run dev:robust
 ### Before Starting Development
 
 **Always run this first:**
+
 ```bash
 # Check database is running
 npm run db:status
@@ -126,18 +138,21 @@ npm run db:status
 ### During Development
 
 **Watch for these signs of trouble:**
+
 - Services stop outputting logs
 - High memory usage
 - "EADDRINUSE" errors
 - Database connection errors
 
 **If you see any of these:**
+
 1. Press Ctrl+C to stop dev server
 2. Run: `npm run dev:robust`
 
 ### After System Changes
 
 **After any of these, ALWAYS run npm run dev:robust:**
+
 - System restart/sleep
 - Network changes (VPN, WiFi)
 - Database updates
@@ -151,12 +166,14 @@ npm run db:status
 ### Backend is DOWN
 
 **Symptoms:**
+
 ```
 Backend API: ● DOWN
 Reason: timeout
 ```
 
 **Solutions:**
+
 1. Check if PostgreSQL is running
 2. Check if port 3001 is blocked by firewall
 3. Run `npm run db:status`
@@ -165,12 +182,14 @@ Reason: timeout
 ### Frontend is DOWN
 
 **Symptoms:**
+
 ```
 Frontend: ● DOWN
 Reason: timeout
 ```
 
 **Solutions:**
+
 1. Check if port 5173 is blocked
 2. Close other browser tabs on localhost:5173
 3. Check if Node.js has enough memory
@@ -179,6 +198,7 @@ Reason: timeout
 ### Both are DOWN
 
 **Solutions:**
+
 1. Stop all processes: Ctrl+C
 2. Kill node processes: `taskkill /F /IM node.exe` (Windows)
 3. Check database is running
@@ -189,6 +209,7 @@ Reason: timeout
 **This is the main error you want to avoid!**
 
 **To NEVER see this again:**
+
 1. **Always use**: `npm run dev:robust`
 2. **Never use**: `npm run dev`
 3. **Wait for**: "ALL SYSTEMS OPERATIONAL" message
@@ -199,9 +220,11 @@ Reason: timeout
 ## Comparison
 
 ### npm run dev (Basic)
+
 ```bash
 npm run dev
 ```
+
 - ❌ No port cleanup
 - ❌ No health checking
 - ❌ No auto-restart
@@ -209,9 +232,11 @@ npm run dev
 - ❌ You see ERR_CONNECTION_REFUSED
 
 ### npm run dev:robust (Guaranteed)
+
 ```bash
 npm run dev:robust
 ```
+
 - ✅ Aggressive port cleanup
 - ✅ Health checks every 5 seconds
 - ✅ Auto-restart on crashes

@@ -15,7 +15,13 @@ async function fixPasswords() {
 
   const result = await pool.query(
     'UPDATE users SET password_hash = $1 WHERE email IN ($2, $3, $4, $5)',
-    [hash, 'john.picker@wms.local', 'jane.picker@wms.local', 'bob.packer@wms.local', 'alice.supervisor@wms.local']
+    [
+      hash,
+      'john.picker@wms.local',
+      'jane.picker@wms.local',
+      'bob.packer@wms.local',
+      'alice.supervisor@wms.local',
+    ]
   );
 
   console.log('Updated', result.rowCount, 'users');

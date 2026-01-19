@@ -197,6 +197,7 @@ npm run extract-features -- --save-to-db
 ### Feature Categories
 
 **Order Features:**
+
 - `order_item_count`: Number of items
 - `order_total_value`: Total value
 - `hour_of_day`: Hour (0-23)
@@ -209,12 +210,14 @@ npm run extract-features -- --save-to-db
 - `priority_level`: Order priority
 
 **Demand Features:**
+
 - Lag features (1 day, 7 days)
 - Moving averages (7 day)
 - Day of week, month
 - Historical statistics
 
 **Picker Features:**
+
 - Experience metrics
 - Performance history
 - Task completion rates
@@ -258,6 +261,7 @@ RANDOM_SEED = 42
 ### Training Outputs
 
 Training produces:
+
 - Trained model file (`.pkl`)
 - Scaler for preprocessing
 - Feature names mapping
@@ -267,6 +271,7 @@ Training produces:
 ### Model Metrics
 
 Models are evaluated on:
+
 - **MAE** (Mean Absolute Error): Average absolute difference
 - **RMSE** (Root Mean Squared Error): Penalizes large errors
 - **R²** (R-squared): Variance explained (0-1, higher is better)
@@ -291,16 +296,19 @@ ML_API_HOST=0.0.0.0 ML_API_PORT=8001 npm run start
 ### API Endpoints
 
 #### Health Check
+
 ```bash
 GET /health
 ```
 
 #### List Models
+
 ```bash
 GET /models
 ```
 
 #### Predict Order Duration
+
 ```bash
 POST /predict/duration
 Content-Type: application/json
@@ -323,6 +331,7 @@ Content-Type: application/json
 ```
 
 #### Predict Demand
+
 ```bash
 POST /predict/demand
 Content-Type: application/json
@@ -334,6 +343,7 @@ Content-Type: application/json
 ```
 
 #### Metrics (Prometheus)
+
 ```bash
 GET /metrics
 ```
@@ -347,39 +357,41 @@ GET /metrics
 **Endpoint:** `POST /predict/duration`
 
 **Request:**
+
 ```typescript
 interface OrderDurationRequest {
-  order_id?: string
-  order_item_count: number      // 1+
-  order_total_value: number     // >= 0
-  hour_of_day: number           // 0-23
-  day_of_week: number           // 0-6 (0=Monday)
-  is_peak_hour: number          // 0 or 1
-  is_weekend: number            // 0 or 1
-  sku_count: number             // 1+
-  avg_sku_popularity: number    // >= 0
-  max_sku_popularity: number    // >= 0
-  zone_diversity: number        // 1+
-  max_distance_zone: number     // 1-5
-  priority_level: number        // 1-4
-  picker_count: number          // >= 0
+  order_id?: string;
+  order_item_count: number; // 1+
+  order_total_value: number; // >= 0
+  hour_of_day: number; // 0-23
+  day_of_week: number; // 0-6 (0=Monday)
+  is_peak_hour: number; // 0 or 1
+  is_weekend: number; // 0 or 1
+  sku_count: number; // 1+
+  avg_sku_popularity: number; // >= 0
+  max_sku_popularity: number; // >= 0
+  zone_diversity: number; // 1+
+  max_distance_zone: number; // 1-5
+  priority_level: number; // 1-4
+  picker_count: number; // >= 0
 }
 ```
 
 **Response:**
+
 ```typescript
 interface DurationPredictionResponse {
-  prediction_id: string
-  model_version: string
+  prediction_id: string;
+  model_version: string;
   prediction: {
-    duration_minutes: number
-    duration_hours: number
-  }
-  confidence: number            // 0-1
+    duration_minutes: number;
+    duration_hours: number;
+  };
+  confidence: number; // 0-1
   metadata: {
-    model_type: string
-    predicted_at: string
-  }
+    model_type: string;
+    predicted_at: string;
+  };
 }
 ```
 
@@ -388,33 +400,35 @@ interface DurationPredictionResponse {
 **Endpoint:** `POST /predict/demand`
 
 **Request:**
+
 ```typescript
 interface DemandForecastRequest {
-  sku_id: string
-  forecast_horizon_days: number // 1-365
+  sku_id: string;
+  forecast_horizon_days: number; // 1-365
 }
 ```
 
 **Response:**
+
 ```typescript
 interface DemandForecastResponse {
-  prediction_id: string
-  model_version: string
+  prediction_id: string;
+  model_version: string;
   prediction: {
-    sku_id: string
-    forecast_horizon_days: number
+    sku_id: string;
+    forecast_horizon_days: number;
     forecasts: Array<{
-      day: number
-      forecast_date: string
-      forecast_quantity: number
-    }>
-  }
-  confidence: number
+      day: number;
+      forecast_date: string;
+      forecast_quantity: number;
+    }>;
+  };
+  confidence: number;
   metadata: {
-    model_type: string
-    predicted_at: string
-    historical_days: number
-  }
+    model_type: string;
+    predicted_at: string;
+    historical_days: number;
+  };
 }
 ```
 
@@ -427,7 +441,7 @@ interface DemandForecastResponse {
 #### Order Duration Prediction
 
 ```tsx
-import { OrderDurationPrediction } from '@/components/ml/OrderDurationPrediction'
+import { OrderDurationPrediction } from '@/components/ml/OrderDurationPrediction';
 
 function OrderPage({ order }) {
   return (
@@ -440,28 +454,25 @@ function OrderPage({ order }) {
           sku_count: order.uniqueSkus,
           zone_diversity: order.zones.length,
           priority: order.priority,
-          created_at: order.createdAt
+          created_at: order.createdAt,
         }}
       />
     </div>
-  )
+  );
 }
 ```
 
 #### Demand Forecast Chart
 
 ```tsx
-import { DemandForecastChart } from '@/components/ml/DemandForecastChart'
+import { DemandForecastChart } from '@/components/ml/DemandForecastChart';
 
 function SKUPage({ skuId }) {
   return (
     <div>
-      <DemandForecastChart
-        skuId={skuId}
-        forecastHorizonDays={14}
-      />
+      <DemandForecastChart skuId={skuId} forecastHorizonDays={14} />
     </div>
-  )
+  );
 }
 ```
 
@@ -469,24 +480,24 @@ function SKUPage({ skuId }) {
 
 ```typescript
 // src/api/ml.ts
-import { api } from './client'
+import { api } from './client';
 
 export const mlApi = {
   predictDuration: async (data: OrderDurationRequest) => {
-    const response = await api.post('/ml/predict/duration', data)
-    return response.data
+    const response = await api.post('/ml/predict/duration', data);
+    return response.data;
   },
 
   predictDemand: async (data: DemandForecastRequest) => {
-    const response = await api.post('/ml/predict/demand', data)
-    return response.data
+    const response = await api.post('/ml/predict/demand', data);
+    return response.data;
   },
 
   getModels: async () => {
-    const response = await api.get('/ml/models')
-    return response.data
-  }
-}
+    const response = await api.get('/ml/models');
+    return response.data;
+  },
+};
 ```
 
 ---
@@ -518,6 +529,7 @@ mlflow runs list --experiment-id 1
 ### Database Logs
 
 Predictions are logged to `ml_predictions` table for:
+
 - Audit trail
 - Model performance monitoring
 - Feature drift detection
@@ -545,6 +557,7 @@ logger = logging.getLogger(__name__)
 **Symptoms:** API returns 503 Service Unavailable
 
 **Solutions:**
+
 ```bash
 # Check if model files exist
 ls -la models/duration/
@@ -559,6 +572,7 @@ ls -la models/duration/scaler_xxx.pkl
 ### Issue: Prediction is slow
 
 **Solutions:**
+
 ```bash
 # Check if prediction caching is enabled
 # Check Redis connection
@@ -571,6 +585,7 @@ curl http://localhost:8001/metrics
 ### Issue: Feature extraction fails
 
 **Solutions:**
+
 ```bash
 # Check database connection
 psql -U wms_user -d wms -c "SELECT COUNT(*) FROM orders"
@@ -585,6 +600,7 @@ psql -U wms_user -d wms -c "SELECT COUNT(*) FROM orders WHERE created_at < NOW()
 ### Issue: Training is slow
 
 **Solutions:**
+
 ```bash
 # Reduce training data size
 npm run train:duration -- --days-back 30
@@ -673,12 +689,14 @@ curl -X POST http://localhost:8001/predict/duration \
 ## 📚 Additional Resources
 
 ### Documentation
+
 - [MLflow Docs](https://mlflow.org/docs/latest/index.html)
 - [XGBoost Docs](https://xgboost.readthedocs.io/)
 - [Scikit-learn Docs](https://scikit-learn.org/stable/)
 - [FastAPI Docs](https://fastapi.tiangolo.com/)
 
 ### Project-Specific
+
 - [Backend API Docs](../../backend/README.md)
 - [Database Schema](../../database/README.md)
 - [Architecture Overview](../../ARCHITECTURE.md)
@@ -688,18 +706,21 @@ curl -X POST http://localhost:8001/predict/duration \
 ## 🎯 Best Practices
 
 ### Data Quality
+
 - ✅ Regularly update features (daily/weekly)
 - ✅ Monitor data drift
 - ✅ Validate feature distributions
 - ✅ Handle missing values appropriately
 
 ### Model Management
+
 - ✅ Version all trained models
 - ✅ Document model performance
 - ✅ Track training data lineage
 - ✅ A/B test new models before deployment
 
 ### Production
+
 - ✅ Use model canary deployments
 - ✅ Monitor prediction latency
 - ✅ Set up alerting for model failures
@@ -710,6 +731,7 @@ curl -X POST http://localhost:8001/predict/duration \
 ## 📞 Support
 
 For issues or questions:
+
 - Check the [Troubleshooting](#troubleshooting) section
 - Review ML logs in the database
 - Check MLflow runs for training details

@@ -14,12 +14,12 @@ async function checkDb() {
     const result = await pool.query('SELECT * FROM users LIMIT 5');
     console.log('Users found:', result.rows.length);
     console.log('Raw user data:', JSON.stringify(result.rows, null, 2));
-    
+
     if (result.rows.length > 0) {
       const user = result.rows[0];
       console.log('\nUser columns:', Object.keys(user));
       console.log('User user_id:', user.user_id);
-      
+
       // Test getUserSafe query
       const safeResult = await pool.query(
         'SELECT user_id, name, email, role, active, current_task_id, created_at, last_login_at FROM users WHERE user_id = $1',

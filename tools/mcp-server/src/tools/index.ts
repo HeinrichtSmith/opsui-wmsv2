@@ -54,7 +54,7 @@ export const allTools = [
  * Get tool by name
  */
 export function getTool(name: string) {
-  return allTools.find((tool) => tool.name === name);
+  return allTools.find(tool => tool.name === name);
 }
 
 /**
@@ -62,7 +62,7 @@ export function getTool(name: string) {
  */
 export function getToolsByCategory(category: string) {
   const prefix = `${category}_`;
-  return allTools.filter((tool) => tool.name.startsWith(prefix));
+  return allTools.filter(tool => tool.name.startsWith(prefix));
 }
 
 /**

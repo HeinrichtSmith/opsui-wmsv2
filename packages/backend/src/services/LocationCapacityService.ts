@@ -88,10 +88,7 @@ export class LocationCapacityService {
   async getCapacityRule(ruleId: string): Promise<CapacityRule> {
     const client = await getPool();
 
-    const result = await client.query(
-      `SELECT * FROM capacity_rules WHERE rule_id = $1`,
-      [ruleId]
-    );
+    const result = await client.query(`SELECT * FROM capacity_rules WHERE rule_id = $1`, [ruleId]);
 
     if (result.rows.length === 0) {
       throw new Error(`Capacity rule ${ruleId} not found`);
@@ -184,10 +181,7 @@ export class LocationCapacityService {
   async deleteCapacityRule(ruleId: string): Promise<void> {
     const client = await getPool();
 
-    await client.query(
-      `DELETE FROM capacity_rules WHERE rule_id = $1`,
-      [ruleId]
-    );
+    await client.query(`DELETE FROM capacity_rules WHERE rule_id = $1`, [ruleId]);
 
     logger.info('Capacity rule deleted', { ruleId });
   }
@@ -202,10 +196,9 @@ export class LocationCapacityService {
   async getLocationCapacity(binLocation: string): Promise<LocationCapacity> {
     const client = await getPool();
 
-    const result = await client.query(
-      `SELECT * FROM location_capacities WHERE bin_location = $1`,
-      [binLocation]
-    );
+    const result = await client.query(`SELECT * FROM location_capacities WHERE bin_location = $1`, [
+      binLocation,
+    ]);
 
     if (result.rows.length === 0) {
       throw new Error(`Location capacity for ${binLocation} not found`);
@@ -351,12 +344,27 @@ export class LocationCapacityService {
              last_updated = NOW(),
              updated_at = NOW()
          WHERE bin_location = $6 AND capacity_type = $7`,
-        [currentUtilization, availableCapacity, utilizationPercent, status, status, binLocation, rule.capacityType]
+        [
+          currentUtilization,
+          availableCapacity,
+          utilizationPercent,
+          status,
+          status,
+          binLocation,
+          rule.capacityType,
+        ]
       );
 
       // Create alert if needed
       if (status === CapacityRuleStatus.EXCEEDED || status === CapacityRuleStatus.WARNING) {
-        await this.createCapacityAlert(binLocation, rule.capacityType, currentUtilization, maximumCapacity, utilizationPercent, status);
+        await this.createCapacityAlert(
+          binLocation,
+          rule.capacityType,
+          currentUtilization,
+          maximumCapacity,
+          utilizationPercent,
+          status
+        );
       }
     } else {
       // Create new
@@ -366,12 +374,30 @@ export class LocationCapacityService {
           (capacity_id, bin_location, capacity_type, maximum_capacity, current_utilization,
            available_capacity, utilization_percent, capacity_unit, status, warning_threshold, last_updated)
          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW())`,
-        [capacityId, binLocation, rule.capacityType, maximumCapacity, currentUtilization, availableCapacity, utilizationPercent, rule.capacityUnit, status, rule.warningThreshold]
+        [
+          capacityId,
+          binLocation,
+          rule.capacityType,
+          maximumCapacity,
+          currentUtilization,
+          availableCapacity,
+          utilizationPercent,
+          rule.capacityUnit,
+          status,
+          rule.warningThreshold,
+        ]
       );
 
       // Create alert if needed
       if (status === CapacityRuleStatus.EXCEEDED || status === CapacityRuleStatus.WARNING) {
-        await this.createCapacityAlert(binLocation, rule.capacityType, currentUtilization, maximumCapacity, utilizationPercent, status);
+        await this.createCapacityAlert(
+          binLocation,
+          rule.capacityType,
+          currentUtilization,
+          maximumCapacity,
+          utilizationPercent,
+          status
+        );
       }
     }
   }
@@ -379,7 +405,10 @@ export class LocationCapacityService {
   /**
    * Create default location capacity
    */
-  private async createDefaultLocationCapacity(binLocation: string, currentQuantity: number): Promise<LocationCapacity> {
+  private async createDefaultLocationCapacity(
+    binLocation: string,
+    currentQuantity: number
+  ): Promise<LocationCapacity> {
     const client = await getPool();
 
     const capacityId = `LCAP-${nanoid(10)}`.toUpperCase();
@@ -391,7 +420,18 @@ export class LocationCapacityService {
         (capacity_id, bin_location, capacity_type, maximum_capacity, current_utilization,
          available_capacity, utilization_percent, capacity_unit, status, warning_threshold, last_updated)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW())`,
-      [capacityId, binLocation, CapacityType.QUANTITY, defaultCapacity, currentQuantity, Math.max(0, defaultCapacity - currentQuantity), utilizationPercent, CapacityUnit.UNITS, CapacityRuleStatus.ACTIVE, 80]
+      [
+        capacityId,
+        binLocation,
+        CapacityType.QUANTITY,
+        defaultCapacity,
+        currentQuantity,
+        Math.max(0, defaultCapacity - currentQuantity),
+        utilizationPercent,
+        CapacityUnit.UNITS,
+        CapacityRuleStatus.ACTIVE,
+        80,
+      ]
     );
 
     return await this.getLocationCapacity(binLocation);
@@ -509,7 +549,12 @@ export class LocationCapacityService {
              alert_message = $3,
              updated_at = NOW()
          WHERE alert_id = $4`,
-        [currentUtilization, utilizationPercent, `Location ${binLocation} is at ${utilizationPercent.toFixed(1)}% capacity`, existingAlert.rows[0].alert_id]
+        [
+          currentUtilization,
+          utilizationPercent,
+          `Location ${binLocation} is at ${utilizationPercent.toFixed(1)}% capacity`,
+          existingAlert.rows[0].alert_id,
+        ]
       );
       return;
     }
@@ -523,7 +568,16 @@ export class LocationCapacityService {
         (alert_id, bin_location, capacity_type, current_utilization, maximum_capacity,
          utilization_percent, alert_type, alert_message)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
-      [alertId, binLocation, capacityType, currentUtilization, maximumCapacity, utilizationPercent, alertType, `Location ${binLocation} is at ${utilizationPercent.toFixed(1)}% capacity`]
+      [
+        alertId,
+        binLocation,
+        capacityType,
+        currentUtilization,
+        maximumCapacity,
+        utilizationPercent,
+        alertType,
+        `Location ${binLocation} is at ${utilizationPercent.toFixed(1)}% capacity`,
+      ]
     );
 
     logger.info('Capacity alert created', { alertId, binLocation, utilizationPercent });
@@ -576,10 +630,9 @@ export class LocationCapacityService {
     const client = await getPool();
 
     // Get location details
-    const locationResult = await client.query(
-      `SELECT * FROM bin_locations WHERE bin_id = $1`,
-      [binLocation]
-    );
+    const locationResult = await client.query(`SELECT * FROM bin_locations WHERE bin_id = $1`, [
+      binLocation,
+    ]);
 
     if (locationResult.rows.length === 0) {
       return [];

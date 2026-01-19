@@ -12,10 +12,10 @@ const pool = new Pool({
 
 async function applyFix() {
   const client = await pool.connect();
-  
+
   try {
     console.log('🔧 Applying order_items status trigger fix...\n');
-    
+
     // Drop old trigger and function
     await client.query(`DROP TRIGGER IF EXISTS trigger_update_order_progress ON order_items`);
     await client.query(`DROP FUNCTION IF EXISTS update_order_progress()`);
@@ -77,7 +77,6 @@ async function applyFix() {
     console.log('  - Recreated trigger_update_order_progress trigger\n');
     console.log('The database trigger will now correctly handle order_item_status enum values.');
     console.log('\n✨ Fix completed successfully!');
-    
   } catch (error) {
     console.error('❌ Error applying migration:', error.message);
     throw error;

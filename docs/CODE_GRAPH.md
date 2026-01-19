@@ -11,6 +11,7 @@
 ## Graph Format
 
 Each node represents a file/component with:
+
 - **File**: Path to the file
 - **Type**: service | repository | route | component | type | util
 - **Domain**: Business domain (orders, inventory, auth, etc.)
@@ -24,6 +25,7 @@ Each node represents a file/component with:
 ## Domain: Orders
 
 ### OrderService.ts
+
 ```yaml
 File: packages/backend/src/services/OrderService.ts
 Type: service
@@ -63,6 +65,7 @@ Critical Paths:
 ```
 
 ### OrderRepository.ts
+
 ```yaml
 File: packages/backend/src/repositories/OrderRepository.ts
 Type: repository
@@ -93,6 +96,7 @@ Indexes Used:
 ## Domain: Inventory
 
 ### InventoryService.ts
+
 ```yaml
 File: packages/backend/src/services/InventoryService.ts
 Type: service
@@ -134,6 +138,7 @@ Invariants Enforced:
 ```
 
 ### InventoryRepository.ts
+
 ```yaml
 File: packages/backend/src/repositories/InventoryRepository.ts
 Type: repository
@@ -163,6 +168,7 @@ Indexes Used:
 ## Domain: Authentication
 
 ### AuthService.ts
+
 ```yaml
 File: packages/backend/src/services/AuthService.ts
 Type: service
@@ -207,6 +213,7 @@ Security:
 ## Domain: Metrics & Dashboard
 
 ### MetricsService.ts
+
 ```yaml
 File: packages/backend/src/services/MetricsService.ts
 Type: service
@@ -244,6 +251,7 @@ Performance:
 ## Frontend Dependencies
 
 ### PickingPage.tsx
+
 ```yaml
 File: packages/frontend/src/pages/picking/PickingPage.tsx
 Type: component
@@ -278,6 +286,7 @@ User Interactions:
 ## Shared Types Package
 
 ### packages/shared/src/types/order.ts
+
 ```yaml
 File: packages/shared/src/types/order.ts
 Type: type definitions
@@ -305,6 +314,7 @@ Critical: This is the SINGLE SOURCE OF TRUTH for order types.
 ```
 
 ### packages/shared/src/types/workflow.ts
+
 ```yaml
 File: packages/shared/src/types/workflow.ts
 Type: type definitions + validation logic
@@ -335,6 +345,7 @@ Critical: All state transitions MUST go through validateTransition().
 ## Cross-Cutting Concerns
 
 ### Database Client
+
 ```yaml
 File: packages/backend/src/db/client.ts
 Type: infrastructure
@@ -360,6 +371,7 @@ Configuration:
 ```
 
 ### Logger
+
 ```yaml
 File: packages/backend/src/config/logger.ts
 Type: infrastructure
@@ -385,6 +397,7 @@ Usage:
 ## Dependency Heat Map
 
 **High coupling areas** (be careful when changing):
+
 1. **OrderStatus enum** - Used in 50+ files across backend/frontend
 2. **validateTransition()** - All state transitions go through this
 3. **Order type** - Core domain type used everywhere
@@ -392,11 +405,13 @@ Usage:
 5. **Auth middleware** - Protects all API routes
 
 **Medium coupling areas**:
+
 1. Service layer files (OrderService, InventoryService, etc.)
 2. Repository layer files
 3. Shared utility functions
 
 **Low coupling areas** (safe to change):
+
 1. Frontend components (leaf nodes)
 2. Utility functions
 3. Test files
@@ -409,6 +424,7 @@ Usage:
 **Currently: None detected** ✅
 
 The architecture successfully avoids circular dependencies by:
+
 - Services depend on repositories, NOT vice versa
 - Routes depend on services, NOT vice versa
 - Frontend depends on backend types via shared, NOT vice versa
@@ -419,12 +435,14 @@ The architecture successfully avoids circular dependencies by:
 ## Impact Analysis Guide
 
 When changing a file, check its **Impacts** list to understand:
+
 1. What will break if you change the API
 2. What needs to be updated if you change types
 3. What tests need to be rerun
 4. What documentation needs updating
 
 **Example**: Changing `OrderService.ts`
+
 - Check `routes/orders.ts` for API contract changes
 - Check `PickingPage.tsx` for frontend assumptions
 - Check `MetricsService.ts` for dashboard dependencies
@@ -445,6 +463,7 @@ When changing a file, check its **Impacts** list to understand:
 ## Usage for GLM 4.7
 
 Before making changes, GLM 4.7 should:
+
 1. **Look up the file** in this graph
 2. **Check dependencies** to understand what it needs
 3. **Check impacts** to understand what will break
@@ -452,6 +471,7 @@ Before making changes, GLM 4.7 should:
 5. **Check API contracts** if modifying routes/services
 
 This context helps GLM 4.7:
+
 - Predict side effects of changes
 - Update all affected files
 - Run appropriate tests
@@ -460,6 +480,7 @@ This context helps GLM 4.7:
 ---
 
 **Maintenance**: Update this graph when:
+
 - Adding new major files
 - Changing file dependencies
 - Refactoring architecture

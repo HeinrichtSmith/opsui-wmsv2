@@ -15,7 +15,7 @@ import {
   UpdateProductionOrderDTO,
   RecordProductionOutputDTO,
   ProductionOrderStatus,
-  CreateBOMDTO
+  CreateBOMDTO,
 } from '@opsui/shared';
 
 export class ProductionRepository {
@@ -23,7 +23,9 @@ export class ProductionRepository {
   // BILL OF MATERIALS
   // ========================================================================
 
-  async createBOM(bom: Omit<BillOfMaterial, 'bomId' | 'createdAt' | 'updatedAt'>): Promise<BillOfMaterial> {
+  async createBOM(
+    bom: Omit<BillOfMaterial, 'bomId' | 'createdAt' | 'updatedAt'>
+  ): Promise<BillOfMaterial> {
     const client = await getPool();
 
     // Generate BOM ID
@@ -52,7 +54,7 @@ export class ProductionRepository {
           bom.estimatedCost || null,
           bom.effectiveDate || null,
           bom.expiryDate || null,
-          bom.createdBy
+          bom.createdBy,
         ]
       );
 
@@ -72,7 +74,7 @@ export class ProductionRepository {
             component.unitOfMeasure,
             component.isOptional,
             component.substituteSkus ? JSON.stringify(component.substituteSkus) : null,
-            component.notes || null
+            component.notes || null,
           ]
         );
       }
@@ -91,10 +93,7 @@ export class ProductionRepository {
   async findBOMById(bomId: string): Promise<BillOfMaterial | null> {
     const client = await getPool();
 
-    const result = await client.query(
-      `SELECT * FROM bill_of_materials WHERE bom_id = $1`,
-      [bomId]
-    );
+    const result = await client.query(`SELECT * FROM bill_of_materials WHERE bom_id = $1`, [bomId]);
 
     if (result.rows.length === 0) {
       return null;
@@ -103,10 +102,9 @@ export class ProductionRepository {
     const bomRow = result.rows[0];
 
     // Get components
-    const componentsResult = await client.query(
-      `SELECT * FROM bom_components WHERE bom_id = $1`,
-      [bomId]
-    );
+    const componentsResult = await client.query(`SELECT * FROM bom_components WHERE bom_id = $1`, [
+      bomId,
+    ]);
 
     const components = componentsResult.rows.map(row => ({
       componentId: row.component_id,
@@ -116,7 +114,7 @@ export class ProductionRepository {
       unitOfMeasure: row.unit_of_measure,
       isOptional: row.is_optional,
       substituteSkus: row.substitute_skus ? JSON.parse(row.substitute_skus) : undefined,
-      notes: row.notes
+      notes: row.notes,
     }));
 
     return this.mapRowToBOM(bomRow, components);
@@ -164,7 +162,7 @@ export class ProductionRepository {
         unitOfMeasure: row.unit_of_measure,
         isOptional: row.is_optional,
         substituteSkus: row.substitute_skus ? JSON.parse(row.substitute_skus) : undefined,
-        notes: row.notes
+        notes: row.notes,
       }));
 
       boms.push(this.mapRowToBOM(bomRow, components));
@@ -177,7 +175,9 @@ export class ProductionRepository {
   // PRODUCTION ORDERS
   // ========================================================================
 
-  async createProductionOrder(order: Omit<ProductionOrder, 'orderId' | 'createdAt' | 'updatedAt'>): Promise<ProductionOrder> {
+  async createProductionOrder(
+    order: Omit<ProductionOrder, 'orderId' | 'createdAt' | 'updatedAt'>
+  ): Promise<ProductionOrder> {
     const client = await getPool();
 
     // Generate order ID and number
@@ -219,7 +219,7 @@ export class ProductionRepository {
           order.assignedTo || null,
           order.workCenter || null,
           order.notes || null,
-          order.createdBy
+          order.createdBy,
         ]
       );
 
@@ -227,7 +227,8 @@ export class ProductionRepository {
 
       // Insert components from BOM
       for (const bomComponent of bom.components) {
-        const quantityRequired = (bomComponent.quantity * order.quantityToProduce) / bom.totalQuantity;
+        const quantityRequired =
+          (bomComponent.quantity * order.quantityToProduce) / bom.totalQuantity;
 
         await client.query(
           `INSERT INTO production_order_components
@@ -240,7 +241,7 @@ export class ProductionRepository {
             bomComponent.sku,
             null,
             quantityRequired,
-            bomComponent.unitOfMeasure
+            bomComponent.unitOfMeasure,
           ]
         );
       }
@@ -248,7 +249,7 @@ export class ProductionRepository {
       await client.query('COMMIT');
 
       logger.info('Production order created', { orderId, orderNumber });
-      return await this.findProductionOrderById(orderId) as ProductionOrder;
+      return (await this.findProductionOrderById(orderId)) as ProductionOrder;
     } catch (error) {
       await client.query('ROLLBACK');
       logger.error('Error creating production order', error);
@@ -259,10 +260,9 @@ export class ProductionRepository {
   async findProductionOrderById(orderId: string): Promise<ProductionOrder | null> {
     const client = await getPool();
 
-    const result = await client.query(
-      `SELECT * FROM production_orders WHERE order_id = $1`,
-      [orderId]
-    );
+    const result = await client.query(`SELECT * FROM production_orders WHERE order_id = $1`, [
+      orderId,
+    ]);
 
     if (result.rows.length === 0) {
       return null;
@@ -286,7 +286,7 @@ export class ProductionRepository {
       quantityReturned: parseFloat(row.quantity_returned),
       unitOfMeasure: row.unit_of_measure,
       binLocation: row.bin_location,
-      lotNumber: row.lot_number
+      lotNumber: row.lot_number,
     }));
 
     return this.mapRowToProductionOrder(orderRow, components);
@@ -346,7 +346,10 @@ export class ProductionRepository {
     return { orders, total };
   }
 
-  async updateProductionOrder(orderId: string, updates: Partial<ProductionOrder>): Promise<ProductionOrder | null> {
+  async updateProductionOrder(
+    orderId: string,
+    updates: Partial<ProductionOrder>
+  ): Promise<ProductionOrder | null> {
     const client = await getPool();
 
     const fields: string[] = [];
@@ -414,7 +417,9 @@ export class ProductionRepository {
   // PRODUCTION OUTPUT
   // ========================================================================
 
-  async createProductionOutput(output: Omit<ProductionOutput, 'outputId'>): Promise<ProductionOutput> {
+  async createProductionOutput(
+    output: Omit<ProductionOutput, 'outputId'>
+  ): Promise<ProductionOutput> {
     const client = await getPool();
 
     const outputId = `OUT-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -437,7 +442,7 @@ export class ProductionRepository {
         output.inspectedBy || null,
         output.inspectionDate || null,
         output.notes || null,
-        output.binLocation || null
+        output.binLocation || null,
       ]
     );
 
@@ -459,7 +464,9 @@ export class ProductionRepository {
   // PRODUCTION JOURNAL
   // ========================================================================
 
-  async createProductionJournalEntry(entry: Omit<ProductionOutput, 'outputId'>): Promise<ProductionOutput> {
+  async createProductionJournalEntry(
+    entry: Omit<ProductionOutput, 'outputId'>
+  ): Promise<ProductionOutput> {
     // This should be for journal, not output - fixing the type
     const client = await getPool();
 
@@ -477,7 +484,7 @@ export class ProductionRepository {
         entry.producedBy,
         null,
         entry.notes,
-        null
+        null,
       ]
     );
 
@@ -501,7 +508,7 @@ export class ProductionRepository {
       enteredBy: row.entered_by,
       quantity: row.quantity ? parseFloat(row.quantity) : undefined,
       notes: row.notes,
-      durationMinutes: row.duration_minutes
+      durationMinutes: row.duration_minutes,
     }));
   }
 
@@ -526,7 +533,7 @@ export class ProductionRepository {
       updatedBy: row.updated_by,
       updatedAt: row.updated_at,
       effectiveDate: row.effective_date,
-      expiryDate: row.expiry_date
+      expiryDate: row.expiry_date,
     };
   }
 
@@ -555,7 +562,7 @@ export class ProductionRepository {
       createdAt: row.created_at,
       createdBy: row.created_by,
       updatedAt: row.updated_at,
-      updatedBy: row.updated_by
+      updatedBy: row.updated_by,
     };
   }
 
@@ -572,7 +579,7 @@ export class ProductionRepository {
       inspectedBy: row.inspected_by,
       inspectionDate: row.inspection_date,
       notes: row.notes,
-      binLocation: row.bin_location
+      binLocation: row.bin_location,
     };
   }
 }

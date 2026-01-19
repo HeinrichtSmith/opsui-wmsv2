@@ -56,14 +56,13 @@ async function resetStuckOrder(orderId: string) {
     await query('BEGIN');
 
     await query(
-      'UPDATE orders SET status = \'PENDING\', picker_id = NULL, claimed_at = NULL WHERE order_id = $1',
+      "UPDATE orders SET status = 'PENDING', picker_id = NULL, claimed_at = NULL WHERE order_id = $1",
       [orderId]
     );
 
-    const pickTasksResult = await query(
-      'DELETE FROM pick_tasks WHERE order_id = $1 RETURNING *',
-      [orderId]
-    );
+    const pickTasksResult = await query('DELETE FROM pick_tasks WHERE order_id = $1 RETURNING *', [
+      orderId,
+    ]);
 
     await query('COMMIT');
 
@@ -87,11 +86,11 @@ async function listStuckOrders() {
 
     const result = await query(
       'SELECT o.order_id, o.customer_name, o.status, o.picker_id, o.claimed_at, COUNT(pt.pick_task_id) as pick_tasks ' +
-      'FROM orders o ' +
-      'LEFT JOIN pick_tasks pt ON o.order_id = pt.order_id ' +
-      'WHERE o.status = \'PICKING\' ' +
-      'GROUP BY o.order_id, o.customer_name, o.status, o.picker_id, o.claimed_at ' +
-      'ORDER BY o.claimed_at DESC'
+        'FROM orders o ' +
+        'LEFT JOIN pick_tasks pt ON o.order_id = pt.order_id ' +
+        "WHERE o.status = 'PICKING' " +
+        'GROUP BY o.order_id, o.customer_name, o.status, o.picker_id, o.claimed_at ' +
+        'ORDER BY o.claimed_at DESC'
     );
 
     if (result.rows.length === 0) {
@@ -100,7 +99,7 @@ async function listStuckOrders() {
     }
 
     result.rows.forEach((order: any, index: number) => {
-      console.log((index + 1) + '. Order: ' + order.order_id);
+      console.log(index + 1 + '. Order: ' + order.order_id);
       console.log('   Customer: ' + order.customer_name);
       console.log('   Picker: ' + (order.picker_id || 'None'));
       console.log('   Claimed: ' + (order.claimed_at || 'Never'));
@@ -132,7 +131,7 @@ async function main() {
   process.exit(0);
 }
 
-main().catch((error) => {
+main().catch(error => {
   logger.error('Script failed', { error });
   console.error('Script failed:', error);
   process.exit(1);

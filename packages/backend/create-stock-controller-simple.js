@@ -80,7 +80,9 @@ async function createStockController() {
       // Create indexes
       await pool.query('CREATE INDEX idx_stock_counts_bin_location ON stock_counts(bin_location)');
       await pool.query('CREATE INDEX idx_stock_counts_status ON stock_counts(status)');
-      await pool.query('CREATE INDEX idx_stock_count_items_count_id ON stock_count_items(count_id)');
+      await pool.query(
+        'CREATE INDEX idx_stock_count_items_count_id ON stock_count_items(count_id)'
+      );
 
       console.log('✅ Created stock control tables');
     } else {
@@ -101,10 +103,7 @@ async function createStockController() {
       console.log('ℹ️  User already exists:', user);
 
       if (user.role !== 'STOCK_CONTROLLER') {
-        await pool.query(
-          "UPDATE users SET role = 'STOCK_CONTROLLER' WHERE user_id = $1",
-          [userId]
-        );
+        await pool.query("UPDATE users SET role = 'STOCK_CONTROLLER' WHERE user_id = $1", [userId]);
         console.log('✅ Updated user role to STOCK_CONTROLLER');
       }
     } else {
@@ -141,7 +140,6 @@ async function createStockController() {
     console.log('   Email:', email);
     console.log('   Password: Stock123!');
     console.log('='.repeat(60) + '\n');
-
   } catch (error) {
     console.error('❌ Error:', error.message);
     process.exit(1);

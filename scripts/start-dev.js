@@ -86,7 +86,9 @@ async function checkPrerequisites() {
     logError('PostgreSQL is not running or not accessible');
     log('\nPlease start PostgreSQL:');
     log('  Windows: Start PostgreSQL service from Services');
-    log('  Docker: docker run --name wms-postgres -e POSTGRES_PASSWORD=wms_password -e POSTGRES_DB=wms_db -p 5432:5432 -d postgres:15');
+    log(
+      '  Docker: docker run --name wms-postgres -e POSTGRES_PASSWORD=wms_password -e POSTGRES_DB=wms_db -p 5432:5432 -d postgres:15'
+    );
     return false;
   }
   logSuccess('PostgreSQL is running');
@@ -114,15 +116,15 @@ async function checkPrerequisites() {
 }
 
 async function checkPostgreSQL() {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     const isWindows = process.platform === 'win32';
 
     if (isWindows) {
-      exec('pg_isready -h localhost -p 5432', { windowsHide: true }, (error) => {
+      exec('pg_isready -h localhost -p 5432', { windowsHide: true }, error => {
         resolve(!error);
       });
     } else {
-      exec('pg_isready', (error) => {
+      exec('pg_isready', error => {
         resolve(!error);
       });
     }
@@ -156,7 +158,7 @@ async function killExistingProcesses() {
 }
 
 async function killProcessOnPort(port) {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     const isWindows = process.platform === 'win32';
 
     if (isWindows) {
@@ -183,18 +185,22 @@ async function killProcessOnPort(port) {
         }
 
         let killed = 0;
-        const killPromises = Array.from(pids).map(pid =>
-          new Promise(killResolve => {
-            exec(`taskkill /F /PID ${pid}`, { windowsHide: true }, () => {
-              killed++;
-              killResolve();
-            });
-          })
+        const killPromises = Array.from(pids).map(
+          pid =>
+            new Promise(killResolve => {
+              exec(`taskkill /F /PID ${pid}`, { windowsHide: true }, () => {
+                killed++;
+                killResolve();
+              });
+            })
         );
 
         Promise.all(killPromises).then(() => {
           if (killed > 0) {
-            log(`Killed process(es) on port ${port} (PIDs: ${Array.from(pids).join(', ')})`, 'yellow');
+            log(
+              `Killed process(es) on port ${port} (PIDs: ${Array.from(pids).join(', ')})`,
+              'yellow'
+            );
           }
           resolve(true);
         });
@@ -251,7 +257,7 @@ async function verifyDatabase() {
     log('1. Check PostgreSQL is running');
     log('2. Check packages/backend/.env has correct credentials');
     log('3. Check database exists: CREATE DATABASE wms_db;');
-    log('4. Check user exists: CREATE USER wms_user WITH PASSWORD \'wms_password\';');
+    log("4. Check user exists: CREATE USER wms_user WITH PASSWORD 'wms_password';");
     log('5. Grant permissions: GRANT ALL PRIVILEGES ON DATABASE wms_db TO wms_user;');
     return false;
   }
@@ -276,7 +282,7 @@ async function startBackend() {
 
     let outputStarted = false;
 
-    backendProcess.stdout.on('data', (data) => {
+    backendProcess.stdout.on('data', data => {
       const msg = data.toString().trim();
       if (msg) {
         // Only show first few lines to avoid spam
@@ -289,19 +295,19 @@ async function startBackend() {
       }
     });
 
-    backendProcess.stderr.on('data', (data) => {
+    backendProcess.stderr.on('data', data => {
       const msg = data.toString().trim();
       if (msg && !msg.includes('Watching')) {
         logError(`[Backend] ${msg}`);
       }
     });
 
-    backendProcess.on('error', (err) => {
+    backendProcess.on('error', err => {
       logError(`Backend failed to start: ${err.message}`);
       reject(err);
     });
 
-    backendProcess.on('exit', (code) => {
+    backendProcess.on('exit', code => {
       if (code !== 0 && code !== null) {
         logError(`Backend exited with code ${code}`);
         reject(new Error(`Backend exited with code ${code}`));
@@ -347,7 +353,7 @@ function checkHealth(url) {
       timeout: 2000,
     };
 
-    const req = http.request(options, (res) => {
+    const req = http.request(options, res => {
       resolve(res.statusCode === 200);
     });
 
@@ -380,7 +386,7 @@ async function startFrontend() {
 
     let outputStarted = false;
 
-    frontendProcess.stdout.on('data', (data) => {
+    frontendProcess.stdout.on('data', data => {
       const msg = data.toString().trim();
       if (msg) {
         if (!outputStarted) {
@@ -392,14 +398,14 @@ async function startFrontend() {
       }
     });
 
-    frontendProcess.stderr.on('data', (data) => {
+    frontendProcess.stderr.on('data', data => {
       const msg = data.toString().trim();
       if (msg) {
         logError(`[Frontend] ${msg}`);
       }
     });
 
-    frontendProcess.on('error', (err) => {
+    frontendProcess.on('error', err => {
       logError(`Frontend failed to start: ${err.message}`);
       reject(err);
     });
@@ -460,25 +466,29 @@ async function shutdown() {
   if (backendProcess) {
     log('Stopping backend...', 'yellow');
     backendProcess.kill('SIGTERM');
-    promises.push(new Promise(resolve => {
-      backendProcess.on('exit', () => resolve());
-      setTimeout(() => {
-        backendProcess.kill('SIGKILL');
-        resolve();
-      }, 5000);
-    }));
+    promises.push(
+      new Promise(resolve => {
+        backendProcess.on('exit', () => resolve());
+        setTimeout(() => {
+          backendProcess.kill('SIGKILL');
+          resolve();
+        }, 5000);
+      })
+    );
   }
 
   if (frontendProcess) {
     log('Stopping frontend...', 'yellow');
     frontendProcess.kill('SIGTERM');
-    promises.push(new Promise(resolve => {
-      frontendProcess.on('exit', () => resolve());
-      setTimeout(() => {
-        frontendProcess.kill('SIGKILL');
-        resolve();
-      }, 5000);
-    }));
+    promises.push(
+      new Promise(resolve => {
+        frontendProcess.on('exit', () => resolve());
+        setTimeout(() => {
+          frontendProcess.kill('SIGKILL');
+          resolve();
+        }, 5000);
+      })
+    );
   }
 
   await Promise.all(promises);
@@ -536,7 +546,6 @@ async function main() {
     // Keep process alive
     process.on('SIGINT', shutdown);
     process.on('SIGTERM', shutdown);
-
   } catch (error) {
     logError(`\nStartup failed: ${error.message}`);
     console.log('\nTroubleshooting:');

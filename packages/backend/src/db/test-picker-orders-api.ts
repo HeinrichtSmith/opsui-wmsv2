@@ -9,7 +9,8 @@ async function testPickerOrdersQuery(): Promise<void> {
     const pickerId = 'USR-PICK01';
     console.log(`🔍 Testing getPickerOrders query for: ${pickerId}\n`);
 
-    const result = await query(`
+    const result = await query(
+      `
       SELECT
         o.order_id,
         o.status,
@@ -30,18 +31,21 @@ async function testPickerOrdersQuery(): Promise<void> {
           ELSE 4
         END,
         o.updated_at DESC
-    `, [pickerId]);
+    `,
+      [pickerId]
+    );
 
     console.log(`📦 Found ${result.rows.length} orders:`);
-    console.table(result.rows.map(row => ({
-      orderId: row.order_id,
-      status: row.status,
-      progress: row.progress,
-      customerName: row.customer_name,
-      priority: row.priority,
-      itemCount: row.item_count,
-    })));
-
+    console.table(
+      result.rows.map(row => ({
+        orderId: row.order_id,
+        status: row.status,
+        progress: row.progress,
+        customerName: row.customer_name,
+        priority: row.priority,
+        itemCount: row.item_count,
+      }))
+    );
   } catch (error) {
     console.error('❌ Error:', error);
   } finally {

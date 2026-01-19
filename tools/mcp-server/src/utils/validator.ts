@@ -15,10 +15,14 @@ export const commonSchemas = {
   relativePath: z.string().regex(/^(\.\.\/|\.\/|[a-zA-Z0-9_\-\.\/]+)$/),
 
   // Identifiers
-  entityName: z.string()
+  entityName: z
+    .string()
     .min(1)
     .max(100)
-    .regex(/^[a-zA-Z][a-zA-Z0-9_]*$/, 'Must start with letter and contain only letters, numbers, and underscores'),
+    .regex(
+      /^[a-zA-Z][a-zA-Z0-9_]*$/,
+      'Must start with letter and contain only letters, numbers, and underscores'
+    ),
 
   // Numbers
   positiveInteger: z.number().int().positive(),
@@ -45,21 +49,29 @@ export const toolSchemas = {
   // Code generation schemas
   generateEntity: z.object({
     entityName: commonSchemas.entityName,
-    fields: z.array(z.object({
-      name: z.string().min(1).max(100),
-      type: z.enum(['String', 'Number', 'Boolean', 'Date', 'Json', 'Int', 'Float', 'DateTime']),
-      isRequired: z.boolean().optional().default(false),
-      isUnique: z.boolean().optional().default(false),
-      isId: z.boolean().optional().default(false),
-      hasDefault: z.boolean().optional().default(false),
-      default: z.any().optional(),
-    })).min(1),
+    fields: z
+      .array(
+        z.object({
+          name: z.string().min(1).max(100),
+          type: z.enum(['String', 'Number', 'Boolean', 'Date', 'Json', 'Int', 'Float', 'DateTime']),
+          isRequired: z.boolean().optional().default(false),
+          isUnique: z.boolean().optional().default(false),
+          isId: z.boolean().optional().default(false),
+          hasDefault: z.boolean().optional().default(false),
+          default: z.any().optional(),
+        })
+      )
+      .min(1),
     outputPath: commonSchemas.relativePath.optional(),
   }),
 
   // Database schemas
   createMigration: z.object({
-    name: z.string().min(1).max(100).regex(/^[a-z0-9_]+$/, 'Only lowercase letters, numbers, and underscores'),
+    name: z
+      .string()
+      .min(1)
+      .max(100)
+      .regex(/^[a-z0-9_]+$/, 'Only lowercase letters, numbers, and underscores'),
     projectPath: commonSchemas.filePath.optional(),
   }),
 
@@ -93,10 +105,14 @@ export const toolSchemas = {
   createOrder: z.object({
     customerId: z.string().min(1),
     customerName: z.string().min(1).max(200),
-    items: z.array(z.object({
-      sku: z.string().min(1).max(50),
-      quantity: commonSchemas.positiveInteger,
-    })).min(1),
+    items: z
+      .array(
+        z.object({
+          sku: z.string().min(1).max(50),
+          quantity: commonSchemas.positiveInteger,
+        })
+      )
+      .min(1),
     priority: z.enum(['LOW', 'NORMAL', 'HIGH', 'URGENT']).optional().default('NORMAL'),
   }),
 
@@ -110,7 +126,10 @@ export const toolSchemas = {
   inventoryCheck: z.object({
     sku: z.string().min(1).max(50),
     quantity: commonSchemas.positiveInteger,
-    binLocation: z.string().regex(/^[A-Z]-\d{1,3}-\d{2}$/).optional(),
+    binLocation: z
+      .string()
+      .regex(/^[A-Z]-\d{1,3}-\d{2}$/)
+      .optional(),
   }),
 };
 

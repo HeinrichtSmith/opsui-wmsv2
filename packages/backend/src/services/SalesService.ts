@@ -19,7 +19,7 @@ import {
   LeadStatus,
   OpportunityStage,
   QuoteStatus,
-  NotFoundError
+  NotFoundError,
 } from '@opsui/shared';
 
 export class SalesService {
@@ -40,7 +40,7 @@ export class SalesService {
     const customer = await salesRepository.createCustomer({
       ...dto,
       status: dto.status || 'PROSPECT',
-      createdBy
+      createdBy,
     });
 
     return customer;
@@ -63,7 +63,11 @@ export class SalesService {
     return await salesRepository.findAllCustomers(filters);
   }
 
-  async updateCustomer(customerId: string, dto: Partial<Customer>, userId: string): Promise<Customer> {
+  async updateCustomer(
+    customerId: string,
+    dto: Partial<Customer>,
+    userId: string
+  ): Promise<Customer> {
     const customer = await salesRepository.findCustomerById(customerId);
     if (!customer) {
       throw new NotFoundError('Customer', customerId);
@@ -71,7 +75,7 @@ export class SalesService {
 
     const updated = await salesRepository.updateCustomer(customerId, {
       ...dto,
-      updatedBy: userId
+      updatedBy: userId,
     });
 
     return updated as Customer;
@@ -98,7 +102,7 @@ export class SalesService {
     const lead = await salesRepository.createLead({
       ...dto,
       status: 'NEW',
-      createdBy
+      createdBy,
     });
 
     return lead;
@@ -129,7 +133,7 @@ export class SalesService {
 
     const updated = await salesRepository.updateLead(leadId, {
       ...dto,
-      updatedBy: userId
+      updatedBy: userId,
     });
 
     return updated as Lead;
@@ -153,16 +157,16 @@ export class SalesService {
         city: 'City',
         state: 'State',
         postalCode: '0000',
-        country: 'NZ'
+        country: 'NZ',
       },
       assignedTo: lead.assignedTo,
-      createdBy: userId
+      createdBy: userId,
     });
 
     // Update lead status
     await salesRepository.updateLead(leadId, {
       status: 'WON',
-      updatedBy: userId
+      updatedBy: userId,
     });
 
     return customer;
@@ -192,7 +196,7 @@ export class SalesService {
 
     const opportunity = await salesRepository.createOpportunity({
       ...dto,
-      createdBy
+      createdBy,
     });
 
     return opportunity;
@@ -216,7 +220,11 @@ export class SalesService {
     return await salesRepository.findAllOpportunities(filters);
   }
 
-  async updateOpportunityStage(opportunityId: string, stage: OpportunityStage, userId: string): Promise<Opportunity> {
+  async updateOpportunityStage(
+    opportunityId: string,
+    stage: OpportunityStage,
+    userId: string
+  ): Promise<Opportunity> {
     const opportunity = await salesRepository.findOpportunityById(opportunityId);
     if (!opportunity) {
       throw new NotFoundError('Opportunity', opportunityId);
@@ -225,7 +233,7 @@ export class SalesService {
     // If closing as won or lost, record who and when
     const updates: Partial<Opportunity> = {
       stage,
-      updatedBy: userId
+      updatedBy: userId,
     };
 
     if (stage === 'CLOSED_WON' || stage === 'CLOSED_LOST') {
@@ -275,7 +283,7 @@ export class SalesService {
     const quote = await salesRepository.createQuote({
       ...dto,
       status: 'DRAFT',
-      createdBy
+      createdBy,
     });
 
     return quote;
@@ -310,7 +318,7 @@ export class SalesService {
 
     const updated = await salesRepository.updateCustomer(quote.customerId, {
       lastContactDate: new Date(),
-      updatedBy: userId
+      updatedBy: userId,
     } as any);
 
     return quote; // Return original since update doesn't return full quote
@@ -333,7 +341,9 @@ export class SalesService {
   // CUSTOMER INTERACTIONS
   // ========================================================================
 
-  async logInteraction(dto: Omit<CustomerInteraction, 'interactionId' | 'createdAt'>): Promise<CustomerInteraction> {
+  async logInteraction(
+    dto: Omit<CustomerInteraction, 'interactionId' | 'createdAt'>
+  ): Promise<CustomerInteraction> {
     // Validate interaction
     if (!dto.subject || dto.subject.trim() === '') {
       throw new Error('Subject is required');
@@ -345,21 +355,24 @@ export class SalesService {
 
     const interaction = await salesRepository.createInteraction({
       ...dto,
-      createdAt: new Date()
+      createdAt: new Date(),
     });
 
     // Update customer last contact date if applicable
     if (interaction.customerId) {
       await salesRepository.updateCustomer(interaction.customerId, {
         lastContactDate: new Date(),
-        updatedBy: dto.createdBy
+        updatedBy: dto.createdBy,
       } as any);
     }
 
     return interaction;
   }
 
-  async getCustomerInteractions(customerId: string, limit: number = 50): Promise<CustomerInteraction[]> {
+  async getCustomerInteractions(
+    customerId: string,
+    limit: number = 50
+  ): Promise<CustomerInteraction[]> {
     const customer = await salesRepository.findCustomerById(customerId);
     if (!customer) {
       throw new NotFoundError('Customer', customerId);

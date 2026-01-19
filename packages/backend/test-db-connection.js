@@ -32,24 +32,24 @@ console.log('');
 // Test connection with hardcoded password
 async function testConnection() {
   console.log('=== TESTING CONNECTION ===');
-  
+
   const client = new Client({
     host: 'localhost',
     port: 5432,
     database: 'wms_db',
     user: 'wms_user',
-    password: 'wms_password'  // Hardcoded for testing
+    password: 'wms_password', // Hardcoded for testing
   });
-  
+
   try {
     console.log('Attempting to connect with hardcoded credentials...');
     await client.connect();
     console.log('✅ Connected successfully!');
-    
+
     // Test a simple query
     const result = await client.query('SELECT NOW()');
     console.log('Database time:', result.rows[0].now);
-    
+
     await client.end();
     console.log('✅ Connection test passed');
     console.log('');

@@ -32,6 +32,7 @@ npm run mcp:monitor
 ```
 
 This will:
+
 - Start the WMS MCP server automatically
 - Monitor it every 5 seconds
 - Restart it if it crashes
@@ -73,12 +74,12 @@ Press Ctrl+C to stop monitoring
 
 ## NPM Scripts
 
-| Command | Description |
-|---------|-------------|
+| Command               | Description                                |
+| --------------------- | ------------------------------------------ |
 | `npm run mcp:monitor` | Start health monitoring with auto-recovery |
-| `npm run mcp:start` | Alias for `mcp:monitor` |
-| `npm run mcp:dev` | Start MCP server in development mode |
-| `npm run mcp:build` | Build MCP server for production |
+| `npm run mcp:start`   | Alias for `mcp:monitor`                    |
+| `npm run mcp:dev`     | Start MCP server in development mode       |
+| `npm run mcp:build`   | Build MCP server for production            |
 
 ## Configuration
 
@@ -116,19 +117,19 @@ const mcpServers = [
 
 ### Server Configuration Options
 
-| Option | Type | Description | Default |
-|--------|------|-------------|---------|
-| `name` | string | Unique server identifier | Required |
-| `displayName` | string | Human-readable name | Required |
-| `command` | string | Command to start server | Required |
-| `args` | string[] | Command arguments | `[]` |
-| `cwd` | string | Working directory | `process.cwd()` |
-| `env` | object | Environment variables | `{}` |
-| `healthCheck` | string | Health check type (`stdio`, `tcp`) | `stdio` |
-| `healthCheckUrl` | string | URL for TCP health check | `null` |
-| `startupTimeout` | number | Milliseconds to wait for startup | `10000` |
-| `restartDelay` | number | Base delay before restart (ms) | `2000` |
-| `maxRestarts` | number | Maximum restart attempts before giving up | `10` |
+| Option           | Type     | Description                               | Default         |
+| ---------------- | -------- | ----------------------------------------- | --------------- |
+| `name`           | string   | Unique server identifier                  | Required        |
+| `displayName`    | string   | Human-readable name                       | Required        |
+| `command`        | string   | Command to start server                   | Required        |
+| `args`           | string[] | Command arguments                         | `[]`            |
+| `cwd`            | string   | Working directory                         | `process.cwd()` |
+| `env`            | object   | Environment variables                     | `{}`            |
+| `healthCheck`    | string   | Health check type (`stdio`, `tcp`)        | `stdio`         |
+| `healthCheckUrl` | string   | URL for TCP health check                  | `null`          |
+| `startupTimeout` | number   | Milliseconds to wait for startup          | `10000`         |
+| `restartDelay`   | number   | Base delay before restart (ms)            | `2000`          |
+| `maxRestarts`    | number   | Maximum restart attempts before giving up | `10`            |
 
 ## How It Works
 
@@ -142,6 +143,7 @@ const mcpServers = [
 ### 2. Health Checking
 
 Every 5 seconds, the monitor:
+
 1. Checks if server process is still running
 2. Verifies process hasn't been killed
 3. Updates dashboard with latest status
@@ -150,6 +152,7 @@ Every 5 seconds, the monitor:
 ### 3. Automatic Recovery
 
 When a server crashes:
+
 1. Immediately detected by health check
 2. Calculates backoff delay: `restartDelay * 2^restartCount`
 3. Waits for backoff period
@@ -158,6 +161,7 @@ When a server crashes:
 6. If successful, resets restart counter
 
 Example backoff sequence:
+
 - Restart 1: 2s delay
 - Restart 2: 4s delay
 - Restart 3: 8s delay
@@ -167,6 +171,7 @@ Example backoff sequence:
 ### 4. Heartbeat System
 
 The MCP server sends heartbeat messages every 5 seconds:
+
 ```
 [WMS-MCP] Heartbeat: 2026-01-14T14:30:45.123Z - PID:12345
 ```
@@ -176,6 +181,7 @@ This confirms the server is alive and processing.
 ### 5. Graceful Shutdown
 
 On `Ctrl+C`:
+
 1. Stops health checking
 2. Sends SIGTERM to all servers
 3. Waits 2 seconds for clean shutdown
@@ -189,6 +195,7 @@ On `Ctrl+C`:
 **Symptoms:** Status shows "● DOWN" with "Process was killed"
 
 **Solutions:**
+
 1. Check if MCP server is built: `npm run mcp:build`
 2. Check for port conflicts
 3. Verify server logs for errors
@@ -199,6 +206,7 @@ On `Ctrl+C`:
 **Symptoms:** Restart count keeps increasing
 
 **Solutions:**
+
 1. Check `Last Error` message in dashboard
 2. Review server logs for root cause
 3. Fix the underlying issue
@@ -209,6 +217,7 @@ On `Ctrl+C`:
 **Symptoms:** "Exceeded max restarts (10), giving up"
 
 **Solutions:**
+
 1. Identify the root cause (usually a crash on startup)
 2. Fix the issue
 3. Restart the health monitor: `npm run mcp:monitor`
@@ -218,6 +227,7 @@ On `Ctrl+C`:
 **Symptoms:** "Failed Checks: 3" but server appears running
 
 **Solutions:**
+
 1. Server may be frozen/hung
 2. Check server logs for errors
 3. Monitor will auto-restart if checks continue failing
@@ -244,6 +254,7 @@ npm run mcp:monitor
 ### Automatic MCP Recovery
 
 The health monitor ensures MCP tools are always available:
+
 - If MCP server crashes, it restarts automatically
 - No need to manually restart MCP servers
 - Development continues uninterrupted
@@ -371,6 +382,7 @@ A: Edit `tools/mcp-server/src/index.ts` and modify the heartbeat interval (defau
 ## Summary
 
 The MCP Health Monitoring System provides:
+
 - ✅ Automatic recovery from failures
 - ✅ Real-time status dashboard
 - ✅ Exponential backoff for stability

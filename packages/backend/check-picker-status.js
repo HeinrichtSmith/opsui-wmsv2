@@ -1,7 +1,7 @@
 const { Pool } = require('pg');
 
 const pool = new Pool({
-  connectionString: 'postgres://wms_user:wms_password@localhost:5432/wms_db'
+  connectionString: 'postgres://wms_user:wms_password@localhost:5432/wms_db',
 });
 
 async function checkPickerStatus() {
@@ -12,7 +12,7 @@ async function checkPickerStatus() {
        WHERE email LIKE '%picker%'
        ORDER BY email`
     );
-    
+
     console.log('Picker accounts in database:');
     console.log(JSON.stringify(result.rows, null, 2));
   } catch (error) {

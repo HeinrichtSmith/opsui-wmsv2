@@ -61,7 +61,7 @@ function toSnakeCase(obj: any): any {
   if (Array.isArray(obj)) return obj.map(toSnakeCase);
 
   return Object.keys(obj).reduce((acc: any, key) => {
-    const snakeKey = key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
+    const snakeKey = key.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
     acc[snakeKey] = toSnakeCase(obj[key]);
     return acc;
   }, {});
@@ -103,7 +103,11 @@ apiClient.interceptors.response.use(
           });
 
           const data = toCamelCase(response.data);
-          const { accessToken, refreshToken: newRefreshToken, user } = data as {
+          const {
+            accessToken,
+            refreshToken: newRefreshToken,
+            user,
+          } = data as {
             accessToken: string;
             refreshToken: string;
             user: any;
@@ -126,9 +130,7 @@ apiClient.interceptors.response.use(
     }
 
     // Handle other errors
-    const errorData = error.response?.data
-      ? toCamelCase(error.response.data)
-      : {};
+    const errorData = error.response?.data ? toCamelCase(error.response.data) : {};
     const errorMessage = (errorData as { error?: string })?.error || error.message;
 
     return Promise.reject(new Error(errorMessage));

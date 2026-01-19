@@ -11,10 +11,10 @@ const pool = new Pool({
 async function listSKUs() {
   try {
     const result = await pool.query('SELECT sku, name, barcode, active FROM skus ORDER BY sku');
-    
+
     console.log('SKUs in database:');
     console.log('------------------');
-    
+
     if (result.rows.length === 0) {
       console.log('No SKUs found!');
     } else {

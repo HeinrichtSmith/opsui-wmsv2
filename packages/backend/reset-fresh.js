@@ -60,7 +60,6 @@ async function resetFreshData() {
     console.log(`Pending orders: ${summary.pending_orders}`);
     console.log('\n✓ Database reset to fresh state!');
     console.log('\nNote: trigger will be recreated on next order claim');
-
   } catch (error) {
     console.error('Error resetting database:', error);
     process.exit(1);

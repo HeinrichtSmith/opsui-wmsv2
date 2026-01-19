@@ -24,7 +24,6 @@ async function clearStateChanges() {
     const verifyResult = await pool.query('SELECT COUNT(*) as count FROM order_state_changes');
     console.log(`\nRemaining entries: ${verifyResult.rows[0].count}`);
     console.log('\n✓ order_state_changes table cleared!');
-
   } catch (error) {
     console.error('Error:', error);
     process.exit(1);

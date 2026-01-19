@@ -10,7 +10,12 @@ import { useClaimOrderForPacking } from '@/services/api';
 import { Card, CardContent, Button, Header } from '@/components/shared';
 import { TaskStatusBadge } from '@/components/shared';
 import { OrderStatus, OrderPriority, type Order } from '@opsui/shared';
-import { ExclamationCircleIcon, CubeIcon, ClockIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import {
+  ExclamationCircleIcon,
+  CubeIcon,
+  ClockIcon,
+  MagnifyingGlassIcon,
+} from '@heroicons/react/24/outline';
 import { useAuthStore } from '@/stores';
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api-client';
@@ -30,10 +35,15 @@ export function PackingQueuePage() {
   const [filter, setFilter] = useState<'all' | 'high' | 'urgent'>('all');
   const [activeTab, setActiveTab] = useState<TabType>('waiting');
   const [searchQuery, setSearchQuery] = useState('');
-  const currentUser = useAuthStore((state) => state.user);
+  const currentUser = useAuthStore(state => state.user);
 
   // Get orders that are PICKED (ready for packing) - fetch full order details for accurate counts
-  const { data: waitingData, isLoading, error, refetch } = useQuery({
+  const {
+    data: waitingData,
+    isLoading,
+    error,
+    refetch,
+  } = useQuery({
     queryKey: ['orders', 'full', OrderStatus.PICKED],
     queryFn: async () => {
       console.log('[PackingQueuePage] Fetching PICKED orders');
@@ -50,7 +60,9 @@ export function PackingQueuePage() {
     queryFn: async () => {
       if (!currentUser?.userId) return { orders: [] };
       console.log('[PackingQueuePage] Fetching PACKING orders for user:', currentUser.userId);
-      const response = await apiClient.get(`/orders/full?status=${OrderStatus.PACKING}&packerId=${currentUser.userId}`);
+      const response = await apiClient.get(
+        `/orders/full?status=${OrderStatus.PACKING}&packerId=${currentUser.userId}`
+      );
       console.log('[PackingQueuePage] PACKING orders response:', response.data);
       return response.data;
     },
@@ -58,7 +70,13 @@ export function PackingQueuePage() {
     refetchInterval: 5000, // Poll every 5 seconds for updates
   });
 
-  console.log('[PackingQueuePage] State:', { isLoading, isLoadingMyOrders, error, ordersCount: waitingData?.orders?.length, myOrdersCount: myOrdersData?.orders?.length });
+  console.log('[PackingQueuePage] State:', {
+    isLoading,
+    isLoadingMyOrders,
+    error,
+    ordersCount: waitingData?.orders?.length,
+    myOrdersCount: myOrdersData?.orders?.length,
+  });
 
   const claimMutation = useClaimOrderForPacking();
 
@@ -86,7 +104,7 @@ export function PackingQueuePage() {
 
       // Search in items (SKU and name)
       if (order.items && order.items.length > 0) {
-        return order.items.some((item) => {
+        return order.items.some(item => {
           // Search in SKU
           if (item.sku?.toLowerCase().includes(query)) {
             return true;
@@ -124,7 +142,7 @@ export function PackingQueuePage() {
 
       // Search in items (SKU and name)
       if (order.items && order.items.length > 0) {
-        return order.items.some((item) => {
+        return order.items.some(item => {
           // Search in SKU
           if (item.sku?.toLowerCase().includes(query)) {
             return true;
@@ -226,7 +244,7 @@ export function PackingQueuePage() {
               type="text"
               placeholder="Search order"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={e => setSearchQuery(e.target.value)}
               className="pl-10 pr-4 py-2.5 w-64 bg-white/[0.05] border border-white/[0.08] rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:border-primary-500/50 focus:bg-white/[0.08] transition-all duration-300"
             />
           </div>
@@ -291,7 +309,9 @@ export function PackingQueuePage() {
                   <ClockIcon className="h-16 w-16 text-gray-500 mx-auto mb-4" />
                   <h3 className="text-xl font-semibold text-white mb-2">No active orders</h3>
                   <p className="text-gray-400">
-                    {searchQuery ? 'No orders match your search' : 'You don\'t have any orders currently assigned to you'}
+                    {searchQuery
+                      ? 'No orders match your search'
+                      : "You don't have any orders currently assigned to you"}
                   </p>
                 </CardContent>
               </Card>
@@ -325,11 +345,15 @@ export function PackingQueuePage() {
                       {/* Stats */}
                       <div className="grid grid-cols-2 gap-4 py-4 border-t border-b border-white/[0.08]">
                         <div>
-                          <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Items</p>
+                          <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">
+                            Items
+                          </p>
                           <p className="text-xl font-bold text-white">{order.items?.length || 0}</p>
                         </div>
                         <div>
-                          <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Progress</p>
+                          <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">
+                            Progress
+                          </p>
                           <p className="text-xl font-bold text-primary-400">{order.progress}%</p>
                         </div>
                       </div>
@@ -337,11 +361,7 @@ export function PackingQueuePage() {
                       {/* Status Badge */}
                       <div className="flex items-center justify-between">
                         <TaskStatusBadge status={order.status as any} />
-                        <Button
-                          variant="primary"
-                          size="sm"
-                          className="shadow-glow"
-                        >
+                        <Button variant="primary" size="sm" className="shadow-glow">
                           Continue Packing
                         </Button>
                       </div>
@@ -430,11 +450,17 @@ export function PackingQueuePage() {
                         {/* Stats */}
                         <div className="grid grid-cols-2 gap-4 py-4 border-t border-b border-white/[0.08]">
                           <div>
-                            <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Items</p>
-                            <p className="text-xl font-bold text-white">{order.items?.length || 0}</p>
+                            <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">
+                              Items
+                            </p>
+                            <p className="text-xl font-bold text-white">
+                              {order.items?.length || 0}
+                            </p>
                           </div>
                           <div>
-                            <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Progress</p>
+                            <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">
+                              Progress
+                            </p>
                             <p className="text-xl font-bold text-success-400">{order.progress}%</p>
                           </div>
                         </div>

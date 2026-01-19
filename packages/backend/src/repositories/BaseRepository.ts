@@ -24,7 +24,7 @@ function toCamelCase(str: string): string {
  * Convert camelCase to snake_case
  */
 function toSnakeCase(str: string): string {
-  return str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
+  return str.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
 }
 
 /**
@@ -77,10 +77,9 @@ export abstract class BaseRepository<T> {
   // --------------------------------------------------------------------------
 
   async findById(id: string): Promise<T | null> {
-    const result = await query<T>(
-      `SELECT * FROM ${this.tableName} WHERE ${this.primaryKey} = $1`,
-      [id]
-    );
+    const result = await query<T>(`SELECT * FROM ${this.tableName} WHERE ${this.primaryKey} = $1`, [
+      id,
+    ]);
 
     return result.rows[0] || null;
   }
@@ -174,9 +173,7 @@ export abstract class BaseRepository<T> {
       RETURNING *
     `;
 
-    const result = client
-      ? await client.query<T>(sql, values)
-      : await query<T>(sql, values);
+    const result = client ? await client.query<T>(sql, values) : await query<T>(sql, values);
 
     return result.rows[0];
   }
@@ -186,10 +183,12 @@ export abstract class BaseRepository<T> {
 
     const columns = Object.keys(data[0]);
     const snakeColumns = columns.map(toSnakeCase);
-    const placeholders = data.map((_, i) => {
-      const rowPlaceholders = columns.map((_, j) => `$${i * columns.length + j + 1}`).join(', ');
-      return `(${rowPlaceholders})`;
-    }).join(', ');
+    const placeholders = data
+      .map((_, i) => {
+        const rowPlaceholders = columns.map((_, j) => `$${i * columns.length + j + 1}`).join(', ');
+        return `(${rowPlaceholders})`;
+      })
+      .join(', ');
 
     const values = data.flatMap(Object.values);
 
@@ -199,9 +198,7 @@ export abstract class BaseRepository<T> {
       RETURNING *
     `;
 
-    const result = client
-      ? await client.query<T>(sql, values)
-      : await query<T>(sql, values);
+    const result = client ? await client.query<T>(sql, values) : await query<T>(sql, values);
 
     return result.rows;
   }
@@ -255,7 +252,9 @@ export abstract class BaseRepository<T> {
     if (ids.length === 0) return 0;
 
     const result = client
-      ? await client.query(`DELETE FROM ${this.tableName} WHERE ${this.primaryKey} = ANY($1)`, [ids])
+      ? await client.query(`DELETE FROM ${this.tableName} WHERE ${this.primaryKey} = ANY($1)`, [
+          ids,
+        ])
       : await query(`DELETE FROM ${this.tableName} WHERE ${this.primaryKey} = ANY($1)`, [ids]);
 
     return result.rowCount || 0;
@@ -279,9 +278,7 @@ export abstract class BaseRepository<T> {
   // TRANSACTION HELPERS
   // --------------------------------------------------------------------------
 
-  async withTransaction<R>(
-    callback: (client: PoolClient) => Promise<R>
-  ): Promise<R> {
+  async withTransaction<R>(callback: (client: PoolClient) => Promise<R>): Promise<R> {
     return transaction(callback);
   }
 }

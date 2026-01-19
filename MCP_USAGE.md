@@ -16,12 +16,14 @@ MCP (Model Context Protocol) provides tools for AI agents to interact with exter
 ## MCP Tool Categories in WMS
 
 ### Read Operations (SAFE)
+
 - Database queries for inspection
 - File reading for analysis
 - API calls for information retrieval
 - Cache reads
 
 ### Write Operations (CAUTION)
+
 - Database modifications
 - File writes
 - API calls that modify state
@@ -32,18 +34,21 @@ MCP (Model Context Protocol) provides tools for AI agents to interact with exter
 ## Read vs Write Responsibilities
 
 ### MCP Tools MUST Use Read Operations For:
+
 - **Code analysis** - reading files to understand structure
 - **Database inspection** - querying schema, checking data integrity
 - **Debugging** - reading logs, error states
 - **Validation** - verifying invariants before operations
 
 ### MCP Tools MUST Use Write Operations For:
+
 - **Business logic execution** - service-layer operations
 - **State transitions** - updating order status (with validation)
 - **Inventory modifications** - reservation, deduction (with transaction)
 - **Audit logging** - writing to transaction tables
 
 ### MCP Tools MUST NEVER Use Write Operations For:
+
 - **Schema changes** - use migration scripts instead
 - **Configuration changes** - update `.env.example` not `.env`
 - **Direct constraint bypass** - never disable foreign keys or checks
@@ -54,16 +59,22 @@ MCP (Model Context Protocol) provides tools for AI agents to interact with exter
 ## Idempotency Expectations
 
 ### What MUST Be Idempotent
+
 All MCP operations that could be retried MUST be idempotent:
+
 - **Claiming an order** - second claim attempt should fail gracefully, not create duplicate
 - **Reserving inventory** - reserving same quantity twice should be safe
 - **Updating order status** - setting same status twice should be no-op
 
 ### Implementing Idempotency
+
 ```typescript
 // ❌ NOT IDEMPOTENT
 async function claimOrder(orderId: string, pickerId: string) {
-  await db.execute('UPDATE orders SET picker_id = $1 WHERE order_id = $2', [pickerId, orderId]);
+  await db.execute('UPDATE orders SET picker_id = $1 WHERE order_id = $2', [
+    pickerId,
+    orderId,
+  ]);
 }
 
 // ✅ IDEMPOTENT
@@ -79,6 +90,7 @@ async function claimOrder(orderId: string, pickerId: string) {
 ```
 
 ### Idempotency Checklist
+
 - [ ] Operation safe to retry if network fails
 - [ ] No duplicate records created on retry
 - [ ] No partial state corruption on failure
@@ -89,6 +101,7 @@ async function claimOrder(orderId: string, pickerId: string) {
 ## Error Handling Rules
 
 ### MCP Tools MUST Handle These Errors:
+
 1. **Network timeouts** - retry with exponential backoff
 2. **Deadlocks** - retry transaction after random delay
 3. **Constraint violations** - convert to domain error, do not retry
@@ -96,6 +109,7 @@ async function claimOrder(orderId: string, pickerId: string) {
 5. **Permission denied** - log security event, return error
 
 ### Error Recovery Strategy
+
 ```typescript
 // ✅ CORRECT MCP Error Handling
 async function mcpReserveInventory(params: ReserveInventoryParams) {
@@ -104,11 +118,11 @@ async function mcpReserveInventory(params: ReserveInventoryParams) {
 
   while (attempt < maxRetries) {
     try {
-      return await executeInTransaction(async (trx) => {
+      return await executeInTransaction(async trx => {
         // Validate availability
         const available = await getAvailableInventory(trx, params.sku);
         if (available < params.quantity) {
-          throw new InventoryError('Insufficient inventory');  // Non-retryable
+          throw new InventoryError('Insufficient inventory'); // Non-retryable
         }
         // Reserve
         await reserveInventory(trx, params);
@@ -117,13 +131,14 @@ async function mcpReserveInventory(params: ReserveInventoryParams) {
     } catch (error) {
       attempt++;
       if (error instanceof InventoryError) {
-        throw error;  // Don't retry business logic errors
+        throw error; // Don't retry business logic errors
       }
-      if (error.code === '40P01') {  // Deadlock
-        await sleep(random(100, 500) * attempt);  // Backoff
+      if (error.code === '40P01') {
+        // Deadlock
+        await sleep(random(100, 500) * attempt); // Backoff
         continue;
       }
-      throw error;  // Other errors non-retryable
+      throw error; // Other errors non-retryable
     }
   }
   throw new Error('Max retries exceeded');
@@ -131,6 +146,7 @@ async function mcpReserveInventory(params: ReserveInventoryParams) {
 ```
 
 ### NEVER Catch and Suppress Errors
+
 ```typescript
 // ❌ WRONG - Silently failing
 try {
@@ -153,18 +169,21 @@ try {
 ## When to Use MCP Tools vs Direct Access
 
 ### Use MCP Tools When:
+
 - **Operation is complex and reusable** - abstract into tool
 - **Operation requires validation** - encapsulate business rules
 - **Operation needs error handling** - centralize error recovery
 - **Operation is called from multiple places** - DRY principle
 
 ### Use Direct Database Access When:
+
 - **Simple query** - single table SELECT with known result
 - **Migration script** - schema modification
 - **Performance-critical** - need to avoid tool overhead
 - **One-off operation** - not reusable
 
 ### Use Direct API Access When:
+
 - **External service integration** - calling third-party APIs
 - **File operations** - reading config files
 - **System operations** - running build scripts
@@ -174,6 +193,7 @@ try {
 ## MCP Tool Design Patterns
 
 ### Pattern 1: Validated Write
+
 ```typescript
 // MCP tool for order state transition
 async function mcpTransitionOrderState(
@@ -184,7 +204,9 @@ async function mcpTransitionOrderState(
   // 1. Validate transition
   const order = await getOrder(orderId);
   if (!isValidTransition(order.status, toStatus)) {
-    throw new ValidationError(`Invalid transition ${order.status} → ${toStatus}`);
+    throw new ValidationError(
+      `Invalid transition ${order.status} → ${toStatus}`
+    );
   }
 
   // 2. Check prerequisites
@@ -196,7 +218,7 @@ async function mcpTransitionOrderState(
   }
 
   // 3. Execute in transaction
-  return await executeInTransaction(async (trx) => {
+  return await executeInTransaction(async trx => {
     const updated = await trx('orders')
       .where({ order_id: orderId })
       .update({ status: toStatus, updated_at: new Date() })
@@ -209,16 +231,17 @@ async function mcpTransitionOrderState(
 ```
 
 ### Pattern 2: Idempotent Create
+
 ```typescript
 // MCP tool for creating order (idempotent)
 async function mcpCreateOrder(dto: CreateOrderDTO): Promise<Order> {
-  return await executeInTransaction(async (trx) => {
+  return await executeInTransaction(async trx => {
     // Use deterministic ID based on customer + timestamp
     const orderId = generateOrderId(dto.customerId);
 
     const existing = await trx('orders').where({ order_id: orderId }).first();
     if (existing) {
-      return existing;  // Idempotent - return existing
+      return existing; // Idempotent - return existing
     }
 
     // Validate inventory
@@ -235,25 +258,28 @@ async function mcpCreateOrder(dto: CreateOrderDTO): Promise<Order> {
     }
 
     // Create order
-    return await trx('orders').insert({
-      order_id: orderId,
-      customer_id: dto.customerId,
-      customer_name: dto.customerName,
-      priority: dto.priority,
-      status: OrderStatus.PENDING
-    }).returning('*');
+    return await trx('orders')
+      .insert({
+        order_id: orderId,
+        customer_id: dto.customerId,
+        customer_name: dto.customerName,
+        priority: dto.priority,
+        status: OrderStatus.PENDING,
+      })
+      .returning('*');
   });
 }
 ```
 
 ### Pattern 3: Compensating Transaction
+
 ```typescript
 // MCP tool with compensating actions
 async function mcpProcessShipment(orderId: string): Promise<void> {
-  let inventoryReserved: Array<{sku: string, quantity: number}> = [];
+  let inventoryReserved: Array<{ sku: string; quantity: number }> = [];
 
   try {
-    await executeInTransaction(async (trx) => {
+    await executeInTransaction(async trx => {
       const order = await getOrder(trx, orderId);
 
       // Stage 1: Reserve additional packing materials
@@ -275,7 +301,7 @@ async function mcpProcessShipment(orderId: string): Promise<void> {
     });
   } catch (error) {
     // Compensating action: release reserved materials
-    await executeInTransaction(async (trx) => {
+    await executeInTransaction(async trx => {
       for (const item of inventoryReserved) {
         await releasePackingMaterial(trx, item.sku, item.quantity);
       }
@@ -290,25 +316,31 @@ async function mcpProcessShipment(orderId: string): Promise<void> {
 ## MCP Tool Registration
 
 ### Naming Convention
+
 ```typescript
 // Prefix business logic tools with domain
-mcp_wms_order_claim
-mcp_wms_inventory_reserve
-mcp_wms_shipment_process
+mcp_wms_order_claim;
+mcp_wms_inventory_reserve;
+mcp_wms_shipment_process;
 
 // Prefix read-only tools with query
-mcp_query_order_by_id
-mcp_query_inventory_available
+mcp_query_order_by_id;
+mcp_query_inventory_available;
 ```
 
 ### Input Validation
+
 ```typescript
 // Always validate inputs using Joi
 const reserveInventorySchema = Joi.object({
-  orderId: Joi.string().pattern(/^ORD-\d{8}-\d{6}$/).required(),
+  orderId: Joi.string()
+    .pattern(/^ORD-\d{8}-\d{6}$/)
+    .required(),
   sku: Joi.string().max(50).required(),
   quantity: Joi.number().integer().positive().required(),
-  binLocation: Joi.string().pattern(/^[A-Z]-\d{1,3}-\d{2}$/).required()
+  binLocation: Joi.string()
+    .pattern(/^[A-Z]-\d{1,3}-\d{2}$/)
+    .required(),
 });
 
 async function mcpReserveInventory(params: unknown) {
@@ -325,15 +357,17 @@ async function mcpReserveInventory(params: unknown) {
 ## MCP and Database Transactions
 
 ### Transaction Boundaries
+
 - **MCP tools should manage transactions** - don't rely on caller
 - **Each MCP tool is a transaction unit** - all-or-nothing
 - **Nested tools should share transaction** - pass trx object
 
 ### Transaction Sharing Pattern
+
 ```typescript
 // Parent tool
 async function mcpProcessOrder(orderId: string) {
-  return await executeInTransaction(async (trx) => {
+  return await executeInTransaction(async trx => {
     // Child tools share transaction
     await mcpReserveInventory(trx, orderId, items);
     await mcpUpdateOrderStatus(trx, orderId, OrderStatus.PICKING);
@@ -347,11 +381,13 @@ async function mcpProcessOrder(orderId: string) {
 ## Security Rules for MCP
 
 ### Input Sanitization
+
 - **NEVER trust client input** - validate everything
 - **Parameterize all queries** - prevent SQL injection
 - **Sanitize error messages** - don't expose internals
 
 ### Authorization
+
 - **Check user role** - validate permissions
 - **Resource ownership** - verify user can access resource
 - **Audit all access** - log who did what
@@ -365,7 +401,11 @@ async function mcpCancelOrder(orderId: string, userId: string) {
   }
 
   // Audit the action
-  await logAuditEvent('ORDER_CANCELLED', { orderId, userId, timestamp: new Date() });
+  await logAuditEvent('ORDER_CANCELLED', {
+    orderId,
+    userId,
+    timestamp: new Date(),
+  });
 
   // Proceed with cancellation
   // ...

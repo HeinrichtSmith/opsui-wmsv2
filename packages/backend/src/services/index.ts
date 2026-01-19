@@ -10,15 +10,7 @@ export * from './MetricsService';
 export * from './AuthService';
 
 // Re-export singleton instances
-export {
-  orderService,
-} from './OrderService';
-export {
-  inventoryService,
-} from './InventoryService';
-export {
-  metricsService,
-} from './MetricsService';
-export {
-  authService,
-} from './AuthService';
+export { orderService } from './OrderService';
+export { inventoryService } from './InventoryService';
+export { metricsService } from './MetricsService';
+export { authService } from './AuthService';

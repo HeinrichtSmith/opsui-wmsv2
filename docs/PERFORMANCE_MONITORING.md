@@ -10,6 +10,7 @@
 ## Current Performance Baseline
 
 ### Backend Performance
+
 ```yaml
 API Response Times:
   - Average: ~100ms
@@ -33,6 +34,7 @@ Authentication:
 ```
 
 ### Frontend Performance
+
 ```yaml
 Load Times:
   - Initial page load: ~2s
@@ -46,6 +48,7 @@ Bundle Sizes:
 ```
 
 ### Test Performance
+
 ```yaml
 Test Suite Runtime:
   - Unit tests: ~15 seconds
@@ -119,6 +122,7 @@ ab -n 1000 -c 10 http://localhost:3001/api/orders
 ### When to Optimize
 
 **Optimize when**:
+
 - User reports slowness
 - Metrics show degradation (>20% slower than baseline)
 - P95 response time > 500ms
@@ -126,6 +130,7 @@ ab -n 1000 -c 10 http://localhost:3001/api/orders
 - Frontend load time > 3s
 
 **Don't optimize when**:
+
 - Code looks "messy" but performs fine
 - Micro-optimizations that save <10ms
 - Premature optimization without measurements
@@ -140,6 +145,7 @@ ab -n 1000 -c 10 http://localhost:3001/api/orders
 **Symptom**: Slow page loads, many database queries
 
 **Detection**:
+
 ```typescript
 // ❌ N+1 queries (100+ queries for 100 orders)
 const orders = await db('orders').select('*');
@@ -149,6 +155,7 @@ for (const order of orders) {
 ```
 
 **Solution**:
+
 ```typescript
 // ✅ Single query with join
 const orders = await db('orders')
@@ -166,6 +173,7 @@ const orders = await db('orders')
 **Symptom**: Slow queries on large tables
 
 **Detection**:
+
 ```bash
 # Check query execution plan
 EXPLAIN ANALYZE SELECT * FROM orders WHERE status = 'PENDING';
@@ -174,6 +182,7 @@ EXPLAIN ANALYZE SELECT * FROM orders WHERE status = 'PENDING';
 ```
 
 **Solution**:
+
 ```sql
 -- Add index for filtered columns
 CREATE INDEX idx_orders_status ON orders(status);
@@ -191,6 +200,7 @@ CREATE INDEX idx_orders_status_priority ON orders(status, priority);
 **Symptom**: Slow operations that could be parallel
 
 **Detection**:
+
 ```typescript
 // ❌ Serial operations (slow)
 const user = await fetchUser(id);
@@ -199,12 +209,13 @@ const recommendations = await fetchRecommendations(id);
 ```
 
 **Solution**:
+
 ```typescript
 // ✅ Parallel operations
 const [user, orders, recommendations] = await Promise.all([
   fetchUser(id),
   fetchOrders(id),
-  fetchRecommendations(id)
+  fetchRecommendations(id),
 ]);
 ```
 
@@ -217,6 +228,7 @@ const [user, orders, recommendations] = await Promise.all([
 **Symptom**: Slow API responses, large network transfers
 
 **Detection**:
+
 ```bash
 # Check response size
 curl -s http://localhost:3001/api/orders | wc -c
@@ -225,6 +237,7 @@ curl -s http://localhost:3001/api/orders | wc -c
 ```
 
 **Solution**:
+
 ```typescript
 // ✅ Paginated responses
 async getOrders(page: number, limit: number) {
@@ -256,6 +269,7 @@ async getOrders(page: number, limit: number) {
 **Symptom**: Repeated expensive operations
 
 **Detection**:
+
 ```typescript
 // ❌ No caching - recalculates every time
 async function getDashboardMetrics() {
@@ -268,6 +282,7 @@ async function getDashboardMetrics() {
 ```
 
 **Solution**:
+
 ```typescript
 // ✅ Cached with TTL
 const cache = new Map<string, { data: any; expiry: number }>();
@@ -281,7 +296,7 @@ async function getDashboardMetrics() {
   const metrics = await calculateMetrics();
   cache.set('dashboard', {
     data: metrics,
-    expiry: Date.now() + 60000 // 1 minute TTL
+    expiry: Date.now() + 60000, // 1 minute TTL
   });
 
   return metrics;
@@ -297,18 +312,21 @@ async function getDashboardMetrics() {
 ### Before Implementing a Feature
 
 **Database Operations**:
+
 - [ ] Will this query use existing indexes?
 - [ ] Is there risk of N+1 queries?
 - [ ] Can operations be parallelized with Promise.all?
 - [ ] Should this be cached? If yes, for how long?
 
 **API Operations**:
+
 - [ ] Is the response paginated?
 - [ ] Are we only returning required fields?
 - [ ] Is there input validation to prevent unnecessary work?
 - [ ] Are we using compression for large responses?
 
 **Frontend Operations**:
+
 - [ ] Are we using React Query's caching?
 - [ ] Are we loading data in parallel?
 - [ ] Are we memoizing expensive calculations?
@@ -324,14 +342,20 @@ async function getDashboardMetrics() {
 // packages/backend/src/middleware/performance.ts
 import { Request, Response, NextFunction } from 'express';
 
-export function performanceMiddleware(req: Request, res: Response, next: NextFunction) {
+export function performanceMiddleware(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   const startTime = Date.now();
 
   res.on('finish', () => {
     const duration = Date.now() - startTime;
 
     if (duration > 500) {
-      console.warn(`⚠️  SLOW REQUEST: ${req.method} ${req.path} took ${duration}ms`);
+      console.warn(
+        `⚠️  SLOW REQUEST: ${req.method} ${req.path} took ${duration}ms`
+      );
     }
 
     // Log to metrics system
@@ -354,8 +378,8 @@ const knex = require('knex')({
       if (message.includes('SLOW QUERY')) {
         console.warn(message);
       }
-    }
-  }
+    },
+  },
 });
 ```
 
@@ -512,6 +536,7 @@ Alert when:
 User says: "This is slow"
 
 **GLM should**:
+
 1. Ask what specifically is slow
 2. Run performance checks
 3. Identify bottleneck
@@ -544,8 +569,10 @@ npm run perf
 ### Step 5: Document Decision
 
 Add to docs/DECISIONS.md:
+
 ```markdown
 ### ADR-XXX: Performance Optimization for [Feature]
+
 - **Date**: 2025-01-19
 - **Context**: [What was slow]
 - **Solution**: [What was done]
@@ -566,13 +593,13 @@ npm run db:status         # Check database performance
 
 ### Performance Patterns
 
-| Pattern | When to Use | Improvement |
-|---------|-------------|-------------|
-| Eager loading | N+1 queries | 10x faster |
-| Add index | Slow queries | 10x faster |
-| Parallel ops | Serial operations | 3x faster |
-| Pagination | Large responses | 50x smaller |
-| Caching | Repeated calculations | 100x faster |
+| Pattern       | When to Use           | Improvement |
+| ------------- | --------------------- | ----------- |
+| Eager loading | N+1 queries           | 10x faster  |
+| Add index     | Slow queries          | 10x faster  |
+| Parallel ops  | Serial operations     | 3x faster   |
+| Pagination    | Large responses       | 50x smaller |
+| Caching       | Repeated calculations | 100x faster |
 
 ---
 

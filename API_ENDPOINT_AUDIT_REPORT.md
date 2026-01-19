@@ -37,6 +37,7 @@ The WMS API demonstrates strong adherence to modern REST API best practices with
 **Location**: `packages/backend/src/middleware/security.ts`
 
 Implemented security headers:
+
 - `Content-Security-Policy`: Restricts resources the browser can load
 - `X-Frame-Options: DENY`: Prevents clickjacking attacks
 - `X-Content-Type-Options: nosniff`: Prevents MIME type sniffing
@@ -53,12 +54,14 @@ Implemented security headers:
 **Location**: `packages/backend/src/middleware/security.ts`
 
 Implementation:
+
 - Validates Origin header for state-changing operations (POST, PUT, DELETE, PATCH)
 - Whitelist approach with environment-aware configuration
 - Skips validation for read-only operations (GET, HEAD, OPTIONS)
 - Allows development origins with proper checks
 
 **Strengths**:
+
 - Origin header validation prevents CSRF attacks
 - Development-friendly with localhost checks
 - Properly exempts authentication endpoints
@@ -73,6 +76,7 @@ Implementation:
 **Location**: `packages/backend/src/middleware/security.ts`
 
 Implementation:
+
 - 10MB maximum request body size
 - Pre-emptive Content-Length validation
 - Logs size limit violations
@@ -89,12 +93,14 @@ Implementation:
 **Location**: `packages/backend/src/middleware/security.ts`
 
 Implementation:
+
 - Removes `<script>` tags from string inputs
 - Removes `javascript:` protocol handlers
 - Removes inline event handlers (`onload=`, `onerror=`, etc.)
 - Recursive sanitization of nested objects
 
 **Strengths**:
+
 - Defense-in-depth approach (validation + sanitization)
 - Handles nested objects
 - Applied to both body and query parameters
@@ -110,6 +116,7 @@ Implementation:
 **Location**: `packages/backend/src/app.ts`
 
 Using Helmet.js for additional security headers:
+
 - HSTS (HTTP Strict Transport Security)
 - X-Powered-By header removal
 - Additional browser protections
@@ -125,12 +132,14 @@ Using Helmet.js for additional security headers:
 **Location**: `packages/backend/src/middleware/auth.ts`
 
 Implementation:
+
 - Bearer token authentication
 - JWT signature verification
 - Token expiration handling
 - User payload attachment to request
 
 **Strengths**:
+
 - Uses `jsonwebtoken` library (industry standard)
 - Proper token validation
 - Active role support for multi-role users
@@ -145,6 +154,7 @@ Implementation:
 **Location**: `packages/backend/src/middleware/auth.ts`
 
 Available Roles:
+
 - `PICKER` - Order picking operations
 - `PACKER` - Packing operations
 - `STOCK_CONTROLLER` - Inventory management
@@ -157,12 +167,14 @@ Available Roles:
 - `RMA` - Returns management
 
 Implementation:
+
 - `authorize()` middleware for flexible role checks
 - Specific helpers: `requireAdmin`, `requireSupervisor`, `requirePicker`
 - Support for multiple roles in single authorization check
 - Active role switching for multi-role users
 
 **Strengths**:
+
 - Granular permissions
 - Reusable authorization middleware
 - Support for complex role requirements
@@ -177,12 +189,14 @@ Implementation:
 **Location**: `packages/backend/src/routes/auth.ts` and `middleware/auth.ts`
 
 Features:
+
 - Users can have multiple roles assigned
 - Active role switching via `/api/auth/set-active-role`
 - JWT tokens include active role
 - Authorization checks use effective role
 
 **Strengths**:
+
 - Allows admin to act as different roles
 - Reduces need for multiple accounts
 - Proper role validation
@@ -197,11 +211,13 @@ Features:
 **Location**: `packages/backend/src/routes/auth.ts`
 
 Endpoints:
+
 - `POST /api/auth/login` - User authentication
 - `POST /api/auth/refresh` - Token refresh
 - `POST /api/auth/change-password` - Password change
 
 Implementation:
+
 - Refresh token support for extended sessions
 - Current password verification before changes
 - Validation via `validate.login` schema
@@ -209,6 +225,7 @@ Implementation:
 **Assessment**: ✅ Good - Basic password management
 
 **Recommendations**:
+
 - Implement password strength requirements
 - Add password history tracking
 - Implement account lockout after failed attempts
@@ -223,12 +240,14 @@ Implementation:
 **Location**: `packages/backend/src/middleware/validation.ts`
 
 Implementation:
+
 - Schema-based validation using Joi library
 - Separate validators for body, query, and parameters
 - Common schemas for reusability
 - Detailed error messages with field-level details
 
 **Validations Implemented**:
+
 - Order ID format: `ORD-YYYYMMDD-XXXX`
 - SKU format: 2-50 alphanumeric characters
 - Bin location: `ZONE-AISLE-SHELF` (e.g., `A-12-03`)
@@ -238,6 +257,7 @@ Implementation:
 - Status validation (PENDING, PICKING, PICKED, PACKING, PACKED, SHIPPED, CANCELLED, BACKORDER)
 
 **Strengths**:
+
 - Centralized validation logic
 - Clear, actionable error messages
 - Pattern-based validation
@@ -253,12 +273,14 @@ Implementation:
 **Location**: Multiple route files
 
 Examples:
+
 - `validate.createOrder` - Order creation
 - `validate.pickItem` - Pick actions
 - `validate.cancelOrder` - Order cancellation
 - `validate.login` - Authentication
 
 **Strengths**:
+
 - Applied at route level
 - Automatic field sanitization
 - Detailed validation errors
@@ -272,12 +294,14 @@ Examples:
 **Location**: `packages/backend/src/routes/orders.ts`
 
 Additional validations in route handlers:
+
 - Field presence checks with 400 errors
 - Value validation (e.g., status in allowed list)
 - Reason requirements for sensitive operations
 - User authentication checks
 
 **Strengths**:
+
 - Defense in depth
 - Business logic validation
 - Clear error messages
@@ -293,6 +317,7 @@ Additional validations in route handlers:
 **Location**: `packages/backend/src/middleware/rateLimiter.ts` and `security.ts`
 
 Rate Limiters:
+
 1. **Auth Rate Limiter**
    - Window: 15 minutes
    - Limit: 5 attempts
@@ -317,6 +342,7 @@ Rate Limiters:
    - Purpose: Prevent picking abuse
 
 **Strengths**:
+
 - Granular rate limits by endpoint type
 - Appropriate limits for different operations
 - Standard headers for rate limit info
@@ -326,6 +352,7 @@ Rate Limiters:
 **Assessment**: ✅ Excellent - Industry-standard rate limiting
 
 **Recommendations**:
+
 - Implement sliding window algorithm for smoother limits
 - Add rate limit headers for client-side handling
 - Consider IP-based vs user-based limiting
@@ -340,6 +367,7 @@ Rate Limiters:
 **Location**: `packages/backend/src/middleware/errorHandler.ts`
 
 Implementation:
+
 - Global error handler middleware
 - Structured error responses
 - Appropriate HTTP status codes
@@ -347,6 +375,7 @@ Implementation:
 - Development stack traces
 
 **Error Structure**:
+
 ```json
 {
   "error": "Error message",
@@ -357,6 +386,7 @@ Implementation:
 ```
 
 **Status Codes Used**:
+
 - 400 - Bad Request (validation errors)
 - 401 - Unauthorized (authentication failed)
 - 403 - Forbidden (authorization failed)
@@ -367,6 +397,7 @@ Implementation:
 - 500 - Internal Server Error (unexpected errors)
 
 **Strengths**:
+
 - Consistent error format
 - Proper status code usage
 - Detailed error codes for client handling
@@ -382,6 +413,7 @@ Implementation:
 **Location**: `packages/backend/src/middleware/errorHandler.ts`
 
 Utility functions:
+
 - `badRequest()` - 400 errors
 - `unauthorized()` - 401 errors
 - `forbidden()` - 403 errors
@@ -390,6 +422,7 @@ Utility functions:
 - `internalError()` - 500 errors
 
 **Strengths**:
+
 - Consistent error creation
 - Type-safe error handling
 - Reusable across services
@@ -403,11 +436,13 @@ Utility functions:
 **Location**: `packages/backend/src/middleware/errorHandler.ts`
 
 Implementation:
+
 - `asyncHandler()` wrapper for async route handlers
 - Catches and forwards errors to global handler
 - Eliminates need for try-catch in routes
 
 **Strengths**:
+
 - Clean route code
 - Consistent error handling
 - Type-safe
@@ -423,19 +458,21 @@ Implementation:
 **Location**: Throughout service layer (verified via code analysis)
 
 Implementation:
+
 - PostgreSQL parameter placeholders (`$1`, `$2`, etc.)
 - No string concatenation in queries
 - `pg` library for safe query execution
 
 **Example**:
+
 ```typescript
-const result = await query(
-  `SELECT * FROM orders WHERE order_id = $1`,
-  [orderId]
-);
+const result = await query(`SELECT * FROM orders WHERE order_id = $1`, [
+  orderId,
+]);
 ```
 
 **Strengths**:
+
 - Nearly foolproof injection prevention
 - Automatic type handling
 - Performance benefits (query plan caching)
@@ -450,12 +487,14 @@ const result = await query(
 **Location**: `packages/backend/src/middleware/validation.ts`
 
 Defense-in-depth:
+
 - Type validation via Joi schemas
 - Format validation (regex patterns)
 - Length limits
 - Allowlist validation (for known values)
 
 **Strengths**:
+
 - Validates before database queries
 - Prevents invalid data from reaching DB
 - Complements parameterized queries
@@ -471,6 +510,7 @@ Defense-in-depth:
 **Location**: All route modules
 
 Patterns:
+
 - Proper HTTP verb usage (GET, POST, PUT, PATCH, DELETE)
 - Resource-based URLs (`/orders`, `/skus`, `/inventory`)
 - Nesting related resources (`/orders/:orderId/items`)
@@ -478,6 +518,7 @@ Patterns:
 - Status codes matching operation results
 
 **Strengths**:
+
 - Intuitive API structure
 - Standard REST conventions
 - Cache-friendly GET endpoints
@@ -490,6 +531,7 @@ Patterns:
 ### ✅ Consistent Response Format (IMPLEMENTED)
 
 **Success Responses**:
+
 ```json
 {
   "data": { ... },
@@ -498,6 +540,7 @@ Patterns:
 ```
 
 **Error Responses**:
+
 ```json
 {
   "error": "Error message",
@@ -507,6 +550,7 @@ Patterns:
 ```
 
 **Strengths**:
+
 - Predictable response structure
 - Easy client-side handling
 - Consistent across all endpoints
@@ -520,12 +564,14 @@ Patterns:
 **Location**: Multiple endpoints
 
 Query Parameters:
+
 - `page` - Page number (default: 1)
 - `limit` - Items per page (default: 20, max: 100)
 - `sortBy` - Sort field (default: createdAt)
 - `sortOrder` - Sort direction (asc/desc)
 
 **Strengths**:
+
 - Consistent pagination approach
 - Reasonable limits
 - Sorting support
@@ -540,6 +586,7 @@ Query Parameters:
 **Location**: Order, SKU, and inventory endpoints
 
 Filter Parameters:
+
 - Status filters
 - Priority filters
 - User ID filters
@@ -547,6 +594,7 @@ Filter Parameters:
 - Date ranges
 
 **Strengths**:
+
 - Flexible querying
 - Reduces data transfer
 - Client-side filtering support
@@ -560,6 +608,7 @@ Filter Parameters:
 ### Authentication Module (`/api/auth`)
 
 **Endpoints**:
+
 - `POST /login` - User authentication
 - `POST /refresh` - Token refresh
 - `POST /logout` - User logout
@@ -581,6 +630,7 @@ Filter Parameters:
 ### Orders Module (`/api/orders`)
 
 **Endpoints**:
+
 - `GET /` - Get order queue
 - `POST /` - Create new order
 - `GET /my-orders` - Get picker's active orders
@@ -611,6 +661,7 @@ Filter Parameters:
 **SQL Injection**: ✅ Parameterized queries throughout
 
 **Strengths**:
+
 - Comprehensive order lifecycle management
 - Both picking and packing workflows
 - Progress tracking
@@ -624,6 +675,7 @@ Filter Parameters:
 ### Shipping Module (`/api/shipping`)
 
 **Endpoints**:
+
 - `GET /carriers` - Get all active carriers
 - `GET /carriers/:carrierId` - Get specific carrier
 - `POST /shipments` - Create shipment
@@ -643,6 +695,7 @@ Filter Parameters:
 **API Integration**: ✅ Verified carrier endpoints (NZ Courier, Mainfreight)
 
 **Strengths**:
+
 - Carrier management
 - Shipment lifecycle
 - Label generation
@@ -656,6 +709,7 @@ Filter Parameters:
 ### Health Module (`/health`)
 
 **Endpoints**:
+
 - `GET /health` - Health check
 - `GET /ready` - Readiness check
 
@@ -669,11 +723,13 @@ Filter Parameters:
 ### Inventory Module (`/api/inventory`)
 
 **Endpoints**: (Not reviewed in detail)
+
 - Standard CRUD operations for inventory items
 - Stock adjustments
 - Location management
 
 **Expected Features**:
+
 - Authentication required
 - Role-based access
 - Input validation
@@ -686,11 +742,13 @@ Filter Parameters:
 ### SKU Module (`/api/skus`)
 
 **Endpoints**: (Not reviewed in detail)
+
 - SKU CRUD operations
 - Barcode management
 - Category management
 
 **Expected Features**:
+
 - Authentication required
 - SKU format validation
 - Parameterized queries
@@ -702,11 +760,13 @@ Filter Parameters:
 ### Stock Control Module (`/api/stock-control`)
 
 **Endpoints**: (Not reviewed in detail)
+
 - Stock adjustments
 - Inventory transfers
 - Cycle counts
 
 **Expected Features**:
+
 - Supervisor/admin access
 - Transaction logging
 - Validation
@@ -718,6 +778,7 @@ Filter Parameters:
 ### Other Modules
 
 Modules requiring detailed review:
+
 - `/api/metrics` - Performance metrics
 - `/api/exceptions` - Exception handling
 - `/api/inbound` - Inbound goods
@@ -762,6 +823,7 @@ Modules requiring detailed review:
    - Recommendation: Include total count, pages
    - Benefit: Client can show progress
    - Implementation:
+
    ```json
    {
      "data": [...],
@@ -953,61 +1015,61 @@ Modules requiring detailed review:
 
 ## Security Scorecard
 
-| Category | Score | Notes |
-|-----------|--------|-------|
-| Authentication | 10/10 | Excellent JWT implementation |
-| Authorization | 10/10 | Comprehensive RBAC |
-| Input Validation | 9/10 | Strong, could add more constraints |
-| SQL Injection | 10/10 | Parameterized queries |
-| XSS Protection | 8/10 | Basic sanitization, consider DOMPurify |
-| CSRF Protection | 10/10 | Robust origin validation |
-| Rate Limiting | 10/10 | Multi-tier, well-configured |
-| Security Headers | 10/10 | All critical headers present |
-| Error Handling | 10/10 | Centralized, consistent |
-| Logging | 9/10 | Good, needs audit logging |
-| **TOTAL** | **96/100** | **Excellent** |
+| Category         | Score      | Notes                                  |
+| ---------------- | ---------- | -------------------------------------- |
+| Authentication   | 10/10      | Excellent JWT implementation           |
+| Authorization    | 10/10      | Comprehensive RBAC                     |
+| Input Validation | 9/10       | Strong, could add more constraints     |
+| SQL Injection    | 10/10      | Parameterized queries                  |
+| XSS Protection   | 8/10       | Basic sanitization, consider DOMPurify |
+| CSRF Protection  | 10/10      | Robust origin validation               |
+| Rate Limiting    | 10/10      | Multi-tier, well-configured            |
+| Security Headers | 10/10      | All critical headers present           |
+| Error Handling   | 10/10      | Centralized, consistent                |
+| Logging          | 9/10       | Good, needs audit logging              |
+| **TOTAL**        | **96/100** | **Excellent**                          |
 
 ---
 
 ## API Design Scorecard
 
-| Category | Score | Notes |
-|-----------|--------|-------|
-| RESTful Design | 10/10 | Proper resource-based URLs |
-| HTTP Status Codes | 10/10 | Appropriate usage |
-| Error Responses | 10/10 | Consistent format |
-| Pagination | 9/10 | Basic, needs metadata |
-| Filtering | 10/10 | Flexible query parameters |
-| Consistency | 10/10 | Uniform responses |
-| Documentation | 6/10 | Swagger in dev only |
-| Versioning | 0/10 | Not implemented |
-| **TOTAL** | **65/80** | **Good** |
+| Category          | Score     | Notes                      |
+| ----------------- | --------- | -------------------------- |
+| RESTful Design    | 10/10     | Proper resource-based URLs |
+| HTTP Status Codes | 10/10     | Appropriate usage          |
+| Error Responses   | 10/10     | Consistent format          |
+| Pagination        | 9/10      | Basic, needs metadata      |
+| Filtering         | 10/10     | Flexible query parameters  |
+| Consistency       | 10/10     | Uniform responses          |
+| Documentation     | 6/10      | Swagger in dev only        |
+| Versioning        | 0/10      | Not implemented            |
+| **TOTAL**         | **65/80** | **Good**                   |
 
 ---
 
 ## Module Coverage
 
-| Module | Review Status | Score |
-|---------|--------------|-------|
-| Authentication | ✅ Complete | 10/10 |
-| Orders | ✅ Complete | 10/10 |
-| Shipping | ✅ Complete | 10/10 |
-| Health | ✅ Complete | 10/10 |
-| Inventory | ⚠️ Partial | -/10 |
-| SKUs | ⚠️ Partial | -/10 |
-| Stock Control | ⚠️ Partial | -/10 |
-| Metrics | ⚠️ Partial | -/10 |
-| Exceptions | ⚠️ Partial | -/10 |
-| Inbound | ⚠️ Partial | -/10 |
-| Cycle Count | ⚠️ Partial | -/10 |
-| Location Capacity | ⚠️ Partial | -/10 |
-| Quality Control | ⚠️ Partial | -/10 |
-| Business Rules | ⚠️ Partial | -/10 |
-| Reports | ⚠️ Partial | -/10 |
-| Integrations | ⚠️ Partial | -/10 |
-| Production | ⚠️ Partial | -/10 |
-| Sales | ⚠️ Partial | -/10 |
-| Maintenance | ⚠️ Partial | -/10 |
+| Module            | Review Status | Score |
+| ----------------- | ------------- | ----- |
+| Authentication    | ✅ Complete   | 10/10 |
+| Orders            | ✅ Complete   | 10/10 |
+| Shipping          | ✅ Complete   | 10/10 |
+| Health            | ✅ Complete   | 10/10 |
+| Inventory         | ⚠️ Partial    | -/10  |
+| SKUs              | ⚠️ Partial    | -/10  |
+| Stock Control     | ⚠️ Partial    | -/10  |
+| Metrics           | ⚠️ Partial    | -/10  |
+| Exceptions        | ⚠️ Partial    | -/10  |
+| Inbound           | ⚠️ Partial    | -/10  |
+| Cycle Count       | ⚠️ Partial    | -/10  |
+| Location Capacity | ⚠️ Partial    | -/10  |
+| Quality Control   | ⚠️ Partial    | -/10  |
+| Business Rules    | ⚠️ Partial    | -/10  |
+| Reports           | ⚠️ Partial    | -/10  |
+| Integrations      | ⚠️ Partial    | -/10  |
+| Production        | ⚠️ Partial    | -/10  |
+| Sales             | ⚠️ Partial    | -/10  |
+| Maintenance       | ⚠️ Partial    | -/10  |
 
 ---
 
@@ -1016,6 +1078,7 @@ Modules requiring detailed review:
 The WMS API demonstrates **excellent** adherence to modern REST API best practices with **strong security measures**, **robust error handling**, and **comprehensive validation**. The architecture is well-designed with proper separation of concerns and follows industry standards.
 
 **Key Strengths**:
+
 - Security-first approach with multiple layers of protection
 - Comprehensive authentication and authorization
 - Consistent error handling and response formats
@@ -1024,6 +1087,7 @@ The WMS API demonstrates **excellent** adherence to modern REST API best practic
 - Robust input validation
 
 **Areas for Improvement**:
+
 - API versioning for future-proofing
 - Comprehensive audit logging
 - Response caching for performance

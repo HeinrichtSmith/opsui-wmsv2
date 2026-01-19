@@ -28,7 +28,11 @@ export const wmsDomainTools: ToolMetadata[] = [
       required: ['orderId'],
     },
     handler: async (args: ToolArgs, context: ToolContext) => {
-      const { orderId, optimizePath = true, groupByZone = true } = args as {
+      const {
+        orderId,
+        optimizePath = true,
+        groupByZone = true,
+      } = args as {
         orderId: string;
         optimizePath?: boolean;
         groupByZone?: boolean;

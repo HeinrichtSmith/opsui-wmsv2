@@ -17,7 +17,7 @@ async function runTestPickers() {
     const sql = fs.readFileSync(sqlPath, 'utf8');
 
     logger.info(`Executing SQL from ${sqlPath} (${sql.length} bytes)...`);
-    
+
     await query(sql);
 
     logger.info('✅ Test picker data loaded successfully!');
@@ -32,7 +32,7 @@ async function runTestPickers() {
     logger.info('    * ORD-TEST05: Picked by Sarah 2h ago (IDLE)');
     logger.info('');
     logger.info('Test the picker activity endpoint to verify tracking works correctly.');
-    
+
     process.exit(0);
   } catch (error) {
     logger.error('❌ Error loading test picker data:', error);

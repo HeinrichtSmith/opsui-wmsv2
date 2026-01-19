@@ -9,21 +9,28 @@ The implementation adds a new `STOCK_CONTROLLER` user role and provides a full-f
 ## Files Created/Modified
 
 ### 1. Shared Types
+
 **File:** `packages/shared/src/types/index.ts`
+
 - Added `STOCK_CONTROLLER` to the `UserRole` enum
 - Updated `UserRoleValue` type to include the new role
 
 ### 2. Database Migrations
+
 **File:** `packages/backend/src/db/migrations/add_stock_controller_role.sql`
+
 - Adds `STOCK_CONTROLLER` value to the `user_role` enum in PostgreSQL
 
 **File:** `packages/backend/src/db/migrations/add_stock_control_tables.sql`
+
 - Creates `stock_counts` table for managing stock count sessions
 - Creates `stock_count_items` table for storing count results
 - Adds necessary indexes for performance
 
 ### 3. Backend Implementation
+
 **File:** `packages/backend/src/routes/stockControl.ts`
+
 - REST API routes for stock control operations
 - Endpoints for:
   - Dashboard metrics
@@ -37,19 +44,24 @@ The implementation adds a new `STOCK_CONTROLLER` user role and provides a full-f
   - Bin location management
 
 **File:** `packages/backend/src/services/StockControlService.ts`
+
 - Business logic for stock control operations
 - Handles stock counts, transfers, adjustments
 - Provides reporting and reconciliation functions
 
 **File:** `packages/backend/src/routes/index.ts`
+
 - Registered stock control routes at `/api/stock-control`
 
 ### 4. Frontend Implementation
+
 **File:** `packages/frontend/src/services/api.ts`
+
 - Added `stockControlApi` with all stock control API functions
 - Added React Query hooks for stock control operations
 
 **File:** `packages/frontend/src/pages/StockControlPage.tsx`
+
 - Comprehensive stock control page with multiple tabs:
   - **Dashboard**: Overview metrics, recent transactions, low stock alerts
   - **Inventory**: Searchable, filterable inventory list with pagination
@@ -57,22 +69,28 @@ The implementation adds a new `STOCK_CONTROLLER` user role and provides a full-f
   - **Quick Actions**: Modals for stock transfers, adjustments, and stock counts
 
 **File:** `packages/frontend/src/pages/index.ts`
+
 - Exported `StockControlPage` component
 
 **File:** `packages/frontend/src/App.tsx`
+
 - Added `/stock-control` route
 - Updated routing logic to handle `STOCK_CONTROLLER` role
 - Stock controllers now redirect to stock control page on login
 
 **File:** `packages/frontend/src/components/shared/Header.tsx`
+
 - Added navigation links for Dashboard and Stock Control
 - Links visible to STOCK_CONTROLLER, SUPERVISOR, and ADMIN roles
 
 ### 5. User Account Creation
+
 **File:** `packages/backend/create-stock-controller.sql`
+
 - SQL script to create a stock controller user
 
 **File:** `packages/backend/scripts/createStockController.js`
+
 - Node.js script to programmatically create stock controller accounts
 - Usage: `node scripts/createStockController.js [email] [password] [name]`
 
@@ -142,6 +160,7 @@ psql -U your_user -d wms_database
 ### 2. Create a Stock Controller Account
 
 **Option A: Using the Node.js script (Recommended)**
+
 ```bash
 cd packages/backend
 npm run build
@@ -149,6 +168,7 @@ node scripts/createStockController.js stockcontroller@wms.local Stock123! "Stock
 ```
 
 **Option B: Using the SQL script**
+
 ```bash
 # First generate a bcrypt hash for your password
 # Then edit and run:
@@ -174,38 +194,39 @@ npm run dev
 ### 4. Login
 
 Navigate to `http://localhost:5173/login` and login with:
+
 - Email: `stockcontroller@wms.local`
 - Password: `Stock123!`
 
 ## Role Permissions
 
-| Role          | Can Access Stock Control | Permissions                                           |
-|---------------|-------------------------|-------------------------------------------------------|
-| PICKER        | ❌ No                   | Cannot access stock control features                  |
-| PACKER        | ❌ No                   | Cannot access stock control features                  |
-| STOCK_CONTROLLER | ✅ Yes               | Full stock control access                             |
-| SUPERVISOR    | ✅ Yes                  | Full stock control access + dashboard                 |
-| ADMIN         | ✅ Yes                  | Full stock control access + all admin features       |
+| Role             | Can Access Stock Control | Permissions                                    |
+| ---------------- | ------------------------ | ---------------------------------------------- |
+| PICKER           | ❌ No                    | Cannot access stock control features           |
+| PACKER           | ❌ No                    | Cannot access stock control features           |
+| STOCK_CONTROLLER | ✅ Yes                   | Full stock control access                      |
+| SUPERVISOR       | ✅ Yes                   | Full stock control access + dashboard          |
+| ADMIN            | ✅ Yes                   | Full stock control access + all admin features |
 
 ## API Endpoints
 
 All endpoints are prefixed with `/api/stock-control` and require authentication.
 
-| Method | Endpoint                    | Description                          |
-|--------|----------------------------|--------------------------------------|
-| GET    | `/dashboard`               | Get dashboard metrics                |
-| GET    | `/inventory`               | Get inventory list with filters      |
-| GET    | `/inventory/:sku`          | Get SKU inventory detail             |
-| POST   | `/stock-count`             | Create new stock count               |
-| POST   | `/stock-count/:id/submit`  | Submit stock count results           |
-| GET    | `/stock-counts`            | Get list of stock counts             |
-| POST   | `/transfer`                | Transfer stock between bins          |
-| POST   | `/adjust`                  | Adjust inventory quantities          |
-| GET    | `/transactions`            | Get transaction history              |
-| GET    | `/reports/low-stock`       | Get low stock report                 |
-| GET    | `/reports/movements`       | Get stock movement report            |
-| POST   | `/reconcile`               | Reconcile inventory discrepancies    |
-| GET    | `/bins`                    | Get bin locations                    |
+| Method | Endpoint                  | Description                       |
+| ------ | ------------------------- | --------------------------------- |
+| GET    | `/dashboard`              | Get dashboard metrics             |
+| GET    | `/inventory`              | Get inventory list with filters   |
+| GET    | `/inventory/:sku`         | Get SKU inventory detail          |
+| POST   | `/stock-count`            | Create new stock count            |
+| POST   | `/stock-count/:id/submit` | Submit stock count results        |
+| GET    | `/stock-counts`           | Get list of stock counts          |
+| POST   | `/transfer`               | Transfer stock between bins       |
+| POST   | `/adjust`                 | Adjust inventory quantities       |
+| GET    | `/transactions`           | Get transaction history           |
+| GET    | `/reports/low-stock`      | Get low stock report              |
+| GET    | `/reports/movements`      | Get stock movement report         |
+| POST   | `/reconcile`              | Reconcile inventory discrepancies |
+| GET    | `/bins`                   | Get bin locations                 |
 
 ## Future Enhancements
 
@@ -258,6 +279,7 @@ UPDATE users SET role = 'STOCK_CONTROLLER' WHERE email = 'stockcontroller@wms.lo
 ### Permission Denied on Stock Control Page
 
 If you can't access the stock control page:
+
 1. Verify the user's role is set to `STOCK_CONTROLLER`
 2. Ensure you've rebuilt the shared package
 3. Check browser console for authentication errors

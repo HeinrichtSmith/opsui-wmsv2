@@ -48,7 +48,6 @@ async function addIsActiveColumn(): Promise<void> {
     `);
 
     console.log('Column details:', verifyResult.rows[0]);
-
   } catch (error) {
     console.error('Error adding is_active column:', error);
     throw error;
@@ -61,7 +60,7 @@ addIsActiveColumn()
     console.log('Migration completed successfully');
     closePool();
   })
-  .catch((error) => {
+  .catch(error => {
     console.error('Migration failed:', error);
     closePool();
     process.exit(1);

@@ -7,6 +7,7 @@
 ## Intent Recognition Patterns
 
 ### When User Says... | They Mean... | GLM Should...
+
 -------------------|--------------|---------------
 "add feature" | Implement new functionality | Follow feature development pattern from APPROVED_PATTERNS.md
 "fix bug" | Something is broken | Use debugging protocol; check tests; identify root cause
@@ -29,6 +30,7 @@
 ## Critical Rules Summary
 
 ### 🚫 NEVER DO (Immutable Laws)
+
 - Modify files outside owned paths without coordination
 - Use string literals for enums (import from shared)
 - Skip transactions for multi-step operations
@@ -38,6 +40,7 @@
 - Delete from audit trail tables
 
 ### ✅ ALWAYS DO (Mandatory Practices)
+
 - Check file ownership before modifying
 - Import types from `@wms/shared/types`
 - Wrap multi-step operations in transactions
@@ -61,6 +64,7 @@ PENDING ──────→ BACKORDER ──→ PENDING
 ```
 
 ### Valid Transitions Only
+
 - `PENDING → PICKING, CANCELLED, BACKORDER`
 - `PICKING → PICKED, CANCELLED`
 - `PICKED → PACKING`
@@ -75,22 +79,26 @@ PENDING ──────→ BACKORDER ──→ PENDING
 ## Critical Files by Category
 
 ### Rules & Context
+
 - `.clinerules.md` - Supreme ruleset (2,494 lines)
 - `AI_RULES.md` - Agent boundaries
 - `prompts/CONTEXT_HEADER.md` - Project context template
 - `patterns/APPROVED_PATTERNS.md` - Code pattern library
 
 ### Architecture
+
 - `docs/DECISIONS.md` - Architectural decision log
 - `docs/ARCHITECTURE.md` - System architecture
 - `docs/CODE_ORGANIZATION.md` - File structure conventions
 
 ### Database
+
 - `packages/backend/src/db/schema.sql` - Authoritative schema
 - `packages/backend/src/db/client.ts` - Database connection
 - `packages/backend/src/db/migrate.js` - Migration runner
 
 ### Core Services
+
 - `packages/backend/src/services/OrderService.ts` - Order lifecycle
 - `packages/backend/src/services/InventoryService.ts` - Inventory management
 - `packages/backend/src/services/AuthService.ts` - Authentication
@@ -101,6 +109,7 @@ PENDING ──────→ BACKORDER ──→ PENDING
 ## Common Commands
 
 ### Server Management (USE THESE)
+
 ```bash
 npm run dev            # Start all servers (foolproof startup)
 npm run dev:stop       # Stop all servers gracefully
@@ -112,6 +121,7 @@ npm run dev:safe       # Safe mode (use npm run dev instead)
 ```
 
 ### Testing
+
 ```bash
 npm test               # Run all tests
 npm run test:all       # All tests + validation
@@ -120,6 +130,7 @@ npm run test:coverage  # Coverage report
 ```
 
 ### Database
+
 ```bash
 npm run db:status      # Show database state
 npm run db:seed        # Add sample data (safe)
@@ -129,6 +140,7 @@ npm run db:migrate     # Run database migrations
 ```
 
 ### Code Quality
+
 ```bash
 npm run lint:fix       # Fix linting issues
 npm run format         # Format code
@@ -141,6 +153,7 @@ npm run build          # Build all packages
 ## Domain-Specific Knowledge
 
 ### Order Lifecycle
+
 1. **Created** → Inventory reserved
 2. **Claimed** → Picker assigned (max 10 per picker)
 3. **Picking** → Items scanned and picked
@@ -149,12 +162,14 @@ npm run build          # Build all packages
 6. **Shipped** → Order completed
 
 ### Inventory Rules
+
 - **Never negative**: Check before deducting
 - **Reserved ≤ Total**: Enforced invariant
 - **Available = Total - Reserved**: Computed column
 - **All changes audited**: Transaction log
 
 ### User Roles
+
 - **PICKER**: Claims and picks orders
 - **PACKER**: Packs and ships orders
 - **SUPERVISOR**: Views dashboard and metrics
@@ -167,13 +182,13 @@ npm run build          # Build all packages
 ```typescript
 // Import from shared types
 import {
-  ValidationError,    // 400 - Invalid input
-  UnauthorizedError,  // 401 - Not authenticated
-  ForbiddenError,     // 403 - No permission
-  NotFoundError,      // 404 - Resource missing
-  ConflictError,      // 409 - Resource exists / constraint violation
-  InventoryError,     // 409 - Insufficient inventory
-  WMSError           // Base error class
+  ValidationError, // 400 - Invalid input
+  UnauthorizedError, // 401 - Not authenticated
+  ForbiddenError, // 403 - No permission
+  NotFoundError, // 404 - Resource missing
+  ConflictError, // 409 - Resource exists / constraint violation
+  InventoryError, // 409 - Insufficient inventory
+  WMSError, // Base error class
 } from '@wms/shared/types';
 ```
 
@@ -182,6 +197,7 @@ import {
 ## Code Patterns by Task Type
 
 ### Adding an API Endpoint
+
 1. Create validation schema (Joi)
 2. Add route in `packages/backend/src/routes/`
 3. Add service method in `packages/backend/src/services/`
@@ -191,6 +207,7 @@ import {
 7. Extract pattern if reusable
 
 ### Modifying State Machine
+
 1. Check `docs/DECISIONS.md` ADR-009 first
 2. Update workflow types in shared
 3. Add transition validation
@@ -199,6 +216,7 @@ import {
 6. Update documentation
 
 ### Database Schema Change
+
 1. Modify `packages/backend/src/db/schema.sql`
 2. Create migration in `packages/backend/src/db/migrations/`
 3. Update TypeScript types
@@ -211,6 +229,7 @@ import {
 ## Debugging Protocol
 
 ### When Something Breaks
+
 1. **Check tests** - `npm test` to see failures
 2. **Check build** - `npm run build` for TypeScript errors
 3. **Check logs** - Backend logs often show the issue
@@ -218,6 +237,7 @@ import {
 5. **Check recent changes** - What was just modified?
 
 ### Common Issues
+
 - **Port in use** → Use `npm run dev:restart`
 - **Database connection refused** → Check PostgreSQL running
 - **Type errors** → Run `npm run build` for details
@@ -229,12 +249,14 @@ import {
 ## Performance Considerations
 
 ### Before Optimizing
+
 1. **Measure first** - Never optimize without profiling
 2. **Identify bottleneck** - What's ACTUALLY slow?
 3. **Set baseline** - Current performance metrics
 4. **Define target** - What's "fast enough"?
 
 ### Common Optimizations
+
 - **N+1 queries** → Use eager loading (JOIN/include)
 - **Missing indexes** → Add database indexes
 - **No caching** → Add Redis for frequently accessed data
@@ -246,6 +268,7 @@ import {
 ## Security Checklist
 
 Before completing ANY feature:
+
 - [ ] All inputs validated with Joi?
 - [ ] All queries parameterized?
 - [ ] Authentication required?
@@ -259,18 +282,26 @@ Before completing ANY feature:
 ## Testing Targets
 
 ### Coverage Requirements
+
 - **Critical paths**: 100% coverage
 - **Business logic**: 90%+ coverage
 - **Utilities**: 95%+ coverage
 - **UI components**: 80%+ coverage
 
 ### Test Structure
+
 ```typescript
 describe('Service/Component', () => {
   describe('method/feature', () => {
-    it('should work with valid input', () => { /* ... */ });
-    it('should handle edge case', () => { /* ... */ });
-    it('should throw on invalid input', () => { /* ... */ });
+    it('should work with valid input', () => {
+      /* ... */
+    });
+    it('should handle edge case', () => {
+      /* ... */
+    });
+    it('should throw on invalid input', () => {
+      /* ... */
+    });
   });
 });
 ```
@@ -280,6 +311,7 @@ describe('Service/Component', () => {
 ## Git Workflow
 
 ### Before Committing
+
 1. Tests pass: `npm test`
 2. Build succeeds: `npm run build`
 3. Lint clean: `npm run lint:fix`
@@ -287,6 +319,7 @@ describe('Service/Component', () => {
 5. Types check: `npm run type-check`
 
 ### Commit Message Format
+
 ```
 type(scope): description
 
@@ -312,6 +345,7 @@ docs(readme): update setup instructions
 ## Project Index Reference
 
 Full project structure available in `.project-index.json`:
+
 - Domain mappings (orders, inventory, auth, etc.)
 - File locations by function
 - State machine definitions
@@ -341,6 +375,7 @@ npm run perf
 ## Emergency Protocols
 
 ### If You Break Something
+
 1. **STOP** - Don't make more changes
 2. **ASSESS** - What changed?
 3. **REVERT** - Go back to last working state
@@ -349,6 +384,7 @@ npm run perf
 6. **TEST** - Verify before reapplying
 
 ### If You Don't Understand
+
 1. **Read** the relevant files
 2. **Search** for similar patterns
 3. **Check** APPROVED_PATTERNS.md
@@ -360,6 +396,7 @@ npm run perf
 ## Current Session Context
 
 This file is automatically loaded by GLM 4.7 to establish:
+
 1. **Project understanding** - What we're building
 2. **Intent recognition** - What user wants
 3. **Protocol knowledge** - How to work safely

@@ -18,13 +18,16 @@ async function checkCurrentView() {
 
     // Also check for any orders they might be picking
     for (const picker of result.rows) {
-      const ordersResult = await query(`
+      const ordersResult = await query(
+        `
         SELECT order_id, status, progress, updated_at
         FROM orders
         WHERE picker_id = $1 AND status = 'PICKING'
         ORDER BY updated_at DESC
         LIMIT 1
-      `, [picker.user_id]);
+      `,
+        [picker.user_id]
+      );
 
       if (ordersResult.rows.length > 0) {
         console.log(`\nPicker ${picker.name} has PICKING order:`, ordersResult.rows[0]);

@@ -49,12 +49,15 @@ async function createUsers() {
 
     // Check and add roles to enum if needed
     for (const roleData of roles) {
-      const enumCheck = await pool.query(`
+      const enumCheck = await pool.query(
+        `
         SELECT enumlabel
         FROM pg_enum
         WHERE enumtypid = 'user_role'::regtype
         AND enumlabel = $1
-      `, [roleData.role]);
+      `,
+        [roleData.role]
+      );
 
       if (enumCheck.rows.length === 0) {
         console.log(`⚠️  ${roleData.role} role not found in enum. Adding it...`);
@@ -82,10 +85,10 @@ async function createUsers() {
         console.log(`ℹ️  User already exists: ${user.email}`);
 
         if (user.role !== roleData.role) {
-          await pool.query(
-            `UPDATE users SET role = $1 WHERE user_id = $2`,
-            [roleData.role, roleData.userId]
-          );
+          await pool.query(`UPDATE users SET role = $1 WHERE user_id = $2`, [
+            roleData.role,
+            roleData.userId,
+          ]);
           console.log(`✅ Updated user role to ${roleData.role}`);
         } else {
           console.log(`✅ User already has correct role`);
@@ -133,11 +136,12 @@ async function createUsers() {
     console.log('\n' + '='.repeat(70));
     console.log('🔐 LOGIN URL: http://localhost:5173/login');
     console.log('='.repeat(70) + '\n');
-
   } catch (error) {
     console.error('❌ Error:', error.message);
     if (error.routine === 'enum_in' && error.message.includes('unsafe')) {
-      console.error('\n💡 Hint: When adding new enum values, you may need to restart the connection.');
+      console.error(
+        '\n💡 Hint: When adding new enum values, you may need to restart the connection.'
+      );
       console.error('   Try running the script again in a few seconds.');
     }
     process.exit(1);

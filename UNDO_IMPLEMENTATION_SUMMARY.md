@@ -9,9 +9,11 @@
 ## What We Just Added
 
 ### 1. Complete Undo Principles Document
+
 **File**: [UNDO_REVERT_PRINCIPLES.md](UNDO_REVERT_PRINCIPLES.md)
 
 Comprehensive guide covering:
+
 - The Golden Rule: "Every Action Must Be Reversible"
 - 5 universal undo patterns
 - Module-specific patterns (Picking, Packing, Admin)
@@ -22,9 +24,11 @@ Comprehensive guide covering:
 - AI agent undo checklist
 
 ### 2. AI Rules Updated
+
 **File**: [AI_RULES.md](AI_RULES.md)
 
 Added mandatory undo requirements:
+
 - Every action must be reversible
 - Soft delete only (no hard deletes)
 - Record all actions for undo
@@ -34,27 +38,33 @@ Added mandatory undo requirements:
 - Confirmation before permanent actions
 
 ### 3. Approved Patterns Updated
+
 **File**: [patterns/APPROVED_PATTERNS.md](patterns/APPROVED_PATTERNS.md)
 
 Added "Undo/Revert for User Actions" pattern with:
+
 - Wrong vs. Right examples
 - Soft delete implementation
 - History recording
 - UI toast patterns
 
 ### 4. React Components
+
 **File**: [packages/frontend/src/components/shared/UndoToast.tsx](packages/frontend/src/components/shared/UndoToast.tsx)
 
 Ready-to-use components:
+
 - `UndoToast` - Toast notification with undo button
 - `useUndoToasts` - Hook for managing multiple toasts
 - `UndoToastContainer` - Container for all toasts
 - `withUndo` - HOC for adding undo to any action
 
 ### 5. React Hooks
+
 **File**: [packages/frontend/src/hooks/useUndo.ts](packages/frontend/src/hooks/useUndo.ts)
 
 Powerful hooks for undo functionality:
+
 - `useUndo` - Full undo/redo history tracking
 - `useUndoableAction` - Wrap async actions with undo
 - `useKeyboardUndo` - Keyboard shortcuts (Ctrl+Z, Ctrl+Y)
@@ -80,12 +90,9 @@ function PickTaskItem({ task }) {
     await updatePickedQuantity(task.id, task.quantity);
 
     // Show undo toast
-    showUndo(
-      `Picked ${task.quantity}x ${task.sku}`,
-      async () => {
-        await updatePickedQuantity(task.id, previousQuantity);
-      }
-    );
+    showUndo(`Picked ${task.quantity}x ${task.sku}`, async () => {
+      await updatePickedQuantity(task.id, previousQuantity);
+    });
   };
 
   return <button onClick={handlePick}>Pick</button>;
@@ -97,12 +104,10 @@ function PickTaskItem({ task }) {
 ```typescript
 // 1. Use soft deletes
 async function deletePickTask(taskId: string) {
-  await db('pick_tasks')
-    .where({ task_id: taskId })
-    .update({
-      deleted_at: new Date(),
-      deleted_by: currentUser.id
-    });
+  await db('pick_tasks').where({ task_id: taskId }).update({
+    deleted_at: new Date(),
+    deleted_by: currentUser.id,
+  });
 }
 
 // 2. Record history for undo
@@ -114,7 +119,7 @@ async function updateStatus(taskId: string, newStatus: string) {
     old_status: current.status,
     new_status: newStatus,
     changed_by: currentUser.id,
-    changed_at: new Date()
+    changed_at: new Date(),
   });
 
   await db('tasks').where({ task_id: taskId }).update({ status: newStatus });
@@ -126,24 +131,29 @@ async function updateStatus(taskId: string, newStatus: string) {
 ## The Golden Rules
 
 ### 1. Every Action Must Be Reversible
+
 - ✅ Soft delete (mark as deleted)
 - ❌ Hard delete (remove from database)
 
 ### 2. Show Undo Option Immediately
+
 - ✅ Toast with "Undo" button
 - ✅ Visible for 5 seconds
 - ❌ Hidden or hard to find
 
 ### 3. Allow Corrections Until Locked
+
 - ✅ Editable until SHIPPED status
 - ❌ Read-only after initial input
 
 ### 4. Support Keyboard Shortcuts
+
 - ✅ Ctrl+Z for undo
 - ✅ Ctrl+Y or Ctrl+Shift+Z for redo
 - ❌ No keyboard support
 
 ### 5. Confirm Before Permanent Actions
+
 - ✅ "Are you sure?" dialog
 - ❌ Instant destruction
 
@@ -154,6 +164,7 @@ async function updateStatus(taskId: string, newStatus: string) {
 ### Picking Module
 
 **Problem**: User accidentally skips an item
+
 ```tsx
 // ❌ WRONG - Permanent skip
 async function skipTask(taskId: string) {
@@ -168,6 +179,7 @@ async function skipTask(taskId: string) {
 ```
 
 **Problem**: User enters wrong quantity
+
 ```tsx
 // ✅ CORRECT - Can adjust
 function QuantityInput({ item }) {
@@ -176,12 +188,9 @@ function QuantityInput({ item }) {
   const handleUpdate = async (newQuantity: number) => {
     await updatePickedQuantity(item.id, newQuantity);
 
-    showUndo(
-      `Quantity updated to ${newQuantity}`,
-      async () => {
-        await updatePickedQuantity(item.id, quantity);
-      }
-    );
+    showUndo(`Quantity updated to ${newQuantity}`, async () => {
+      await updatePickedQuantity(item.id, quantity);
+    });
   };
 
   return <input value={quantity} onChange={handleUpdate} />;
@@ -191,6 +200,7 @@ function QuantityInput({ item }) {
 ### Packing Module
 
 **Problem**: User adds wrong item to shipment
+
 ```tsx
 // ✅ CORRECT - Can remove
 function ShipmentItems({ items }) {
@@ -219,6 +229,7 @@ function ShipmentItems({ items }) {
 ### Admin Module
 
 **Problem**: User applies wrong settings
+
 ```tsx
 // ✅ CORRECT - Can restore
 function SettingsPanel({ settings }) {
@@ -274,18 +285,21 @@ CREATE TABLE task_history (
 Before marking any feature as complete, verify:
 
 ### Undo Functionality
+
 - [ ] Can user undo the action?
 - [ ] Does undo restore previous state correctly?
 - [ ] Can user redo after undo?
 - [ ] Does keyboard shortcut work (Ctrl+Z)?
 
 ### Edge Cases
+
 - [ ] What if user undoes multiple times?
 - [ ] What if user navigates away and back?
 - [ ] What if multiple users are acting?
 - [ ] What if undo fails (network error)?
 
 ### UI/UX
+
 - [ ] Is undo button visible?
 - [ ] Is undo message clear?
 - [ ] Does toast auto-dismiss gracefully?
@@ -297,24 +311,24 @@ Before marking any feature as complete, verify:
 
 Track these metrics to ensure undo is working:
 
-| Metric | Target | How to Measure |
-|--------|--------|----------------|
-| Undo usage rate | High usage of actions | Track undo clicks |
-| Undo success rate | Very high success rate | Monitor errors |
-| Time to undo | Fast response time | Performance metrics |
-| User satisfaction | High satisfaction | User feedback |
+| Metric            | Target                 | How to Measure      |
+| ----------------- | ---------------------- | ------------------- |
+| Undo usage rate   | High usage of actions  | Track undo clicks   |
+| Undo success rate | Very high success rate | Monitor errors      |
+| Time to undo      | Fast response time     | Performance metrics |
+| User satisfaction | High satisfaction      | User feedback       |
 
 ---
 
 ## Key Files Reference
 
-| File | Purpose |
-|------|---------|
-| [UNDO_REVERT_PRINCIPLES.md](UNDO_REVERT_PRINCIPLES.md) | Complete guide |
-| [AI_RULES.md](AI_RULES.md) | AI undo requirements |
-| [patterns/APPROVED_PATTERNS.md](patterns/APPROVED_PATTERNS.md) | Undo pattern |
-| [UndoToast.tsx](packages/frontend/src/components/shared/UndoToast.tsx) | Toast component |
-| [useUndo.ts](packages/frontend/src/hooks/useUndo.ts) | Undo hooks |
+| File                                                                   | Purpose              |
+| ---------------------------------------------------------------------- | -------------------- |
+| [UNDO_REVERT_PRINCIPLES.md](UNDO_REVERT_PRINCIPLES.md)                 | Complete guide       |
+| [AI_RULES.md](AI_RULES.md)                                             | AI undo requirements |
+| [patterns/APPROVED_PATTERNS.md](patterns/APPROVED_PATTERNS.md)         | Undo pattern         |
+| [UndoToast.tsx](packages/frontend/src/components/shared/UndoToast.tsx) | Toast component      |
+| [useUndo.ts](packages/frontend/src/hooks/useUndo.ts)                   | Undo hooks           |
 
 ---
 
@@ -344,6 +358,7 @@ When implementing features, AI MUST ensure:
 **Status**: ✅ System fully implemented and ready to use!
 
 **Next Steps**:
+
 1. Review [UNDO_REVERT_PRINCIPLES.md](UNDO_REVERT_PRINCIPLES.md)
 2. Implement undo in all user actions
 3. Test thoroughly

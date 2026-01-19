@@ -37,19 +37,17 @@ const CUSTOMER_NAMES = [
   'Pacific Supplies',
   'Atlantic Electronics',
   'Central Wholesale Ltd',
-  'Direct Products Co'
+  'Direct Products Co',
 ];
 
 const PRIORITIES = ['URGENT', 'HIGH', 'NORMAL', 'LOW', 'LOW', 'NORMAL', 'NORMAL']; // Weighted for more NORMAL orders
 
-const SKUS = [
-  'WMS-001', 'WMS-002', 'WMS-003'
-];
+const SKUS = ['WMS-001', 'WMS-002', 'WMS-003'];
 
 const SKU_NAMES = {
   'WMS-001': 'Widget A',
   'WMS-002': 'Widget B',
-  'WMS-003': 'Widget C'
+  'WMS-003': 'Widget C',
 };
 
 function generateOrderId() {
@@ -131,7 +129,9 @@ async function seedOrders() {
         }
 
         createdCount++;
-        console.log(`✓ Created order ${orderId}: ${customerName} (${numItems} items, ${priority} priority)`);
+        console.log(
+          `✓ Created order ${orderId}: ${customerName} (${numItems} items, ${priority} priority)`
+        );
       }
     }
 
@@ -142,7 +142,6 @@ async function seedOrders() {
       `SELECT COUNT(*) as count, status FROM orders WHERE status = 'PENDING' GROUP BY status`
     );
     console.log(`\nTotal PENDING orders: ${countResult.rows[0]?.count || 0}`);
-
   } catch (error) {
     console.error('Error:', error);
   } finally {

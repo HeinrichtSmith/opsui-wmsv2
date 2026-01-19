@@ -8,7 +8,8 @@ async function debugAggregate(): Promise<void> {
   try {
     console.log('🔍 Debugging aggregate query...\n');
 
-    const result = await query(`
+    const result = await query(
+      `
       SELECT
         o.order_id,
         o.status,
@@ -18,12 +19,13 @@ async function debugAggregate(): Promise<void> {
       WHERE o.picker_id = $1
       GROUP BY o.order_id, o.status
       LIMIT 1
-    `, ['USR-PICK01']);
+    `,
+      ['USR-PICK01']
+    );
 
     console.log('Raw result:', result.rows[0]);
     console.log('\nKeys:', Object.keys(result.rows[0]));
     console.log('\nValues:', Object.values(result.rows[0]));
-
   } catch (error) {
     console.error('❌ Error:', error);
   } finally {

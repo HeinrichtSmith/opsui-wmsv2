@@ -1,15 +1,12 @@
-  /**
+/**
  * Metrics service
  *
  * Provides dashboard metrics and real-time statistics
- * 
+ *
  * FIXED: Now properly fetches current_view from database
  */
 
-import {
-  DashboardMetricsResponse,
-  OrderStatus,
-} from '@opsui/shared';
+import { DashboardMetricsResponse, OrderStatus } from '@opsui/shared';
 import { query } from '../db/client';
 import { logger } from '../config/logger';
 
@@ -36,7 +33,7 @@ export class MetricsService {
        WHERE u.active = true
          AND u.role IN ('PICKER', 'PACKER')
          AND u.is_active = true
-         AND u.current_view IS NOT NULL`,
+         AND u.current_view IS NOT NULL`
     );
 
     const activeStaff = parseInt(activeStaffResult.rows[0].count, 10);
@@ -121,7 +118,11 @@ export class MetricsService {
   // GET PICKER PERFORMANCE
   // --------------------------------------------------------------------------
 
-  async getPickerPerformance(pickerId: string, startDate: Date, endDate: Date): Promise<{
+  async getPickerPerformance(
+    pickerId: string,
+    startDate: Date,
+    endDate: Date
+  ): Promise<{
     tasksCompleted: number;
     tasksTotal: number;
     averageTimePerTask: number;
@@ -158,7 +159,10 @@ export class MetricsService {
   // GET ALL PICKERS PERFORMANCE
   // --------------------------------------------------------------------------
 
-  async getAllPickersPerformance(startDate: Date, endDate: Date): Promise<
+  async getAllPickersPerformance(
+    startDate: Date,
+    endDate: Date
+  ): Promise<
     Array<{
       pickerId: string;
       pickerName: string;
@@ -185,7 +189,7 @@ export class MetricsService {
       [startDate, endDate]
     );
 
-    return result.rows.map((row) => ({
+    return result.rows.map(row => ({
       pickerId: row.picker_id,
       pickerName: row.picker_name,
       tasksCompleted: parseInt(row.tasks_completed, 10),
@@ -233,49 +237,62 @@ export class MetricsService {
       return [];
     }
 
-      // Step 2: Build picker activity data - one entry per picker
-      // Use camelCase property names from query
-      const pickerIds = activePickers.rows.map(r => r.userId);
-    const activityPromises = pickerIds.map(async (pickerId) => {
+    // Step 2: Build picker activity data - one entry per picker
+    // Use camelCase property names from query
+    const pickerIds = activePickers.rows.map(r => r.userId);
+    const activityPromises = pickerIds.map(async pickerId => {
       // Get most recent PICKING order for this picker
-      const activeOrder = await query(`
+      const activeOrder = await query(
+        `
         SELECT order_id, status, progress, updated_at
         FROM orders
         WHERE picker_id = $1 AND status = 'PICKING'
         ORDER BY updated_at DESC
         LIMIT 1
-      `, [pickerId]);
+      `,
+        [pickerId]
+      );
 
       // Get most recent ANY order for this picker (regardless of status)
-      const recentOrder = await query(`
+      const recentOrder = await query(
+        `
         SELECT order_id, status, progress, updated_at
         FROM orders
         WHERE picker_id = $1
         ORDER BY updated_at DESC
         LIMIT 1
-      `, [pickerId]);
+      `,
+        [pickerId]
+      );
 
       // Get all recent orders (last 5) for this picker to handle order switching
-      const allRecentOrders = await query(`
+      const allRecentOrders = await query(
+        `
         SELECT order_id, status, progress, updated_at
         FROM orders
         WHERE picker_id = $1
         ORDER BY updated_at DESC
         LIMIT 5
-      `, [pickerId]);
+      `,
+        [pickerId]
+      );
 
       // Get most recent task for this picker
-      const recentTask = await query(`
+      const recentTask = await query(
+        `
         SELECT pick_task_id, started_at, completed_at
         FROM pick_tasks
         WHERE picker_id = $1
         ORDER BY COALESCE(completed_at, started_at) DESC
         LIMIT 1
-      `, [pickerId]);
+      `,
+        [pickerId]
+      );
 
       // Get user data including current_view, is_active, and last login
       // Use double-quoted AS aliases to preserve camelCase naming
-      const userResult = await query(`
+      const userResult = await query(
+        `
         SELECT
           last_login_at AS "lastLoginAt",
           current_view AS "currentView",
@@ -283,7 +300,9 @@ export class MetricsService {
           is_active AS "isActive"
         FROM users
         WHERE user_id = $1
-      `, [pickerId]);
+      `,
+        [pickerId]
+      );
 
       return {
         pickerId,
@@ -298,11 +317,11 @@ export class MetricsService {
     const activityData = await Promise.all(activityPromises);
 
     // Step 3: Map to response format
-    const result = activityData.map((data) => {
+    const result = activityData.map(data => {
       logger.info('Mapping picker:', {
         dataPickerId: data.pickerId,
         activePickersRows: activePickers.rows,
-        foundPicker: activePickers.rows.find(p => p.user_id === data.pickerId)
+        foundPicker: activePickers.rows.find(p => p.user_id === data.pickerId),
       });
 
       let status: 'ACTIVE' | 'IDLE' | 'PICKING' = 'IDLE';
@@ -326,11 +345,11 @@ export class MetricsService {
       }
 
       // Determine if picker is on a picking page
-      const isOnPickingPage = currentView && (
-        currentView.includes('Picking Order') ||
-        currentView.includes('/pick/') ||
-        (currentView.includes('/orders/') && currentView.includes('ORD-'))
-      );
+      const isOnPickingPage =
+        currentView &&
+        (currentView.includes('Picking Order') ||
+          currentView.includes('/pick/') ||
+          (currentView.includes('/orders/') && currentView.includes('ORD-')));
 
       // Status determination logic
       // A picker is ACTIVE/PICKING only if:
@@ -388,7 +407,7 @@ export class MetricsService {
 
     logger.info('Picker activity result:', {
       count: result.length,
-      pickers: result
+      pickers: result,
     });
 
     return result;
@@ -398,9 +417,7 @@ export class MetricsService {
   // GET ORDER STATUS BREAKDOWN
   // --------------------------------------------------------------------------
 
-  async getOrderStatusBreakdown(): Promise<
-    Array<{ status: string; count: number }>
-  > {
+  async getOrderStatusBreakdown(): Promise<Array<{ status: string; count: number }>> {
     const result = await query(`
       SELECT status, COUNT(*) as count
       FROM orders
@@ -417,7 +434,7 @@ export class MetricsService {
         END
     `);
 
-    return result.rows.map((row) => ({
+    return result.rows.map(row => ({
       status: row.status,
       count: parseInt(row.count, 10),
     }));
@@ -427,9 +444,7 @@ export class MetricsService {
   // GET HOURLY THROUGHPUT
   // --------------------------------------------------------------------------
 
-  async getHourlyThroughput(): Promise<
-    Array<{ hour: string; picked: number; shipped: number }>
-  > {
+  async getHourlyThroughput(): Promise<Array<{ hour: string; picked: number; shipped: number }>> {
     const result = await query(`
       SELECT
         TO_CHAR(updated_at, 'YYYY-MM-DD HH24:00') as hour,
@@ -441,7 +456,7 @@ export class MetricsService {
       ORDER BY hour DESC
     `);
 
-    return result.rows.map((row) => ({
+    return result.rows.map(row => ({
       hour: row.hour,
       picked: parseInt(row.picked || 0, 10),
       shipped: parseInt(row.shipped || 0, 10),
@@ -452,10 +467,11 @@ export class MetricsService {
   // GET TOP SKUS BY PICK FREQUENCY
   // --------------------------------------------------------------------------
 
-  async getTopSKUsByPickFrequency(limit: number = 10): Promise<
-    Array<{ sku: string; name: string; picks: number }>
-  > {
-    const result = await query(`
+  async getTopSKUsByPickFrequency(
+    limit: number = 10
+  ): Promise<Array<{ sku: string; name: string; picks: number }>> {
+    const result = await query(
+      `
       SELECT
         pt.sku,
         s.name,
@@ -466,9 +482,11 @@ export class MetricsService {
       GROUP BY pt.sku, s.name
       ORDER BY picks DESC
       LIMIT $1
-    `, [limit]);
+    `,
+      [limit]
+    );
 
-    return result.rows.map((row) => ({
+    return result.rows.map(row => ({
       sku: row.sku,
       name: row.name,
       picks: parseInt(row.picks, 10),
@@ -498,7 +516,8 @@ export class MetricsService {
     }>
   > {
     // Get orders for this picker
-    const ordersResult = await query(`
+    const ordersResult = await query(
+      `
       SELECT
         o.order_id,
         o.status,
@@ -519,9 +538,11 @@ export class MetricsService {
           ELSE 4
         END,
         o.updated_at DESC
-    `, [pickerId]);
+    `,
+      [pickerId]
+    );
 
-    const orders = ordersResult.rows.map((row) => ({
+    const orders = ordersResult.rows.map(row => ({
       orderId: row.orderId,
       status: row.status,
       progress: parseInt(row.progress || 0, 10),
@@ -534,8 +555,9 @@ export class MetricsService {
     // Get order items for each order
     if (orders.length > 0) {
       const orderIds = orders.map(o => o.orderId);
-      
-      const itemsResult = await query(`
+
+      const itemsResult = await query(
+        `
         SELECT
           oi.order_id,
           oi.sku,
@@ -547,7 +569,9 @@ export class MetricsService {
         FROM order_items oi
         WHERE oi.order_id = ANY($1)
         ORDER BY oi.order_id, oi.order_item_id
-      `, [orderIds]);
+      `,
+        [orderIds]
+      );
 
       // Group items by order and calculate status dynamically
       const itemsByOrder: Record<string, any[]> = {};
@@ -555,10 +579,10 @@ export class MetricsService {
         if (!itemsByOrder[item.orderId]) {
           itemsByOrder[item.orderId] = [];
         }
-        
+
         const quantity = parseInt(item.quantity, 10);
         const pickedQuantity = parseInt(item.pickedQuantity || 0, 10);
-        
+
         // Calculate item status dynamically based on picked quantity
         let calculatedStatus = 'PENDING';
         if (pickedQuantity >= quantity) {
@@ -566,7 +590,7 @@ export class MetricsService {
         } else if (pickedQuantity > 0) {
           calculatedStatus = 'PARTIAL_PICKED';
         }
-        
+
         itemsByOrder[item.orderId].push({
           sku: item.sku,
           name: item.name,
@@ -621,36 +645,46 @@ export class MetricsService {
 
     // Step 2: Build packer activity data - one entry per packer
     const packerIds = activePackers.rows.map(r => r.userId);
-    const activityPromises = packerIds.map(async (packerId) => {
+    const activityPromises = packerIds.map(async packerId => {
       // Get most recent PACKING order for this packer
-      const activeOrder = await query(`
+      const activeOrder = await query(
+        `
         SELECT order_id, status, progress, updated_at
         FROM orders
         WHERE packer_id = $1 AND status = 'PACKING'
         ORDER BY updated_at DESC
         LIMIT 1
-      `, [packerId]);
+      `,
+        [packerId]
+      );
 
       // Get most recent ANY order for this packer (regardless of status)
-      const recentOrder = await query(`
+      const recentOrder = await query(
+        `
         SELECT order_id, status, progress, updated_at
         FROM orders
         WHERE packer_id = $1
         ORDER BY updated_at DESC
         LIMIT 1
-      `, [packerId]);
+      `,
+        [packerId]
+      );
 
       // Get all recent orders (last 5) for this packer to handle order switching
-      const allRecentOrders = await query(`
+      const allRecentOrders = await query(
+        `
         SELECT order_id, status, progress, updated_at
         FROM orders
         WHERE packer_id = $1
         ORDER BY updated_at DESC
         LIMIT 5
-      `, [packerId]);
+      `,
+        [packerId]
+      );
 
       // Get user data including current_view and last login
-      const userResult = await query(`
+      const userResult = await query(
+        `
         SELECT
           last_login_at AS "lastLoginAt",
           current_view AS "currentView",
@@ -658,7 +692,9 @@ export class MetricsService {
           is_active AS "isActive"
         FROM users
         WHERE user_id = $1
-      `, [packerId]);
+      `,
+        [packerId]
+      );
 
       return {
         packerId,
@@ -672,7 +708,7 @@ export class MetricsService {
     const activityData = await Promise.all(activityPromises);
 
     // Step 3: Map to response format
-    const result = activityData.map((data) => {
+    const result = activityData.map(data => {
       let status: 'ACTIVE' | 'IDLE' | 'PACKING' = 'IDLE';
       let currentOrderId: string | null = null;
       let orderProgress: number = 0;
@@ -693,11 +729,11 @@ export class MetricsService {
       }
 
       // Determine if packer is on a packing page
-      const isOnPackingPage = currentView && (
-        currentView.includes('Packing Order') ||
-        currentView.includes('/pack/') ||
-        (currentView.includes('/orders/') && currentView.includes('ORD-'))
-      );
+      const isOnPackingPage =
+        currentView &&
+        (currentView.includes('Packing Order') ||
+          currentView.includes('/pack/') ||
+          (currentView.includes('/orders/') && currentView.includes('ORD-')));
 
       // Status determination logic
       // A packer is ACTIVE/PACKING only if:
@@ -750,7 +786,7 @@ export class MetricsService {
 
     logger.info('Packer activity result:', {
       count: result.length,
-      packers: result
+      packers: result,
     });
 
     return result;
@@ -773,7 +809,8 @@ export class MetricsService {
     // Query: Get orders for a packer - includes:
     // 1. Orders assigned to THIS packer (any status - show their actual status)
     // 2. Orders in queue NOT yet assigned to any packer (status = PICKED AND packer_id IS NULL)
-    const result = await query(`
+    const result = await query(
+      `
       SELECT
         o.order_id,
         o.status,
@@ -794,9 +831,11 @@ export class MetricsService {
           ELSE 4
         END,
         o.updated_at DESC
-    `, [packerId]);
+    `,
+      [packerId]
+    );
 
-    const orders = result.rows.map((row) => ({
+    const orders = result.rows.map(row => ({
       orderId: row.orderId,
       status: row.status,
       progress: parseInt(row.progress || 0, 10),
@@ -808,7 +847,7 @@ export class MetricsService {
     logger.info('Packer orders returned:', {
       packerId,
       count: orders.length,
-      orders: orders.map(o => ({ orderId: o.orderId, status: o.status }))
+      orders: orders.map(o => ({ orderId: o.orderId, status: o.status })),
     });
 
     return orders;
@@ -846,9 +885,10 @@ export class MetricsService {
 
     // Step 2: Build stock controller activity data - one entry per controller
     const controllerIds = activeControllers.rows.map(r => r.userId);
-    const activityPromises = controllerIds.map(async (controllerId) => {
+    const activityPromises = controllerIds.map(async controllerId => {
       // Get user data including current_view and last login
-      const userResult = await query(`
+      const userResult = await query(
+        `
         SELECT
           last_login_at AS "lastLoginAt",
           current_view AS "currentView",
@@ -856,7 +896,9 @@ export class MetricsService {
           is_active AS "isActive"
         FROM users
         WHERE user_id = $1
-      `, [controllerId]);
+      `,
+        [controllerId]
+      );
 
       return {
         controllerId,
@@ -867,7 +909,7 @@ export class MetricsService {
     const activityData = await Promise.all(activityPromises);
 
     // Step 3: Map to response format
-    const result = activityData.map((data) => {
+    const result = activityData.map(data => {
       let status: 'ACTIVE' | 'IDLE' = 'IDLE';
       let lastViewedAt: Date | null = null;
 
@@ -907,7 +949,7 @@ export class MetricsService {
 
     logger.info('Stock controller activity result:', {
       count: result.length,
-      controllers: result
+      controllers: result,
     });
 
     return result;
@@ -917,7 +959,10 @@ export class MetricsService {
   // GET STOCK CONTROLLER TRANSACTIONS
   // --------------------------------------------------------------------------
 
-  async getStockControllerTransactions(controllerId: string, limit: number = 50): Promise<
+  async getStockControllerTransactions(
+    controllerId: string,
+    limit: number = 50
+  ): Promise<
     Array<{
       transactionId: string;
       sku: string;
@@ -928,7 +973,8 @@ export class MetricsService {
       createdAt: Date;
     }>
   > {
-    const result = await query(`
+    const result = await query(
+      `
       SELECT
         t.transaction_id AS "transactionId",
         t.sku,
@@ -941,9 +987,11 @@ export class MetricsService {
       WHERE t.user_id = $1
       ORDER BY t.created_at DESC
       LIMIT $2
-    `, [controllerId, limit]);
+    `,
+      [controllerId, limit]
+    );
 
-    return result.rows.map((row) => ({
+    return result.rows.map(row => ({
       transactionId: row.transactionId,
       sku: row.sku,
       binLocation: row.binLocation,

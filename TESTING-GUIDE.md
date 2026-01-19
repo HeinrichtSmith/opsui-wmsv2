@@ -30,6 +30,7 @@ This project now has a **comprehensive testing ecosystem** that validates both f
 ## What's New
 
 ### ✅ Frontend Testing (Vitest + React Testing Library)
+
 - **Component Tests**: Test React components, hooks, stores
 - **Integration Tests**: Test API communication with backend
 - **Coverage**: 80% threshold for lines, functions, branches, statements
@@ -37,6 +38,7 @@ This project now has a **comprehensive testing ecosystem** that validates both f
 - **UI Mode**: Visual test runner
 
 ### ✅ Integration Tests
+
 - **API Communication**: Validates frontend can reach backend
 - **Authentication Flow**: Tests login, token handling, protected routes
 - **Data Fetching**: Validates order retrieval, updates, etc.
@@ -44,6 +46,7 @@ This project now has a **comprehensive testing ecosystem** that validates both f
 - **Response Times**: Ensures API responds within SLA
 
 ### ✅ Connection Validation
+
 - **Backend Health**: Checks backend API is running
 - **Frontend Health**: Checks frontend dev server is running
 - **Database Connectivity**: Validates database connection
@@ -51,6 +54,7 @@ This project now has a **comprehensive testing ecosystem** that validates both f
 - **API Communication**: Tests actual API calls
 
 ### ✅ Pre-Completion Checklist
+
 - **TypeScript Checks**: Backend + frontend type validation
 - **Unit Tests**: Backend + frontend test suites
 - **Integration Tests**: API communication validation
@@ -67,6 +71,7 @@ npm run test:validate
 ```
 
 This runs the complete pre-completion checklist:
+
 - ✅ Backend type check
 - ✅ Frontend type check
 - ✅ Backend unit tests
@@ -76,7 +81,7 @@ This runs the complete pre-completion checklist:
 - ✅ Backend build
 - ✅ Frontend build
 - ✅ Linting
-- ⚠️  Format check (optional)
+- ⚠️ Format check (optional)
 
 ### Run Frontend Tests Only
 
@@ -200,11 +205,13 @@ describe('API Integration', () => {
 ### Before Marking a Task Complete
 
 **ALWAYS run:**
+
 ```bash
 npm run test:validate
 ```
 
 This ensures:
+
 - ✅ No TypeScript errors
 - ✅ All tests pass
 - ✅ Frontend and backend are connected
@@ -215,6 +222,7 @@ This ensures:
 ### During Development
 
 **Watch mode for instant feedback:**
+
 ```bash
 # Terminal 1: Watch backend tests
 npm run test:watch:backend
@@ -247,6 +255,7 @@ npm run test:coverage --workspaces
 - **Frontend**: 80% for lines, functions, branches, statements
 
 Coverage reports are generated in:
+
 - `packages/frontend/coverage/`
 - `packages/backend/coverage/`
 
@@ -257,6 +266,7 @@ Coverage reports are generated in:
 **Symptoms:** Component tests throw errors
 
 **Solutions:**
+
 1. Check that test utilities are properly configured
 2. Verify all providers are wrapped (Router, QueryClient, etc.)
 3. Check for missing mocks (IntersectionObserver, WebSocket, etc.)
@@ -267,6 +277,7 @@ Coverage reports are generated in:
 **Symptoms:** API tests fail with connection errors
 
 **Solutions:**
+
 1. Ensure backend is running on port 3001
 2. Check that database is connected
 3. Verify test user exists (john.picker@wms.local)
@@ -277,6 +288,7 @@ Coverage reports are generated in:
 **Symptoms:** `npm run test:connection` fails
 
 **Solutions:**
+
 1. Start backend: `npm run dev:backend`
 2. Start frontend: `npm run dev:frontend`
 3. Check ports: 3001 (backend), 5173 (frontend)
@@ -287,6 +299,7 @@ Coverage reports are generated in:
 **Symptoms:** TypeScript errors during validation
 
 **Solutions:**
+
 1. Run `npm run typecheck` to see all errors
 2. Fix type errors in source files
 3. Ensure all imports are properly typed
@@ -315,6 +328,7 @@ npm run test:validate
 ### Testing Checklist
 
 For every feature, ensure:
+
 - [ ] Unit tests for business logic
 - [ ] Component tests for UI
 - [ ] Integration tests for API calls

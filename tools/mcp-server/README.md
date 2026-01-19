@@ -5,6 +5,7 @@
 ## 🚀 Features
 
 ### v2.0 Improvements
+
 - **TypeScript**: Full type safety throughout the codebase
 - **Input Validation**: Zod schemas for all tool inputs
 - **Performance Monitoring**: Built-in metrics collection and caching
@@ -16,22 +17,26 @@
 ### Tool Categories
 
 #### Code Analysis Tools
+
 - `analyze_typescript_errors` - Find type errors using TSC
 - `find_unused_exports` - Find dead code with ts-prune
 - `check_code_complexity` - Analyze cyclomatic complexity
 - `find_duplicate_code` - Detect duplicate code patterns
 
 #### Code Generation Tools
+
 - `generate_entity` - Generate TypeORM entities
 - `generate_service` - Generate NestJS services
 - `generate_controller` - Generate REST controllers
 
 #### Project Management Tools
+
 - `analyze_project_structure` - Analyze tech stack and architecture
 - `validate_project_structure` - Validate conventions
 - `find_related_files` - Find imports and dependencies
 
 #### WMS Domain Tools
+
 - `wms_generate_pick_list` - Generate optimized pick lists
 - `wms_validate_inventory` - Check inventory levels
 - `wms_optimize_bin_locations` - Suggest optimal bin placement
@@ -106,18 +111,21 @@ npm run test:coverage
 ## 🐛 Bug Fixes from v1.0
 
 ### Critical
+
 - ✅ Fixed SQL injection vulnerabilities (command sanitization)
 - ✅ Fixed race conditions in inventory operations
 - ✅ Fixed memory leaks (unbounded arrays, resource cleanup)
 - ✅ Fixed missing input validation
 
 ### High Priority
+
 - ✅ Updated to latest MCP SDK (v0.5.0 → v1.0.4)
 - ✅ Converted to TypeScript for type safety
 - ✅ Added comprehensive error handling
 - ✅ Fixed N+1 query patterns
 
 ### Medium Priority
+
 - ✅ Added response caching
 - ✅ Added performance monitoring
 - ✅ Improved code organization (modular structure)

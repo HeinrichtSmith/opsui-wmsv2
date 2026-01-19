@@ -86,8 +86,10 @@ interface TelemetryInsights {
 // STORAGE
 // ============================================================================
 
-const getTelemetryDir = (workspaceRoot: string) => path.join(workspaceRoot, '.wms-cache', 'telemetry');
-const getLogsPath = (workspaceRoot: string) => path.join(getTelemetryDir(workspaceRoot), 'logs.jsonl');
+const getTelemetryDir = (workspaceRoot: string) =>
+  path.join(workspaceRoot, '.wms-cache', 'telemetry');
+const getLogsPath = (workspaceRoot: string) =>
+  path.join(getTelemetryDir(workspaceRoot), 'logs.jsonl');
 const getSessionPath = (workspaceRoot: string, session: string) =>
   path.join(getTelemetryDir(workspaceRoot), `session-${session}.json`);
 
@@ -139,9 +141,7 @@ async function loadInteractions(workspaceRoot: string): Promise<InteractionLog[]
     const content = await fs.readFile(logsPath, 'utf-8');
     const lines = content.trim().split('\n');
 
-    return lines
-      .filter(line => line.trim())
-      .map(line => JSON.parse(line) as InteractionLog);
+    return lines.filter(line => line.trim()).map(line => JSON.parse(line) as InteractionLog);
   } catch {
     return [];
   }
@@ -297,7 +297,7 @@ async function generateInsights(workspaceRoot: string): Promise<TelemetryInsight
 
   insights.bestTaskTimes = Array.from(hourStats.entries())
     .filter(([_, stats]) => stats.total >= 5 && stats.success / stats.total >= 0.8)
-    .sort((a, b) => (b[1].success / b[1].total) - (a[1].success / a[1].total))
+    .sort((a, b) => b[1].success / b[1].total - a[1].success / a[1].total)
     .slice(0, 3)
     .map(([hour]) => `${hour}:00`); // Placeholder for session analysis
 
@@ -351,7 +351,16 @@ export const telemetryTools: ToolMetadata[] = [
         taskType: {
           type: 'string',
           description: 'Type of task',
-          enum: ['bugfix', 'feature', 'refactor', 'documentation', 'testing', 'debugging', 'optimization', 'other'],
+          enum: [
+            'bugfix',
+            'feature',
+            'refactor',
+            'documentation',
+            'testing',
+            'debugging',
+            'optimization',
+            'other',
+          ],
         },
         taskCategory: {
           type: 'string',
@@ -497,9 +506,10 @@ export const telemetryTools: ToolMetadata[] = [
           successRate: Math.round(stats.successRate * 100) + '%',
           avgRevisions: Math.round(stats.avgRevisions * 10) / 10,
         },
-        message: insights.recommendations.length > 0
-          ? `Found ${insights.recommendations.length} recommendation(s)`
-          : 'No recommendations yet - more data needed',
+        message:
+          insights.recommendations.length > 0
+            ? `Found ${insights.recommendations.length} recommendation(s)`
+            : 'No recommendations yet - more data needed',
       };
     },
     options: {
@@ -568,7 +578,16 @@ export const telemetryTools: ToolMetadata[] = [
         taskType: {
           type: 'string',
           description: 'Task type to analyze',
-          enum: ['bugfix', 'feature', 'refactor', 'documentation', 'testing', 'debugging', 'optimization', 'other'],
+          enum: [
+            'bugfix',
+            'feature',
+            'refactor',
+            'documentation',
+            'testing',
+            'debugging',
+            'optimization',
+            'other',
+          ],
         },
       },
       required: ['taskType'],
@@ -652,9 +671,9 @@ export const telemetryTools: ToolMetadata[] = [
         if (logs.length > 0) {
           const headers = Object.keys(logs[0]).join(',');
           const rows = logs.map(log =>
-            Object.values(log).map(v =>
-              typeof v === 'object' ? JSON.stringify(v) : v
-            ).join(',')
+            Object.values(log)
+              .map(v => (typeof v === 'object' ? JSON.stringify(v) : v))
+              .join(',')
           );
           const csv = [headers, ...rows].join('\n');
           await fs.writeFile(exportPath, csv, 'utf-8');

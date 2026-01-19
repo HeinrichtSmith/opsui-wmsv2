@@ -24,7 +24,7 @@ export function validateBody(schema: Joi.ObjectSchema) {
     });
 
     if (error) {
-      const details = error.details.map((detail) => ({
+      const details = error.details.map(detail => ({
         field: detail.path.join('.'),
         message: detail.message,
       }));
@@ -51,7 +51,7 @@ export function validateQuery(schema: Joi.ObjectSchema) {
     });
 
     if (error) {
-      const details = error.details.map((detail) => ({
+      const details = error.details.map(detail => ({
         field: detail.path.join('.'),
         message: detail.message,
       }));
@@ -77,7 +77,7 @@ export function validateParams(schema: Joi.ObjectSchema) {
     });
 
     if (error) {
-      const details = error.details.map((detail) => ({
+      const details = error.details.map(detail => ({
         field: detail.path.join('.'),
         message: detail.message,
       }));
@@ -191,19 +191,18 @@ export const schemas = {
     quantity: commonSchemas.quantity,
     binLocation: commonSchemas.binLocation,
     pickTaskId: commonSchemas.id,
-  })
-  .custom((value, helpers) => {
+  }).custom((value, helpers) => {
     // Handle both camelCase and snake_case
     const binLocation = value.binLocation || value.bin_location;
     const pickTaskId = value.pickTaskId || value.pick_task_id;
-    
+
     if (!binLocation) {
       return helpers.error({ message: 'binLocation is required' });
     }
     if (!pickTaskId) {
       return helpers.error({ message: 'pickTaskId is required' });
     }
-    
+
     return value;
   }),
 

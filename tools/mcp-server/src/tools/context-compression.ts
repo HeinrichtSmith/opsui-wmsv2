@@ -54,7 +54,8 @@ const DEFAULT_RULES: CompressionRule[] = [
   {
     id: 'react-imports',
     name: 'React Standard Imports',
-    pattern: /import React(?:[, ]{[^}]*})? from ['"]react['"];?\s*import { useState, useEffect } from ['"]react['"];?/g,
+    pattern:
+      /import React(?:[, ]{[^}]*})? from ['"]react['"];?\s*import { useState, useEffect } from ['"]react['"];?/g,
     category: 'import',
     reference: '@imports:react-standard',
     compressed: '// @imports:react-standard',
@@ -64,7 +65,8 @@ const DEFAULT_RULES: CompressionRule[] = [
   {
     id: 'vitest-setup',
     name: 'Vitest Test Setup',
-    pattern: /import { describe, it, expect, beforeEach, afterEach, vi } from ['"]vitest['"];?\s*import { render, screen, waitFor } from ['"]@testing-library\/react['"];?/g,
+    pattern:
+      /import { describe, it, expect, beforeEach, afterEach, vi } from ['"]vitest['"];?\s*import { render, screen, waitFor } from ['"]@testing-library\/react['"];?/g,
     category: 'test-setup',
     reference: '@test-setup:vitest-standard',
     compressed: '// @test-setup:vitest-standard',
@@ -74,7 +76,8 @@ const DEFAULT_RULES: CompressionRule[] = [
   {
     id: 'express-route',
     name: 'Express Route Boilerplate',
-    pattern: /router\.(get|post|put|delete|patch)\(['"`][^'"`]+['"`], async \(req, res, next\) => \{\s*try \{[\s\S]{100,500}?\} catch \(error\) \{\s*next\(error\);\s*\}\s*\}\);/g,
+    pattern:
+      /router\.(get|post|put|delete|patch)\(['"`][^'"`]+['"`], async \(req, res, next\) => \{\s*try \{[\s\S]{100,500}?\} catch \(error\) \{\s*next\(error\);\s*\}\s*\}\);/g,
     category: 'boilerplate',
     reference: '@boilerplate:express-route',
     compressed: '// @boilerplate:express-route',
@@ -94,7 +97,8 @@ const DEFAULT_RULES: CompressionRule[] = [
   {
     id: 'zod-validation',
     name: 'Zod Validation Schema',
-    pattern: /import { z } from ['"]zod['"];\s*const \w+Schema = z\.object\(\{[\s\S]{50,400}?\}\);/g,
+    pattern:
+      /import { z } from ['"]zod['"];\s*const \w+Schema = z\.object\(\{[\s\S]{50,400}?\}\);/g,
     category: 'boilerplate',
     reference: '@boilerplate:zod-schema',
     compressed: '// @boilerplate:zod-schema',
@@ -104,7 +108,8 @@ const DEFAULT_RULES: CompressionRule[] = [
   {
     id: 'api-client',
     name: 'API Client Setup',
-    pattern: /const api = axios\.create\(\{\s*baseURL: ['"][^'"]+['"],\s*timeout: \d+,\s*headers:\s*\{[^}]*\}\s*\}\);/g,
+    pattern:
+      /const api = axios\.create\(\{\s*baseURL: ['"][^'"]+['"],\s*timeout: \d+,\s*headers:\s*\{[^}]*\}\s*\}\);/g,
     category: 'config',
     reference: '@config:api-client',
     compressed: '// @config:api-client',
@@ -117,7 +122,8 @@ const DEFAULT_RULES: CompressionRule[] = [
 // STORAGE
 // ============================================================================
 
-const getCacheDir = (workspaceRoot: string) => path.join(workspaceRoot, '.wms-cache', 'compression');
+const getCacheDir = (workspaceRoot: string) =>
+  path.join(workspaceRoot, '.wms-cache', 'compression');
 const getRulesPath = (workspaceRoot: string) => path.join(getCacheDir(workspaceRoot), 'rules.json');
 const getStatsPath = (workspaceRoot: string) => path.join(getCacheDir(workspaceRoot), 'stats.json');
 
@@ -201,10 +207,7 @@ async function ensureCacheDir(workspaceRoot: string): Promise<void> {
 /**
  * Compress content by applying rules
  */
-async function compressContent(
-  content: string,
-  workspaceRoot: string
-): Promise<CompressedContent> {
+async function compressContent(content: string, workspaceRoot: string): Promise<CompressedContent> {
   const rules = await loadRules(workspaceRoot);
   let compressed = content;
   const references: string[] = [];
@@ -250,15 +253,15 @@ async function compressContent(
 /**
  * Decompress content by expanding references
  */
-async function decompressContent(
-  content: string,
-  workspaceRoot: string
-): Promise<string> {
+async function decompressContent(content: string, workspaceRoot: string): Promise<string> {
   const rules = await loadRules(workspaceRoot);
   let decompressed = content;
 
   for (const rule of rules) {
-    const referenceRegex = new RegExp(`// ${rule.reference.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`, 'g');
+    const referenceRegex = new RegExp(
+      `// ${rule.reference.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`,
+      'g'
+    );
     decompressed = decompressed.replace(referenceRegex, rule.reference);
   }
 

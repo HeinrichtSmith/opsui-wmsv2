@@ -31,10 +31,13 @@ function rebuildIndex(): void {
   try {
     // Call the pattern_rebuild MCP tool via node
     // We use a direct import and call since we're in the same process
-    execSync('node -e "import(`file://${process.cwd()}/tools/mcp-server/dist/tools/pattern-extraction.js`).then(m => m.rebuildEmbeddings?.())"', {
-      stdio: 'inherit',
-      cwd: process.cwd(),
-    });
+    execSync(
+      'node -e "import(`file://${process.cwd()}/tools/mcp-server/dist/tools/pattern-extraction.js`).then(m => m.rebuildEmbeddings?.())"',
+      {
+        stdio: 'inherit',
+        cwd: process.cwd(),
+      }
+    );
 
     console.log('[Pattern Watcher] ✅ Index rebuilt successfully');
   } catch (error) {
@@ -68,19 +71,19 @@ const watcher = watch(PATTERNS_DIR, {
 
 // Watch for changes
 watcher
-  .on('add', (path) => {
+  .on('add', path => {
     console.log(`[Pattern Watcher] ➕ New pattern: ${path}`);
     scheduleRebuild();
   })
-  .on('change', (path) => {
+  .on('change', path => {
     console.log(`[Pattern Watcher] ✏️  Modified: ${path}`);
     scheduleRebuild();
   })
-  .on('unlink', (path) => {
+  .on('unlink', path => {
     console.log(`[Pattern Watcher] 🗑️  Deleted: ${path}`);
     scheduleRebuild();
   })
-  .on('error', (error) => {
+  .on('error', error => {
     console.error('[Pattern Watcher] ❌ Watcher error:', error);
   })
   .on('ready', () => {

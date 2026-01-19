@@ -16,7 +16,9 @@ async function main(): Promise<void> {
 
     console.log('✅ Database is accessible');
     console.log(`   Time: ${result.rows[0].current_time}`);
-    console.log(`   Version: ${result.rows[0].version.split(' ')[0]} ${result.rows[0].version.split(' ')[1]}`);
+    console.log(
+      `   Version: ${result.rows[0].version.split(' ')[0]} ${result.rows[0].version.split(' ')[1]}`
+    );
 
     await pool.end();
     process.exit(0);

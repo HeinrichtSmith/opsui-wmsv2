@@ -27,14 +27,7 @@ router.post(
   '/checklists',
   authorize(UserRole.SUPERVISOR, UserRole.ADMIN),
   asyncHandler(async (req: AuthenticatedRequest, res) => {
-    const {
-      checklistName,
-      description,
-      inspectionType,
-      sku,
-      category,
-      items,
-    } = req.body;
+    const { checklistName, description, inspectionType, sku, category, items } = req.body;
 
     // Validate required fields
     if (!checklistName || !inspectionType || !items || !Array.isArray(items)) {
@@ -115,7 +108,13 @@ router.post(
     } = req.body;
 
     // Validate required fields
-    if (!inspectionType || !referenceType || !referenceId || !sku || quantityInspected === undefined) {
+    if (
+      !inspectionType ||
+      !referenceType ||
+      !referenceId ||
+      !sku ||
+      quantityInspected === undefined
+    ) {
       return res.status(400).json({
         error: 'Missing required fields',
         code: 'MISSING_FIELDS',
@@ -253,14 +252,7 @@ router.get(
 router.post(
   '/inspections/results',
   asyncHandler(async (req: AuthenticatedRequest, res) => {
-    const {
-      inspectionId,
-      checklistItemId,
-      result,
-      passed,
-      notes,
-      imageUrl,
-    } = req.body;
+    const { inspectionId, checklistItemId, result, passed, notes, imageUrl } = req.body;
 
     // Validate required fields
     if (!inspectionId || !checklistItemId || result === undefined || passed === undefined) {
@@ -307,7 +299,15 @@ router.post(
     } = req.body;
 
     // Validate required fields
-    if (!orderId || !customerId || !customerName || !returnReason || !items || !Array.isArray(items) || !totalRefundAmount) {
+    if (
+      !orderId ||
+      !customerId ||
+      !customerName ||
+      !returnReason ||
+      !items ||
+      !Array.isArray(items) ||
+      !totalRefundAmount
+    ) {
       return res.status(400).json({
         error: 'Missing required fields',
         code: 'MISSING_FIELDS',

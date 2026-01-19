@@ -32,9 +32,12 @@ export const BACKEND_CONFIG = {
   API_VERSION: 'v1',
 
   /** Full API base URL (constructed from host, port, base path, version) */
-  getApiBaseUrl(host: string = BACKEND_CONFIG.DEFAULT_HOST, port: number = BACKEND_CONFIG.DEFAULT_PORT): string {
+  getApiBaseUrl(
+    host: string = BACKEND_CONFIG.DEFAULT_HOST,
+    port: number = BACKEND_CONFIG.DEFAULT_PORT
+  ): string {
     return `http://${host}:${port}${BACKEND_CONFIG.API_BASE_PATH}/${BACKEND_CONFIG.API_VERSION}`;
-  }
+  },
 } as const;
 
 /**
@@ -48,7 +51,7 @@ export const FRONTEND_CONFIG = {
   DEFAULT_HOST: 'localhost',
 
   /** Default CORS origin (must match backend CORS_ORIGIN env var) */
-  DEFAULT_CORS_ORIGIN: 'http://localhost:5173'
+  DEFAULT_CORS_ORIGIN: 'http://localhost:5173',
 } as const;
 
 /**
@@ -59,7 +62,7 @@ export const WEBSOCKET_CONFIG = {
   DEFAULT_PORT: 3002,
 
   /** WebSocket path */
-  WS_PATH: '/ws'
+  WS_PATH: '/ws',
 } as const;
 
 // ============================================================================
@@ -95,7 +98,7 @@ export const DATABASE_CONFIG = {
   IDLE_TIMEOUT_MS: 30000,
 
   /** Statement timeout in milliseconds (prevents long-running queries) */
-  STATEMENT_TIMEOUT_MS: 30000
+  STATEMENT_TIMEOUT_MS: 30000,
 } as const;
 
 // ============================================================================
@@ -119,7 +122,7 @@ export const REDIS_CONFIG = {
   DEFAULT_TTL: 3600,
 
   /** Connection timeout in milliseconds */
-  CONNECTION_TIMEOUT_MS: 5000
+  CONNECTION_TIMEOUT_MS: 5000,
 } as const;
 
 // ============================================================================
@@ -134,7 +137,7 @@ export const JWT_CONFIG = {
   DEFAULT_EXPIRES_IN: '8h',
 
   /** Refresh token expiration time */
-  REFRESH_EXPIRES_IN: '7d'
+  REFRESH_EXPIRES_IN: '7d',
 } as const;
 
 /**
@@ -142,7 +145,7 @@ export const JWT_CONFIG = {
  */
 export const BCRYPT_CONFIG = {
   /** Default number of hashing rounds */
-  DEFAULT_ROUNDS: 10
+  DEFAULT_ROUNDS: 10,
 } as const;
 
 /**
@@ -153,7 +156,7 @@ export const RATE_LIMIT_CONFIG = {
   WINDOW_MS: 900000, // 15 minutes
 
   /** Max requests per window */
-  MAX_REQUESTS: 100
+  MAX_REQUESTS: 100,
 } as const;
 
 // ============================================================================
@@ -174,7 +177,7 @@ export const PICKER_CONFIG = {
   PICK_TIMEOUT_MINUTES: 30,
 
   /** Maximum pick tasks per order */
-  MAX_PICK_TASKS_PER_ORDER: 100
+  MAX_PICK_TASKS_PER_ORDER: 100,
 } as const;
 
 /**
@@ -185,7 +188,7 @@ export const PACKER_CONFIG = {
   MAX_ORDERS_PER_PACKER: 5,
 
   /** Default packer capacity (concurrent orders) */
-  DEFAULT_PACKER_CAPACITY: 3
+  DEFAULT_PACKER_CAPACITY: 3,
 } as const;
 
 /**
@@ -202,7 +205,7 @@ export const ORDER_CONFIG = {
   ORDER_ID_PREFIX: 'ORD',
 
   /** Order ID format pattern (for validation) */
-  ORDER_ID_PATTERN: /^ORD-\d{8}-\d{6}$/ // ORD-YYYYMMDD-SSSSSS
+  ORDER_ID_PATTERN: /^ORD-\d{8}-\d{6}$/, // ORD-YYYYMMDD-SSSSSS
 } as const;
 
 /**
@@ -216,7 +219,7 @@ export const SKU_CONFIG = {
   MAX_NAME_LENGTH: 255,
 
   /** Maximum length of category name */
-  MAX_CATEGORY_LENGTH: 100
+  MAX_CATEGORY_LENGTH: 100,
 } as const;
 
 /**
@@ -230,7 +233,34 @@ export const BIN_LOCATION_CONFIG = {
   MAX_BIN_ID_LENGTH: 20,
 
   /** Valid zone letters */
-  VALID_ZONES: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'] as const
+  VALID_ZONES: [
+    'A',
+    'B',
+    'C',
+    'D',
+    'E',
+    'F',
+    'G',
+    'H',
+    'I',
+    'J',
+    'K',
+    'L',
+    'M',
+    'N',
+    'O',
+    'P',
+    'Q',
+    'R',
+    'S',
+    'T',
+    'U',
+    'V',
+    'W',
+    'X',
+    'Y',
+    'Z',
+  ] as const,
 } as const;
 
 /**
@@ -244,7 +274,7 @@ export const INVENTORY_CONFIG = {
   MAX_QUANTITY_PER_BIN: 10000,
 
   /** Reserved inventory cannot exceed this percentage of total */
-  MAX_RESERVED_PERCENTAGE: 0.9 // 90%
+  MAX_RESERVED_PERCENTAGE: 0.9, // 90%
 } as const;
 
 // ============================================================================
@@ -259,7 +289,7 @@ export const HEALTH_CHECK_CONFIG = {
   INTERVAL_MS: 30000, // 30 seconds
 
   /** Timeout for health check requests (milliseconds) */
-  TIMEOUT_MS: 5000
+  TIMEOUT_MS: 5000,
 } as const;
 
 // ============================================================================
@@ -280,7 +310,7 @@ export const LOGGING_CONFIG = {
   MAX_FILE_SIZE: 10 * 1024 * 1024, // 10MB
 
   /** Maximum number of log files to keep */
-  MAX_FILES: 14
+  MAX_FILES: 14,
 } as const;
 
 // ============================================================================
@@ -307,7 +337,7 @@ export const ID_PATTERNS = {
   ORDER_STATE_CHANGE: /^OSC-\d{8}-\d{8}$/,
 
   /** Order item ID pattern */
-  ORDER_ITEM: /^ITM-\d{8}-\d{6}$/
+  ORDER_ITEM: /^ITM-\d{8}-\d{6}$/,
 } as const;
 
 // ============================================================================
@@ -328,7 +358,7 @@ export const FEATURE_FLAGS = {
   ENABLE_AUDIT_LOG: true,
 
   /** Enable ML predictions */
-  ENABLE_ML_PREDICTIONS: false // Default off, enable via env var
+  ENABLE_ML_PREDICTIONS: false, // Default off, enable via env var
 } as const;
 
 // ============================================================================
@@ -372,7 +402,7 @@ export const ERROR_CODES = {
 
   /** Conflict errors */
   RESOURCE_CONFLICT: 'RESOURCE_CONFLICT',
-  DUPLICATE_RESOURCE: 'DUPLICATE_RESOURCE'
+  DUPLICATE_RESOURCE: 'DUPLICATE_RESOURCE',
 } as const;
 
 // ============================================================================
@@ -388,7 +418,7 @@ export const TIME = {
   MINUTE: 60 * 1000,
   HOUR: 60 * 60 * 1000,
   DAY: 24 * 60 * 60 * 1000,
-  WEEK: 7 * 24 * 60 * 60 * 1000
+  WEEK: 7 * 24 * 60 * 60 * 1000,
 } as const;
 
 // ============================================================================
@@ -406,7 +436,7 @@ export const VALIDATION_PATTERNS = {
   URL: /^https?:\/\/.+/,
 
   /** UUID v4 validation */
-  UUID: /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+  UUID: /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
 } as const;
 
 // ============================================================================
@@ -447,6 +477,6 @@ export function getEnvVarMappings(): Record<string, string | number | boolean> {
     // Feature flags
     ENABLE_WEBSOCKET: FEATURE_FLAGS.ENABLE_WEBSOCKET,
     ENABLE_REDIS_CACHE: FEATURE_FLAGS.ENABLE_REDIS_CACHE,
-    ENABLE_AUDIT_LOG: FEATURE_FLAGS.ENABLE_AUDIT_LOG
+    ENABLE_AUDIT_LOG: FEATURE_FLAGS.ENABLE_AUDIT_LOG,
   };
 }

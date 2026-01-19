@@ -13,6 +13,7 @@ I've implemented a **comprehensive automation suite** that addresses all the wor
 **File**: [scripts/dev-helper.js](scripts/dev-helper.js)
 
 **Features**:
+
 - ✅ Automatically kills processes on occupied ports (no more manual cleanup!)
 - ✅ Starts backend and frontend in correct order
 - ✅ Waits for services to be healthy
@@ -21,6 +22,7 @@ I've implemented a **comprehensive automation suite** that addresses all the wor
 - ✅ Graceful shutdown on Ctrl+C
 
 **Usage**:
+
 ```bash
 # Start everything (one command!)
 npm run dev:start
@@ -43,6 +45,7 @@ npm run dev:setup
 **Generates in seconds** (what used to take 30+ minutes):
 
 #### React Components
+
 ```bash
 # Generate page component
 npm run generate:component --name UserProfile --type page
@@ -55,12 +58,14 @@ npm run generate:component --name MainLayout --type layout
 ```
 
 #### API Routes + Services + Repositories
+
 ```bash
 # Generate complete CRUD API
 npm run generate:api --resource Product
 ```
 
 Generates:
+
 - Express routes with validation
 - Service layer with business logic
 - Repository for data access
@@ -68,6 +73,7 @@ Generates:
 - OpenAPI documentation scaffolding
 
 #### Test Files
+
 ```bash
 # Generate test for any file
 npm run generate:test --file packages/backend/src/services/OrderService.ts
@@ -83,17 +89,18 @@ npm run generate:test --file packages/backend/src/services/OrderService.ts
 
 **Detects and suggests fixes for**:
 
-| Issue Type | Severity | Auto-Fixable |
-|------------|----------|--------------|
-| N+1 queries | 🔴 High | Yes |
-| Missing error handling | 🟡 Medium | Yes |
-| Unused imports | 🟢 Low | Yes |
-| Console statements | 🟢 Low | Yes |
-| Hardcoded secrets | 🔴 Critical | No |
-| Unsafe JSON.parse | 🟡 Medium | Yes |
-| TODO/FIXME comments | ℹ️ Info | No |
+| Issue Type             | Severity    | Auto-Fixable |
+| ---------------------- | ----------- | ------------ |
+| N+1 queries            | 🔴 High     | Yes          |
+| Missing error handling | 🟡 Medium   | Yes          |
+| Unused imports         | 🟢 Low      | Yes          |
+| Console statements     | 🟢 Low      | Yes          |
+| Hardcoded secrets      | 🔴 Critical | No           |
+| Unsafe JSON.parse      | 🟡 Medium   | Yes          |
+| TODO/FIXME comments    | ℹ️ Info     | No           |
 
 **Usage**:
+
 ```bash
 # Analyze codebase
 npm run analyze:code
@@ -111,6 +118,7 @@ npm run analyze:fix
 **File**: [.husky/pre-commit](.husky/pre-commit) (Already active!)
 
 **Automatically runs before every commit**:
+
 - ✅ Format check (Prettier)
 - ✅ Linting (ESLint)
 - ✅ Type checking (TypeScript)
@@ -120,6 +128,7 @@ npm run analyze:fix
 - ✅ Prohibited pattern detection (console.log, TODO, etc.)
 
 **Usage**:
+
 ```bash
 git commit
 # Hooks run automatically!
@@ -134,6 +143,7 @@ git commit
 **File**: [scripts/pre-completion-checklist.js](scripts/pre-completion-checklist.js)
 
 **Complete validation before marking task complete**:
+
 - ✅ Backend type check
 - ✅ Frontend type check
 - ✅ Backend unit tests
@@ -145,6 +155,7 @@ git commit
 - ✅ Linting
 
 **Usage**:
+
 ```bash
 npm run test:validate
 ```
@@ -156,6 +167,7 @@ npm run test:validate
 ## 📋 Complete Command Reference
 
 ### Development
+
 ```bash
 npm run dev:start          # Start all services (auto-cleanup ports)
 npm run dev:start:no-browser  # Start without opening browser
@@ -163,6 +175,7 @@ npm run dev:setup          # First-time setup
 ```
 
 ### Code Generation
+
 ```bash
 npm run generate:component --name X --type page
 npm run generate:api --resource X
@@ -170,6 +183,7 @@ npm run generate:test --file X
 ```
 
 ### Quality & Analysis
+
 ```bash
 npm run analyze:code       # Scan for issues
 npm run analyze:fix        # Auto-fix issues
@@ -178,12 +192,14 @@ npm run lint:fix          # Auto-fix linting
 ```
 
 ### Validation
+
 ```bash
 npm run test:validate      # Complete pre-task validation
 npm run test:connection    # Verify frontend + backend connectivity
 ```
 
 ### Database
+
 ```bash
 npm run db:indexes         # Apply performance indexes
 npm run db:status          # View database status
@@ -191,6 +207,7 @@ npm run db validate        # Check data integrity
 ```
 
 ### Monitoring
+
 ```bash
 npm run perf               # Performance dashboard
 npm run analyze            # Bundle size analyzer
@@ -202,9 +219,11 @@ npm run mcp:monitor        # MCP server health with auto-recovery
 ## 🎓 Typical Developer Workflow
 
 ### Morning Start (One Command!)
+
 ```bash
 npm run dev:start
 ```
+
 - ✅ Kills processes on ports automatically
 - ✅ Starts backend on 3001
 - ✅ Starts frontend on 5173
@@ -212,20 +231,24 @@ npm run dev:start
 - ✅ Opens browser
 
 ### During Development
+
 - **Terminal 1**: `npm run dev:start` (dev servers)
 - **Terminal 2**: `npm run test:watch` (instant test feedback)
 - **Terminal 3**: `npm run perf` (performance monitoring)
 
 ### Before Committing
+
 ```bash
 git commit  # Hooks run automatically!
 ```
+
 - ✅ Format check
 - ✅ Linting
 - ✅ Type checking
 - ✅ Tests
 
 ### Before Pushing
+
 ```bash
 npm run test:validate
 git push
@@ -237,26 +260,26 @@ git push
 
 ### Time Savings Per Day
 
-| Task | Before | After | Impact |
-|------|--------|-------|--------|
-| Start dev environment | 2-3 min | 10 sec | Massive savings |
-| Generate CRUD API | 30 min | 5 sec | Massive savings |
-| Generate component | 15 min | 5 sec | Massive savings |
-| Quality checks | 2 min | Auto | Complete automation |
-| Port cleanup | 5 min | Auto | Complete automation |
-| Validate connectivity | Manual | Auto | Complete automation |
+| Task                  | Before  | After  | Impact              |
+| --------------------- | ------- | ------ | ------------------- |
+| Start dev environment | 2-3 min | 10 sec | Massive savings     |
+| Generate CRUD API     | 30 min  | 5 sec  | Massive savings     |
+| Generate component    | 15 min  | 5 sec  | Massive savings     |
+| Quality checks        | 2 min   | Auto   | Complete automation |
+| Port cleanup          | 5 min   | Auto   | Complete automation |
+| Validate connectivity | Manual  | Auto   | Complete automation |
 
 **Total: Significant time saved per day!**
 
 ### Code Quality Improvements
 
-| Metric | Before | After |
-|--------|--------|-------|
-| Pre-commit quality checks | Manual | **Automatic** |
-| N+1 query detection | None | **Automated** |
-| Missing error handling | Manual | **Detected** |
-| Hardcoded secrets | Risky | **Detected** |
-| Unused imports | Manual | **Auto-detected** |
+| Metric                    | Before | After             |
+| ------------------------- | ------ | ----------------- |
+| Pre-commit quality checks | Manual | **Automatic**     |
+| N+1 query detection       | None   | **Automated**     |
+| Missing error handling    | Manual | **Detected**      |
+| Hardcoded secrets         | Risky  | **Detected**      |
+| Unused imports            | Manual | **Auto-detected** |
 
 ---
 
@@ -303,21 +326,25 @@ All automation is documented in:
 ### What You Should Do
 
 1. **Start using the new workflow**:
+
    ```bash
    npm run dev:start  # Instead of manual startup
    ```
 
 2. **Generate code instead of writing**:
+
    ```bash
    npm run generate:api --resource Shipment
    ```
 
 3. **Trust the pre-commit hooks**:
+
    ```bash
    git commit  # Hooks run automatically
    ```
 
 4. **Validate before completing tasks**:
+
    ```bash
    npm run test:validate
    ```
@@ -332,6 +359,7 @@ All automation is documented in:
 ## 🚀 You're All Set!
 
 Your development environment is now:
+
 - ✅ **Automated** - Repetitive tasks handled
 - ✅ **Fast** - Instant feedback loops
 - ✅ **Safe** - Quality checks automatic

@@ -72,7 +72,7 @@ export const useUIStore = create<UIState>()(
         set({ soundEnabled: enabled });
       },
       toggleSound: () => {
-        set((state) => ({ soundEnabled: !state.soundEnabled }));
+        set(state => ({ soundEnabled: !state.soundEnabled }));
       },
 
       // Theme actions
@@ -85,7 +85,7 @@ export const useUIStore = create<UIState>()(
         set({ sidebarOpen: open });
       },
       toggleSidebar: () => {
-        set((state) => ({ sidebarOpen: !state.sidebarOpen }));
+        set(state => ({ sidebarOpen: !state.sidebarOpen }));
       },
 
       // Scan input focus
@@ -94,9 +94,9 @@ export const useUIStore = create<UIState>()(
       },
 
       // Notification actions
-      addNotification: (notification) => {
+      addNotification: notification => {
         const id = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-        set((state) => ({
+        set(state => ({
           notifications: [
             ...state.notifications,
             {
@@ -113,8 +113,8 @@ export const useUIStore = create<UIState>()(
         }, 5000);
       },
       removeNotification: (id: string) => {
-        set((state) => ({
-          notifications: state.notifications.filter((n) => n.id !== id),
+        set(state => ({
+          notifications: state.notifications.filter(n => n.id !== id),
         }));
       },
       clearNotifications: () => {
@@ -123,7 +123,7 @@ export const useUIStore = create<UIState>()(
 
       // Loading state actions
       setLoading: (key: string, loading: boolean) => {
-        set((state) => ({
+        set(state => ({
           loadingStates: {
             ...state.loadingStates,
             [key]: loading,
@@ -134,7 +134,7 @@ export const useUIStore = create<UIState>()(
     {
       name: 'wms-ui-storage',
       // Only persist these fields
-      partialize: (state) => ({
+      partialize: state => ({
         soundEnabled: state.soundEnabled,
         theme: state.theme,
         sidebarOpen: state.sidebarOpen,
@@ -184,8 +184,8 @@ export function playSound(type: 'success' | 'error' | 'warning' | 'info'): void 
 
     case 'error':
       // Clean, low "thud" - gentle but clear error sound
-      createTone(audioContext, masterGain, 196.00, 'sine', 0, 0.2, 0.15); // G3
-      createTone(audioContext, masterGain, 156.80, 'triangle', 0, 0.15, 0.1); // Eb3
+      createTone(audioContext, masterGain, 196.0, 'sine', 0, 0.2, 0.15); // G3
+      createTone(audioContext, masterGain, 156.8, 'triangle', 0, 0.15, 0.1); // Eb3
       masterGain.gain.setValueAtTime(0.1, currentTime);
       masterGain.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.25);
       break;
@@ -200,7 +200,7 @@ export function playSound(type: 'success' | 'error' | 'warning' | 'info'): void 
 
     case 'info':
       // Subtle "pop" - like iOS UI sounds
-      createTone(audioContext, masterGain, 880.00, 'sine', 0, 0.05, 0.05); // A5
+      createTone(audioContext, masterGain, 880.0, 'sine', 0, 0.05, 0.05); // A5
       masterGain.gain.setValueAtTime(0.05, currentTime);
       masterGain.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.1);
       break;
@@ -247,10 +247,13 @@ function createTone(
   oscillator.stop(releaseEnd);
 
   // Clean up
-  setTimeout(() => {
-    gainNode.disconnect();
-    oscillator.disconnect();
-  }, (releaseEnd - currentTime) * 1000 + 100);
+  setTimeout(
+    () => {
+      gainNode.disconnect();
+      oscillator.disconnect();
+    },
+    (releaseEnd - currentTime) * 1000 + 100
+  );
 }
 
 /**

@@ -35,7 +35,7 @@ async function forceActivate() {
 
 forceActivate()
   .then(() => process.exit(0))
-  .catch((err) => {
+  .catch(err => {
     console.error('Error:', err);
     process.exit(1);
   });

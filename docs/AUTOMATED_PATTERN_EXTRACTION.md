@@ -10,6 +10,7 @@
 ## Concept
 
 As GLM 4.7 works on tasks, it should:
+
 1. **Recognize** reusable patterns in code
 2. **Extract** the pattern with metadata
 3. **Catalog** it in the pattern library
@@ -22,6 +23,7 @@ As GLM 4.7 works on tasks, it should:
 ### When to Extract Patterns
 
 Extract a pattern when:
+
 - ✅ Same code structure appears 3+ times
 - ✅ Solution is non-trivial (>10 lines)
 - ✅ Pattern is reusable across modules
@@ -29,6 +31,7 @@ Extract a pattern when:
 - ✅ Pattern is tested and working
 
 **Don't extract when**:
+
 - ❌ Code is trivial (<5 lines)
 - ❌ Pattern is specific to one use case
 - ❌ Code is messy or needs refactoring
@@ -110,6 +113,7 @@ After completing a task, GLM 4.7 should analyze:
 ### Step 2: Pattern Recognition
 
 Look for patterns in:
+
 - **Transaction patterns**: How multi-step operations are atomic
 - **Validation patterns**: How input is validated
 - **Error handling patterns**: How errors are mapped
@@ -120,6 +124,7 @@ Look for patterns in:
 ### Step 3: Pattern Extraction
 
 Extract the pattern:
+
 1. Remove business-specific details
 2. Generalize variable names
 3. Add documentation
@@ -129,6 +134,7 @@ Extract the pattern:
 ### Step 4: Pattern Cataloging
 
 Store in [`patterns/APPROVED_PATTERNS.md`](../patterns/APPROVED_PATTERNS.md) with:
+
 - Pattern name and category
 - Code example
 - Usage guidelines
@@ -253,31 +259,37 @@ test_coverage: 90%
 ## Pattern Categories
 
 ### Transaction Patterns
+
 - `service_layer_transaction` - Basic transaction wrapper
 - `transaction_with_capacity_check` - Transaction with constraint
 - `transaction_with_rollback` - Complex transaction with rollback logic
 
 ### Validation Patterns
+
 - `input_validation_with_joi` - Request validation
 - `state_transition_validation` - State machine validation
 - `invariant_check` - Business rule validation
 
 ### Error Handling Patterns
+
 - `error_mapping` - Map database errors to domain errors
 - `error_handler_middleware` - Express error handling
 - `async_error_wrapper` - Wrap async functions with error handling
 
 ### Query Patterns
+
 - `eager_loading` - Prevent N+1 queries
 - `pagination` - Paginated list responses
 - `filtered_search` - Search with multiple filters
 
 ### Authentication Patterns
+
 - `jwt_auth_required` - Protected route
 - `role_based_access` - Role checking
 - `token_refresh` - Refresh token flow
 
 ### UI Patterns
+
 - `form_with_validation` - Form with validation
 - `list_with_pagination` - Paginated list
 - `modal_with_confirm` - Confirmation modal
@@ -401,6 +413,7 @@ patterns/
 ### Concept
 
 Create a script that:
+
 1. Scans codebase for similar code blocks
 2. Identifies potential patterns
 3. Asks GLM 4.7 to review and approve
@@ -562,9 +575,8 @@ function searchByCategory(category: PatternCategory): Pattern[] {
 ```typescript
 function searchByProblem(description: string): Pattern[] {
   const keywords = extractKeywords(description);
-  return patterns.filter(p =>
-    p.problem.includes(keywords) ||
-    p.description.includes(keywords)
+  return patterns.filter(
+    p => p.problem.includes(keywords) || p.description.includes(keywords)
   );
 }
 ```
@@ -577,7 +589,7 @@ function searchBySimilarity(code: string): Pattern[] {
   return patterns
     .map(p => ({
       pattern: p,
-      similarity: compareFeatures(codeFeatures, p.features)
+      similarity: compareFeatures(codeFeatures, p.features),
     }))
     .filter(r => r.similarity > 0.7)
     .sort((a, b) => b.similarity - a.similarity)
@@ -592,6 +604,7 @@ function searchBySimilarity(code: string): Pattern[] {
 ### Pattern Extraction Checklist
 
 After completing a non-trivial task:
+
 - [ ] Did I write code that could be reused?
 - [ ] Is this pattern similar to existing patterns?
 - [ ] Is the code clean and tested?
@@ -601,6 +614,7 @@ After completing a non-trivial task:
 ### Pattern Application Checklist
 
 Before starting a task:
+
 - [ ] What category of work is this?
 - [ ] Are there existing patterns for this?
 - [ ] Should I use an existing pattern?
@@ -621,6 +635,7 @@ Before starting a task:
 ## Integration with Existing Files
 
 This pattern system integrates with:
+
 - [`patterns/APPROVED_PATTERNS.md`](../patterns/APPROVED_PATTERNS.md) - Pattern catalog
 - [`docs/DECISIONS.md`](../docs/DECISIONS.md) - Architectural decisions
 - [`docs/CODE_GRAPH.md`](../docs/CODE_GRAPH.md) - Dependency mapping

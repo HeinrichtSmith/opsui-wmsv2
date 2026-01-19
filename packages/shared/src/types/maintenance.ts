@@ -12,7 +12,7 @@ export enum AssetStatus {
   OPERATIONAL = 'OPERATIONAL',
   IN_MAINTENANCE = 'IN_MAINTENANCE',
   OUT_OF_SERVICE = 'OUT_OF_SERVICE',
-  RETIRED = 'RETIRED'
+  RETIRED = 'RETIRED',
 }
 
 export enum AssetType {
@@ -21,7 +21,7 @@ export enum AssetType {
   EQUIPMENT = 'EQUIPMENT',
   FACILITY = 'FACILITY',
   TOOL = 'TOOL',
-  OTHER = 'OTHER'
+  OTHER = 'OTHER',
 }
 
 export enum MaintenanceStatus {
@@ -29,21 +29,21 @@ export enum MaintenanceStatus {
   IN_PROGRESS = 'IN_PROGRESS',
   COMPLETED = 'COMPLETED',
   CANCELLED = 'CANCELLED',
-  OVERDUE = 'OVERDUE'
+  OVERDUE = 'OVERDUE',
 }
 
 export enum MaintenancePriority {
   LOW = 'LOW',
   MEDIUM = 'MEDIUM',
   HIGH = 'HIGH',
-  EMERGENCY = 'EMERGENCY'
+  EMERGENCY = 'EMERGENCY',
 }
 
 export enum MaintenanceType {
   PREVENTIVE = 'PREVENTIVE',
   CORRECTIVE = 'CORRECTIVE',
   EMERGENCY = 'EMERGENCY',
-  PREDICTIVE = 'PREDICTIVE'
+  PREDICTIVE = 'PREDICTIVE',
 }
 
 // ============================================================================

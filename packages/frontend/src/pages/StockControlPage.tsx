@@ -16,7 +16,15 @@ import {
   useAdjustInventory,
   useCreateStockCount,
 } from '@/services/api';
-import { Card, CardHeader, CardTitle, CardContent, Header, Button, SearchInput } from '@/components/shared';
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  Header,
+  Button,
+  SearchInput,
+} from '@/components/shared';
 import { useAuthStore } from '@/stores';
 import {
   CubeIcon,
@@ -75,8 +83,11 @@ function MetricCard({
               {value}
             </p>
             {trend && (
-              <p className={`mt-2 text-sm ${trend.isPositive ? 'text-success-400' : 'text-error-400'}`}>
-                {trend.isPositive ? '+' : ''}{trend.value}% from last week
+              <p
+                className={`mt-2 text-sm ${trend.isPositive ? 'text-success-400' : 'text-error-400'}`}
+              >
+                {trend.isPositive ? '+' : ''}
+                {trend.value}% from last week
               </p>
             )}
           </div>
@@ -132,7 +143,7 @@ function TransferModal({ onClose }: { onClose: () => void }) {
                 type="text"
                 required
                 value={sku}
-                onChange={(e) => setSku(e.target.value)}
+                onChange={e => setSku(e.target.value)}
                 className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500"
                 placeholder="Enter SKU"
               />
@@ -143,7 +154,7 @@ function TransferModal({ onClose }: { onClose: () => void }) {
                 type="text"
                 required
                 value={fromBin}
-                onChange={(e) => setFromBin(e.target.value)}
+                onChange={e => setFromBin(e.target.value)}
                 className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500"
                 placeholder="e.g., A-01-01"
               />
@@ -154,7 +165,7 @@ function TransferModal({ onClose }: { onClose: () => void }) {
                 type="text"
                 required
                 value={toBin}
-                onChange={(e) => setToBin(e.target.value)}
+                onChange={e => setToBin(e.target.value)}
                 className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500"
                 placeholder="e.g., B-02-03"
               />
@@ -166,7 +177,7 @@ function TransferModal({ onClose }: { onClose: () => void }) {
                 required
                 min="1"
                 value={quantity}
-                onChange={(e) => setQuantity(e.target.value)}
+                onChange={e => setQuantity(e.target.value)}
                 className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500"
                 placeholder="Enter quantity"
               />
@@ -176,19 +187,14 @@ function TransferModal({ onClose }: { onClose: () => void }) {
               <textarea
                 required
                 value={reason}
-                onChange={(e) => setReason(e.target.value)}
+                onChange={e => setReason(e.target.value)}
                 className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500"
                 placeholder="Enter reason for transfer"
                 rows={2}
               />
             </div>
             <div className="flex gap-3">
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={onClose}
-                className="flex-1"
-              >
+              <Button type="button" variant="secondary" onClick={onClose} className="flex-1">
                 Cancel
               </Button>
               <Button
@@ -248,7 +254,7 @@ function AdjustmentModal({ onClose }: { onClose: () => void }) {
                 type="text"
                 required
                 value={sku}
-                onChange={(e) => setSku(e.target.value)}
+                onChange={e => setSku(e.target.value)}
                 className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500"
                 placeholder="Enter SKU"
               />
@@ -259,7 +265,7 @@ function AdjustmentModal({ onClose }: { onClose: () => void }) {
                 type="text"
                 required
                 value={binLocation}
-                onChange={(e) => setBinLocation(e.target.value)}
+                onChange={e => setBinLocation(e.target.value)}
                 className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500"
                 placeholder="e.g., A-01-01"
               />
@@ -272,7 +278,7 @@ function AdjustmentModal({ onClose }: { onClose: () => void }) {
                 type="number"
                 required
                 value={quantity}
-                onChange={(e) => setQuantity(e.target.value)}
+                onChange={e => setQuantity(e.target.value)}
                 className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500"
                 placeholder="e.g., 5 or -5"
               />
@@ -282,19 +288,14 @@ function AdjustmentModal({ onClose }: { onClose: () => void }) {
               <textarea
                 required
                 value={reason}
-                onChange={(e) => setReason(e.target.value)}
+                onChange={e => setReason(e.target.value)}
                 className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500"
                 placeholder="Enter reason for adjustment"
                 rows={2}
               />
             </div>
             <div className="flex gap-3">
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={onClose}
-                className="flex-1"
-              >
+              <Button type="button" variant="secondary" onClick={onClose} className="flex-1">
                 Cancel
               </Button>
               <Button
@@ -347,7 +348,7 @@ function StockCountModal({ onClose }: { onClose: () => void }) {
                 type="text"
                 required
                 value={binLocation}
-                onChange={(e) => setBinLocation(e.target.value)}
+                onChange={e => setBinLocation(e.target.value)}
                 className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500"
                 placeholder="e.g., A-01-01"
               />
@@ -356,7 +357,7 @@ function StockCountModal({ onClose }: { onClose: () => void }) {
               <label className="block text-sm font-medium text-gray-300 mb-1">Count Type</label>
               <select
                 value={type}
-                onChange={(e) => setType(e.target.value as 'FULL' | 'CYCLIC' | 'SPOT')}
+                onChange={e => setType(e.target.value as 'FULL' | 'CYCLIC' | 'SPOT')}
                 className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
               >
                 <option value="SPOT">Spot Count</option>
@@ -365,12 +366,7 @@ function StockCountModal({ onClose }: { onClose: () => void }) {
               </select>
             </div>
             <div className="flex gap-3">
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={onClose}
-                className="flex-1"
-              >
+              <Button type="button" variant="secondary" onClick={onClose} className="flex-1">
                 Cancel
               </Button>
               <Button
@@ -407,7 +403,9 @@ function DashboardTab() {
         <CardContent className="p-8 text-center">
           <ExclamationTriangleIcon className="h-12 w-12 text-warning-400 mx-auto mb-4" />
           <p className="text-gray-300">
-            {isError || error ? 'Failed to load dashboard data. Please try again.' : 'No dashboard data available.'}
+            {isError || error
+              ? 'Failed to load dashboard data. Please try again.'
+              : 'No dashboard data available.'}
           </p>
         </CardContent>
       </Card>
@@ -463,31 +461,52 @@ function DashboardTab() {
                 </tr>
               </thead>
               <tbody>
-                {dashboard.recentTransactions?.map((txn: { transactionId: string; timestamp: string; type: string; sku: string; quantity: number; binLocation?: string; reason: string }) => (
-                  <tr key={txn.transactionId} className="border-b border-white/5 hover:bg-white/[0.02]">
-                    <td className="py-3 px-4 text-gray-300">
-                      {new Date(txn.timestamp).toLocaleString()}
-                    </td>
-                    <td className="py-3 px-4">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        txn.type === 'RECEIPT' ? 'bg-success-500/20 text-success-400' :
-                        txn.type === 'DEDUCTION' ? 'bg-error-500/20 text-error-400' :
-                        txn.type === 'ADJUSTMENT' ? 'bg-warning-500/20 text-warning-400' :
-                        'bg-primary-500/20 text-primary-400'
-                      }`}>
-                        {txn.type}
-                      </span>
-                    </td>
-                    <td className="py-3 px-4 text-white font-medium">{txn.sku}</td>
-                    <td className={`py-3 px-4 font-medium ${
-                      txn.quantity > 0 ? 'text-success-400' : 'text-error-400'
-                    }`}>
-                      {txn.quantity > 0 ? '+' : ''}{txn.quantity}
-                    </td>
-                    <td className="py-3 px-4 text-gray-300">{txn.binLocation || '-'}</td>
-                    <td className="py-3 px-4 text-gray-400 text-sm">{txn.reason}</td>
-                  </tr>
-                ))}
+                {dashboard.recentTransactions?.map(
+                  (txn: {
+                    transactionId: string;
+                    timestamp: string;
+                    type: string;
+                    sku: string;
+                    quantity: number;
+                    binLocation?: string;
+                    reason: string;
+                  }) => (
+                    <tr
+                      key={txn.transactionId}
+                      className="border-b border-white/5 hover:bg-white/[0.02]"
+                    >
+                      <td className="py-3 px-4 text-gray-300">
+                        {new Date(txn.timestamp).toLocaleString()}
+                      </td>
+                      <td className="py-3 px-4">
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            txn.type === 'RECEIPT'
+                              ? 'bg-success-500/20 text-success-400'
+                              : txn.type === 'DEDUCTION'
+                                ? 'bg-error-500/20 text-error-400'
+                                : txn.type === 'ADJUSTMENT'
+                                  ? 'bg-warning-500/20 text-warning-400'
+                                  : 'bg-primary-500/20 text-primary-400'
+                          }`}
+                        >
+                          {txn.type}
+                        </span>
+                      </td>
+                      <td className="py-3 px-4 text-white font-medium">{txn.sku}</td>
+                      <td
+                        className={`py-3 px-4 font-medium ${
+                          txn.quantity > 0 ? 'text-success-400' : 'text-error-400'
+                        }`}
+                      >
+                        {txn.quantity > 0 ? '+' : ''}
+                        {txn.quantity}
+                      </td>
+                      <td className="py-3 px-4 text-gray-300">{txn.binLocation || '-'}</td>
+                      <td className="py-3 px-4 text-gray-400 text-sm">{txn.reason}</td>
+                    </tr>
+                  )
+                )}
               </tbody>
             </table>
           </div>
@@ -515,14 +534,23 @@ function DashboardTab() {
                   </tr>
                 </thead>
                 <tbody>
-                  {lowStock.items.slice(0, 10).map((item: { sku: string; name: string; binLocation: string; available: number }, index: number) => (
-                    <tr key={index} className="border-b border-white/5 hover:bg-white/[0.02]">
-                      <td className="py-3 px-4 text-white font-medium">{item.sku}</td>
-                      <td className="py-3 px-4 text-gray-300">{item.name}</td>
-                      <td className="py-3 px-4 text-gray-300">{item.binLocation}</td>
-                      <td className="py-3 px-4 text-warning-400 font-medium">{item.available}</td>
-                    </tr>
-                  ))}
+                  {lowStock.items
+                    .slice(0, 10)
+                    .map(
+                      (
+                        item: { sku: string; name: string; binLocation: string; available: number },
+                        index: number
+                      ) => (
+                        <tr key={index} className="border-b border-white/5 hover:bg-white/[0.02]">
+                          <td className="py-3 px-4 text-white font-medium">{item.sku}</td>
+                          <td className="py-3 px-4 text-gray-300">{item.name}</td>
+                          <td className="py-3 px-4 text-gray-300">{item.binLocation}</td>
+                          <td className="py-3 px-4 text-warning-400 font-medium">
+                            {item.available}
+                          </td>
+                        </tr>
+                      )
+                    )}
                 </tbody>
               </table>
             </div>
@@ -562,7 +590,7 @@ function InventoryTab({ initialSku }: InventoryTabProps) {
                 <input
                   type="text"
                   value={searchName}
-                  onChange={(e) => {
+                  onChange={e => {
                     setSearchName(e.target.value);
                     setPage(1);
                   }}
@@ -578,7 +606,7 @@ function InventoryTab({ initialSku }: InventoryTabProps) {
                 <input
                   type="text"
                   value={searchSku}
-                  onChange={(e) => {
+                  onChange={e => {
                     setSearchSku(e.target.value);
                     setPage(1);
                   }}
@@ -594,7 +622,7 @@ function InventoryTab({ initialSku }: InventoryTabProps) {
                 <input
                   type="text"
                   value={searchBin}
-                  onChange={(e) => {
+                  onChange={e => {
                     setSearchBin(e.target.value);
                     setPage(1);
                   }}
@@ -608,13 +636,15 @@ function InventoryTab({ initialSku }: InventoryTabProps) {
                 type="checkbox"
                 id="lowStock"
                 checked={filterLowStock}
-                onChange={(e) => {
+                onChange={e => {
                   setFilterLowStock(e.target.checked);
                   setPage(1);
                 }}
                 className="w-4 h-4 rounded border-white/10 bg-white/5 text-primary-500 focus:ring-primary-500"
               />
-              <label htmlFor="lowStock" className="text-sm text-gray-300">Low Stock Only</label>
+              <label htmlFor="lowStock" className="text-sm text-gray-300">
+                Low Stock Only
+              </label>
             </div>
             {(searchName || searchSku || searchBin || filterLowStock) && (
               <Button
@@ -649,7 +679,9 @@ function InventoryTab({ initialSku }: InventoryTabProps) {
                       <th className="text-left py-3 px-4 text-gray-400 font-medium">SKU</th>
                       <th className="text-left py-3 px-4 text-gray-400 font-medium">Name</th>
                       <th className="text-left py-3 px-4 text-gray-400 font-medium">Category</th>
-                      <th className="text-left py-3 px-4 text-gray-400 font-medium">Bin Location</th>
+                      <th className="text-left py-3 px-4 text-gray-400 font-medium">
+                        Bin Location
+                      </th>
                       <th className="text-right py-3 px-4 text-gray-400 font-medium">Quantity</th>
                       <th className="text-right py-3 px-4 text-gray-400 font-medium">Reserved</th>
                       <th className="text-right py-3 px-4 text-gray-400 font-medium">Available</th>
@@ -657,38 +689,55 @@ function InventoryTab({ initialSku }: InventoryTabProps) {
                     </tr>
                   </thead>
                   <tbody>
-                    {data.items.map((item: { sku: string; name: string; category: string; binLocation: string; quantity: number; reserved: number; available: number }, index: number) => (
-                      <tr key={index} className="border-b border-white/5 hover:bg-white/[0.02]">
-                        <td className="py-3 px-4 text-white font-medium">{item.sku}</td>
-                        <td className="py-3 px-4 text-gray-300">{item.name}</td>
-                        <td className="py-3 px-4 text-gray-400">{item.category}</td>
-                        <td className="py-3 px-4 text-gray-300">{item.binLocation}</td>
-                        <td className="py-3 px-4 text-right text-white">{item.quantity}</td>
-                        <td className="py-3 px-4 text-right text-warning-400">{item.reserved}</td>
-                        <td className={`py-3 px-4 text-right font-medium ${
-                          item.available === 0 ? 'text-error-400' :
-                          item.available <= 10 ? 'text-warning-400' :
-                          'text-success-400'
-                        }`}>
-                          {item.available}
-                        </td>
-                        <td className="py-3 px-4 text-center">
-                          {item.available === 0 ? (
-                            <span className="px-2 py-1 rounded-full text-xs font-medium bg-error-500/20 text-error-400">
-                              Out of Stock
-                            </span>
-                          ) : item.available <= 10 ? (
-                            <span className="px-2 py-1 rounded-full text-xs font-medium bg-warning-500/20 text-warning-400">
-                              Low Stock
-                            </span>
-                          ) : (
-                            <span className="px-2 py-1 rounded-full text-xs font-medium bg-success-500/20 text-success-400">
-                              In Stock
-                            </span>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
+                    {data.items.map(
+                      (
+                        item: {
+                          sku: string;
+                          name: string;
+                          category: string;
+                          binLocation: string;
+                          quantity: number;
+                          reserved: number;
+                          available: number;
+                        },
+                        index: number
+                      ) => (
+                        <tr key={index} className="border-b border-white/5 hover:bg-white/[0.02]">
+                          <td className="py-3 px-4 text-white font-medium">{item.sku}</td>
+                          <td className="py-3 px-4 text-gray-300">{item.name}</td>
+                          <td className="py-3 px-4 text-gray-400">{item.category}</td>
+                          <td className="py-3 px-4 text-gray-300">{item.binLocation}</td>
+                          <td className="py-3 px-4 text-right text-white">{item.quantity}</td>
+                          <td className="py-3 px-4 text-right text-warning-400">{item.reserved}</td>
+                          <td
+                            className={`py-3 px-4 text-right font-medium ${
+                              item.available === 0
+                                ? 'text-error-400'
+                                : item.available <= 10
+                                  ? 'text-warning-400'
+                                  : 'text-success-400'
+                            }`}
+                          >
+                            {item.available}
+                          </td>
+                          <td className="py-3 px-4 text-center">
+                            {item.available === 0 ? (
+                              <span className="px-2 py-1 rounded-full text-xs font-medium bg-error-500/20 text-error-400">
+                                Out of Stock
+                              </span>
+                            ) : item.available <= 10 ? (
+                              <span className="px-2 py-1 rounded-full text-xs font-medium bg-warning-500/20 text-warning-400">
+                                Low Stock
+                              </span>
+                            ) : (
+                              <span className="px-2 py-1 rounded-full text-xs font-medium bg-success-500/20 text-success-400">
+                                In Stock
+                              </span>
+                            )}
+                          </td>
+                        </tr>
+                      )
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -697,7 +746,8 @@ function InventoryTab({ initialSku }: InventoryTabProps) {
               {data.total > 50 && (
                 <div className="flex items-center justify-between p-4 border-t border-white/10">
                   <div className="text-sm text-gray-400">
-                    Showing {(page - 1) * 50 + 1} to {Math.min(page * 50, data.total)} of {data.total} items
+                    Showing {(page - 1) * 50 + 1} to {Math.min(page * 50, data.total)} of{' '}
+                    {data.total} items
                   </div>
                   <div className="flex gap-2">
                     <Button
@@ -756,7 +806,7 @@ function TransactionsTab() {
               <input
                 type="text"
                 value={filters.sku}
-                onChange={(e) => {
+                onChange={e => {
                   setFilters({ ...filters, sku: e.target.value });
                   setPage(1);
                 }}
@@ -769,7 +819,7 @@ function TransactionsTab() {
               <input
                 type="text"
                 value={filters.binLocation}
-                onChange={(e) => {
+                onChange={e => {
                   setFilters({ ...filters, binLocation: e.target.value });
                   setPage(1);
                 }}
@@ -781,7 +831,7 @@ function TransactionsTab() {
               <label className="block text-sm font-medium text-gray-300 mb-2">Type</label>
               <select
                 value={filters.type}
-                onChange={(e) => {
+                onChange={e => {
                   setFilters({ ...filters, type: e.target.value });
                   setPage(1);
                 }}
@@ -832,33 +882,58 @@ function TransactionsTab() {
                     </tr>
                   </thead>
                   <tbody>
-                    {data.transactions.map((txn: { transactionId: string; timestamp: string; type: string; sku: string; quantity: number; binLocation?: string; userId: string; reason: string }) => (
-                      <tr key={txn.transactionId} className="border-b border-white/5 hover:bg-white/[0.02]">
-                        <td className="py-3 px-4 text-gray-300 whitespace-nowrap">
-                          {new Date(txn.timestamp).toLocaleString()}
-                        </td>
-                        <td className="py-3 px-4">
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                            txn.type === 'RECEIPT' ? 'bg-success-500/20 text-success-400' :
-                            txn.type === 'DEDUCTION' ? 'bg-error-500/20 text-error-400' :
-                            txn.type === 'ADJUSTMENT' ? 'bg-warning-500/20 text-warning-400' :
-                            txn.type === 'RESERVATION' ? 'bg-primary-500/20 text-primary-400' :
-                            'bg-gray-500/20 text-gray-400'
-                          }`}>
-                            {txn.type}
-                          </span>
-                        </td>
-                        <td className="py-3 px-4 text-white font-medium">{txn.sku}</td>
-                        <td className={`py-3 px-4 text-right font-medium ${
-                          txn.quantity > 0 ? 'text-success-400' : 'text-error-400'
-                        }`}>
-                          {txn.quantity > 0 ? '+' : ''}{txn.quantity}
-                        </td>
-                        <td className="py-3 px-4 text-gray-300">{txn.binLocation || '-'}</td>
-                        <td className="py-3 px-4 text-gray-400">{txn.userId}</td>
-                        <td className="py-3 px-4 text-gray-400 text-sm max-w-xs truncate">{txn.reason}</td>
-                      </tr>
-                    ))}
+                    {data.transactions.map(
+                      (txn: {
+                        transactionId: string;
+                        timestamp: string;
+                        type: string;
+                        sku: string;
+                        quantity: number;
+                        binLocation?: string;
+                        userId: string;
+                        reason: string;
+                      }) => (
+                        <tr
+                          key={txn.transactionId}
+                          className="border-b border-white/5 hover:bg-white/[0.02]"
+                        >
+                          <td className="py-3 px-4 text-gray-300 whitespace-nowrap">
+                            {new Date(txn.timestamp).toLocaleString()}
+                          </td>
+                          <td className="py-3 px-4">
+                            <span
+                              className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                txn.type === 'RECEIPT'
+                                  ? 'bg-success-500/20 text-success-400'
+                                  : txn.type === 'DEDUCTION'
+                                    ? 'bg-error-500/20 text-error-400'
+                                    : txn.type === 'ADJUSTMENT'
+                                      ? 'bg-warning-500/20 text-warning-400'
+                                      : txn.type === 'RESERVATION'
+                                        ? 'bg-primary-500/20 text-primary-400'
+                                        : 'bg-gray-500/20 text-gray-400'
+                              }`}
+                            >
+                              {txn.type}
+                            </span>
+                          </td>
+                          <td className="py-3 px-4 text-white font-medium">{txn.sku}</td>
+                          <td
+                            className={`py-3 px-4 text-right font-medium ${
+                              txn.quantity > 0 ? 'text-success-400' : 'text-error-400'
+                            }`}
+                          >
+                            {txn.quantity > 0 ? '+' : ''}
+                            {txn.quantity}
+                          </td>
+                          <td className="py-3 px-4 text-gray-300">{txn.binLocation || '-'}</td>
+                          <td className="py-3 px-4 text-gray-400">{txn.userId}</td>
+                          <td className="py-3 px-4 text-gray-400 text-sm max-w-xs truncate">
+                            {txn.reason}
+                          </td>
+                        </tr>
+                      )
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -867,7 +942,8 @@ function TransactionsTab() {
               {data.total > 50 && (
                 <div className="flex items-center justify-between p-4 border-t border-white/10">
                   <div className="text-sm text-gray-400">
-                    Showing {(page - 1) * 50 + 1} to {Math.min(page * 50, data.total)} of {data.total} transactions
+                    Showing {(page - 1) * 50 + 1} to {Math.min(page * 50, data.total)} of{' '}
+                    {data.total} transactions
                   </div>
                   <div className="flex gap-2">
                     <Button
@@ -978,7 +1054,8 @@ export function StockControlPage() {
   }
 
   // Check if user has access (stock controller, supervisor, or admin)
-  const hasAccess = user.role === 'STOCK_CONTROLLER' || user.role === 'SUPERVISOR' || user.role === 'ADMIN';
+  const hasAccess =
+    user.role === 'STOCK_CONTROLLER' || user.role === 'SUPERVISOR' || user.role === 'ADMIN';
 
   if (!hasAccess) {
     return (
@@ -994,12 +1071,13 @@ export function StockControlPage() {
     );
   }
 
-  const tabs: { key: TabType; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
-    { key: 'dashboard', label: 'Dashboard', icon: ChartBarIcon },
-    { key: 'inventory', label: 'Inventory', icon: CubeIcon },
-    { key: 'transactions', label: 'Transactions', icon: DocumentTextIcon },
-    { key: 'quick-actions', label: 'Quick Actions', icon: ArrowPathIcon },
-  ];
+  const tabs: { key: TabType; label: string; icon: React.ComponentType<{ className?: string }> }[] =
+    [
+      { key: 'dashboard', label: 'Dashboard', icon: ChartBarIcon },
+      { key: 'inventory', label: 'Inventory', icon: CubeIcon },
+      { key: 'transactions', label: 'Transactions', icon: DocumentTextIcon },
+      { key: 'quick-actions', label: 'Quick Actions', icon: ArrowPathIcon },
+    ];
 
   return (
     <div className="min-h-screen">
@@ -1008,14 +1086,16 @@ export function StockControlPage() {
         {/* Page Header */}
         <div className="animate-in">
           <h1 className="text-3xl font-bold text-white tracking-tight">Stock Control</h1>
-          <p className="mt-2 text-gray-400">Manage inventory, stock counts, transfers, and adjustments</p>
+          <p className="mt-2 text-gray-400">
+            Manage inventory, stock counts, transfers, and adjustments
+          </p>
         </div>
 
         {/* Quick Search */}
         <Card variant="glass">
           <CardContent className="p-4">
             <SearchInput
-              onSelect={(sku) => {
+              onSelect={sku => {
                 setQuickSearchSku(sku);
                 setActiveTab('inventory');
               }}
@@ -1028,7 +1108,7 @@ export function StockControlPage() {
         <Card variant="glass">
           <CardContent className="p-2">
             <div className="flex gap-2 overflow-x-auto">
-              {tabs.map((tab) => (
+              {tabs.map(tab => (
                 <button
                   key={tab.key}
                   onClick={() => setActiveTab(tab.key)}

@@ -21,7 +21,7 @@ async function testBackend() {
   const testView = '/orders/TEST-ROUTE';
 
   console.log(`Updating ${testUserId} to ${testView}`);
-  
+
   await query(
     `UPDATE users
      SET current_view = $1,

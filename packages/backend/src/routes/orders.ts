@@ -128,28 +128,28 @@ router.post(
     } catch (error: any) {
       // Ensure proper error propagation to frontend
       if (error?.message?.includes('cannot be claimed')) {
-        return res.status(409).json({ 
+        return res.status(409).json({
           error: error.message,
-          code: 'ORDER_NOT_CLAIMABLE'
+          code: 'ORDER_NOT_CLAIMABLE',
         });
       }
       if (error?.message?.includes('already claimed')) {
-        return res.status(409).json({ 
+        return res.status(409).json({
           error: error.message,
-          code: 'ORDER_ALREADY_CLAIMED'
+          code: 'ORDER_ALREADY_CLAIMED',
         });
       }
       if (error?.message?.includes('maximum limit')) {
-        return res.status(409).json({ 
+        return res.status(409).json({
           error: error.message,
-          code: 'MAX_ACTIVE_ORDERS'
+          code: 'MAX_ACTIVE_ORDERS',
         });
       }
       // Generic conflict error
       if (error?.status === 409 || error?.code === 'CONFLICT') {
-        return res.status(409).json({ 
+        return res.status(409).json({
           error: error.message || 'Order cannot be claimed',
-          code: 'CONFLICT'
+          code: 'CONFLICT',
         });
       }
       // Re-throw other errors
@@ -261,7 +261,7 @@ router.post(
     // The 'barcode' field now contains either a barcode OR an SKU code
     // Check if it's a valid SKU first
     let sku: string;
-    
+
     // Try to look up by SKU or barcode (frontend sends barcode which might be barcode number or SKU code)
     const skuResult = await query(
       `SELECT sku FROM skus WHERE (sku = $1 OR barcode = $1) AND active = true`,
@@ -340,19 +340,23 @@ router.post(
     }
 
     try {
-      const order = await orderService.unclaimOrder(req.params.orderId, req.user.userId, reason.trim());
+      const order = await orderService.unclaimOrder(
+        req.params.orderId,
+        req.user.userId,
+        reason.trim()
+      );
       res.json(order);
     } catch (error: any) {
       if (error?.message?.includes('not assigned')) {
-        return res.status(409).json({ 
+        return res.status(409).json({
           error: error.message,
-          code: 'NOT_ASSIGNED_TO_PICKER'
+          code: 'NOT_ASSIGNED_TO_PICKER',
         });
       }
       if (error?.message?.includes('not in PICKING status')) {
-        return res.status(409).json({ 
+        return res.status(409).json({
           error: error.message,
-          code: 'NOT_PICKING'
+          code: 'NOT_PICKING',
         });
       }
       throw error;
@@ -392,11 +396,7 @@ router.post(
       });
     }
 
-    const order = await orderService.skipPickTask(
-      pickTaskId,
-      reason.trim(),
-      req.user.userId
-    );
+    const order = await orderService.skipPickTask(pickTaskId, reason.trim(), req.user.userId);
     res.json(order);
   })
 );
@@ -448,7 +448,7 @@ router.put(
     console.log('Original URL:', req.originalUrl);
     console.log('req.params:', JSON.stringify(req.params));
     console.log('req.body:', JSON.stringify(req.body));
-    
+
     // Extract pickTaskId from URL manually since Express isn't parsing it
     const urlParts = req.url.split('/');
     const pickTaskId = urlParts[urlParts.length - 1];
@@ -509,11 +509,7 @@ router.post(
     }
 
     try {
-      const order = await orderService.undoPick(
-        pickTaskId,
-        quantity,
-        reason.trim()
-      );
+      const order = await orderService.undoPick(pickTaskId, quantity, reason.trim());
       res.json(order);
     } catch (error: any) {
       if (error?.message?.includes('not found')) {
@@ -649,7 +645,11 @@ router.post(
     }
 
     try {
-      const order = await orderService.unclaimPackingOrder(req.params.orderId, packer_id, reason.trim());
+      const order = await orderService.unclaimPackingOrder(
+        req.params.orderId,
+        packer_id,
+        reason.trim()
+      );
       res.json(order);
     } catch (error: any) {
       if (error?.message?.includes('not assigned')) {
@@ -701,7 +701,11 @@ router.post(
     }
 
     try {
-      const order = await orderService.verifyPackingItem(req.params.orderId, order_item_id, quantity || 1);
+      const order = await orderService.verifyPackingItem(
+        req.params.orderId,
+        order_item_id,
+        quantity || 1
+      );
       res.json(order);
     } catch (error: any) {
       if (error?.message?.includes('not in PACKING status')) {
@@ -781,7 +785,12 @@ router.post(
     }
 
     try {
-      const order = await orderService.undoPackingVerification(req.params.orderId, order_item_id, quantity || 1, reason);
+      const order = await orderService.undoPackingVerification(
+        req.params.orderId,
+        order_item_id,
+        quantity || 1,
+        reason
+      );
       res.json(order);
     } catch (error: any) {
       if (error?.message?.includes('not in PACKING status')) {

@@ -59,7 +59,7 @@ export class SKURepository extends BaseRepository<SKU> {
       `SELECT DISTINCT category FROM skus WHERE active = true ORDER BY category`
     );
 
-    return result.rows.map((row) => row.category);
+    return result.rows.map(row => row.category);
   }
 
   // --------------------------------------------------------------------------
@@ -80,13 +80,20 @@ export class SKURepository extends BaseRepository<SKU> {
       throw new ConflictError('SKU already exists');
     }
 
-    return this.withTransaction(async (client) => {
+    return this.withTransaction(async client => {
       // Create SKU
       await client.query(
         `INSERT INTO skus (sku, name, description, image, category, bin_locations, active)
          VALUES ($1, $2, $3, $4, $5, $6, true)
          RETURNING *`,
-        [data.sku, data.name, data.description, data.image || null, data.category, data.binLocations]
+        [
+          data.sku,
+          data.name,
+          data.description,
+          data.image || null,
+          data.category,
+          data.binLocations,
+        ]
       );
 
       // Create inventory units for each bin location
@@ -191,7 +198,11 @@ export class SKURepository extends BaseRepository<SKU> {
   // GET SKU WITH INVENTORY
   // --------------------------------------------------------------------------
 
-  async getSKUWithInventory(sku: string): Promise<SKU & { inventory: Array<{ binLocation: string; quantity: number; available: number }> }> {
+  async getSKUWithInventory(
+    sku: string
+  ): Promise<
+    SKU & { inventory: Array<{ binLocation: string; quantity: number; available: number }> }
+  > {
     const skuData = await this.findByIdOrThrow(sku);
 
     const inventoryResult = await query(

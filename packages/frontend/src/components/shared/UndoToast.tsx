@@ -29,7 +29,7 @@ export function UndoToast({
   onUndo,
   onDismiss,
   duration = 5000,
-  undoLabel = 'Undo'
+  undoLabel = 'Undo',
 }: UndoToastProps) {
   const [timeLeft, setTimeLeft] = useState(duration);
 
@@ -110,7 +110,7 @@ export function useUndoToasts() {
       id,
       message,
       onUndo,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
 
     setToasts(prev => [action, ...prev].slice(0, 3)); // Max 3 toasts
@@ -128,7 +128,7 @@ export function useUndoToasts() {
     toasts,
     showUndo,
     dismissToast,
-    clearAll
+    clearAll,
   };
 }
 

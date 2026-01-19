@@ -51,15 +51,11 @@ async function runMigration() {
     console.log(`Parsed ${statements.length} SQL statements`);
 
     // Execute statements in order: tables first, then indexes, then constraints
-    const tableStatements = statements.filter(s =>
-      s.toUpperCase().includes('CREATE TABLE') && !s.toUpperCase().includes('CREATE INDEX')
+    const tableStatements = statements.filter(
+      s => s.toUpperCase().includes('CREATE TABLE') && !s.toUpperCase().includes('CREATE INDEX')
     );
-    const indexStatements = statements.filter(s =>
-      s.toUpperCase().includes('CREATE INDEX')
-    );
-    const alterStatements = statements.filter(s =>
-      s.toUpperCase().startsWith('ALTER TABLE')
-    );
+    const indexStatements = statements.filter(s => s.toUpperCase().includes('CREATE INDEX'));
+    const alterStatements = statements.filter(s => s.toUpperCase().startsWith('ALTER TABLE'));
 
     console.log(`Found ${tableStatements.length} CREATE TABLE statements`);
     console.log(`Found ${indexStatements.length} CREATE INDEX statements`);
@@ -88,7 +84,10 @@ async function runMigration() {
         await client.query(stmt);
         console.log(`  [${i + 1}/${indexStatements.length}] ✓ Index created`);
       } catch (error: any) {
-        if (!error.message?.includes('already exists') && !error.message?.includes('does not exist')) {
+        if (
+          !error.message?.includes('already exists') &&
+          !error.message?.includes('does not exist')
+        ) {
           console.log(`  [${i + 1}/${indexStatements.length}] ⚠ Warning: ${error.message}`);
         }
       }

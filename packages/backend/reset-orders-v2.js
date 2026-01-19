@@ -16,15 +16,15 @@ async function resetOrders() {
     port: parseInt(process.env.DB_PORT) || 5432,
     database: process.env.DB_NAME || 'wms_db',
     user: process.env.DB_USER || 'wms_user',
-    password: process.env.DB_PASSWORD || 'wms_password'
+    password: process.env.DB_PASSWORD || 'wms_password',
   });
-  
+
   try {
     console.log('Connecting to database...');
     await client.connect();
-    
+
     console.log('\n=== RESETTING STUCK ORDERS ===\n');
-    
+
     // Step 1: Check current stuck orders
     console.log('1. Checking for stuck orders...');
     const stuckOrders = await client.query(`
@@ -40,21 +40,23 @@ async function resetOrders() {
       ORDER BY created_at DESC
       LIMIT 10
     `);
-    
+
     if (stuckOrders.rows.length === 0) {
       console.log('   No stuck orders found');
     } else {
       console.log(`   Found ${stuckOrders.rows.length} stuck orders:`);
       stuckOrders.rows.forEach(order => {
-        console.log(`   ${order.order_id} - ${order.customer_name} (Picker: ${order.picker_id || 'None'})`);
+        console.log(
+          `   ${order.order_id} - ${order.customer_name} (Picker: ${order.picker_id || 'None'})`
+        );
       });
     }
-    
+
     // Step 2: Disable the order_state_changes trigger to avoid unique constraint errors
     console.log('\n2. Disabling order_state_changes trigger...');
     await client.query('DROP TRIGGER IF EXISTS trigger_log_order_state_change ON orders');
     console.log('   ✓ Trigger disabled');
-    
+
     // Step 3: Reset orders stuck in PICKING status (clear all picker assignments)
     console.log('\n3. Resetting all orders in PICKING status...');
     const result = await client.query(`
@@ -66,7 +68,7 @@ async function resetOrders() {
       WHERE status = 'PICKING'
     `);
     console.log(`   ✓ Updated ${result.rowCount} orders`);
-    
+
     // Step 4: Delete orphaned pick tasks
     console.log('\n4. Deleting orphaned pick tasks...');
     const taskResult = await client.query(`
@@ -74,7 +76,7 @@ async function resetOrders() {
       WHERE order_id NOT IN (SELECT order_id FROM orders)
     `);
     console.log(`   ✓ Deleted ${taskResult.rowCount} orphaned tasks`);
-    
+
     // Step 5: Verify changes
     console.log('\n5. Orders now available for claiming:');
     const pendingOrders = await client.query(`
@@ -90,7 +92,7 @@ async function resetOrders() {
       ORDER BY priority DESC, created_at ASC
       LIMIT 10
     `);
-    
+
     if (pendingOrders.rows.length === 0) {
       console.log('   No orders available');
     } else {
@@ -98,7 +100,7 @@ async function resetOrders() {
         console.log(`   ${order.order_id} - ${order.customer_name} (${order.priority})`);
       });
     }
-    
+
     // Step 6: Check specific order ORD-20260112-7802
     console.log('\n6. Specific order: ORD-20260112-7802');
     const specificOrder = await client.query(`
@@ -114,7 +116,7 @@ async function resetOrders() {
       FROM orders
       WHERE order_id = 'ORD-20260112-7802'
     `);
-    
+
     if (specificOrder.rows.length === 0) {
       console.log('   ❌ Order not found');
     } else {
@@ -124,7 +126,7 @@ async function resetOrders() {
       console.log(`   Claimed at: ${order.claimed_at || 'Never'}`);
       console.log(`   ${order.claimable}`);
     }
-    
+
     // Step 7: Recreate the order state change trigger
     console.log('\n7. Recreating order_state_changes trigger...');
     await client.query(`
@@ -145,7 +147,7 @@ async function resetOrders() {
       END;
       $$ LANGUAGE plpgsql;
     `);
-    
+
     await client.query(`
       CREATE TRIGGER trigger_log_order_state_change
       AFTER UPDATE ON orders
@@ -153,13 +155,13 @@ async function resetOrders() {
       EXECUTE FUNCTION log_order_state_change();
     `);
     console.log('   ✓ Trigger recreated');
-    
+
     // Step 8: Summary
     console.log('\n=== SUMMARY ===');
     console.log('✓ All orders have been reset to claimable state');
     console.log('✓ You can now claim orders from the Order Queue page');
     console.log('\n=== DONE ===\n');
-    
+
     await client.end();
   } catch (error) {
     console.error('\n❌ Error:', error.message);

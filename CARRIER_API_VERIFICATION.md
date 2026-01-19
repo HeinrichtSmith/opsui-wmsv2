@@ -6,6 +6,7 @@ Verified using Perplexity MCP documentation search
 ---
 
 ## Overview
+
 All 6 shipping carriers have been configured in the database. This document details the verification status of each carrier's API integration based on official documentation.
 
 ---
@@ -13,6 +14,7 @@ All 6 shipping carriers have been configured in the database. This document deta
 ## Carrier Status
 
 ### ✅ NZ Courier (VERIFIED)
+
 - **Carrier ID**: CARR-NZC
 - **API Endpoint**: `https://customer-integration.ep-sandbox.freightways.co.nz`
 - **Contact**: 0800-800-800
@@ -20,6 +22,7 @@ All 6 shipping carriers have been configured in the database. This document deta
 - **Status**: Verified and configured
 
 **Key Features**:
+
 - Address validation (AddressRight)
 - Consignment creation and management
 - Label generation with barcodes
@@ -28,6 +31,7 @@ All 6 shipping carriers have been configured in the database. This document deta
 - SMS/Email notifications
 
 **Important Notes**:
+
 - Requires client_id and client_secret from NZ Couriers
 - Sandbox endpoint currently configured
 - Production endpoints require account approval
@@ -39,6 +43,7 @@ All 6 shipping carriers have been configured in the database. This document deta
 ---
 
 ### ✅ Mainfreight (VERIFIED)
+
 - **Carrier ID**: CARR-MF
 - **API Endpoint**: `https://api.mainfreight.com`
 - **Contact**: 0800-800-111
@@ -46,6 +51,7 @@ All 6 shipping carriers have been configured in the database. This document deta
 - **Status**: Verified and configured
 
 **Key Features**:
+
 - Rate quoting (Transport Rating API - NZ only)
 - Shipment booking and label generation
 - Tracking with event history
@@ -59,6 +65,7 @@ All 6 shipping carriers have been configured in the database. This document deta
 **Service Types**: Standard, Express, Overnight, International
 
 **Important Notes**:
+
 - API key required (register at developer.mainfreight.com)
 - Date format: ISO 8601 (YYYY-MM-DD)
 - Use webhooks instead of polling for tracking
@@ -68,6 +75,7 @@ All 6 shipping carriers have been configured in the database. This document deta
 ---
 
 ### ⚠️ FedEx (REQUIRES DEVELOPER PORTAL ACCESS)
+
 - **Carrier ID**: CARR-FEDEX
 - **API Endpoint**: `https://api.fedex.com` (placeholder)
 - **Contact**: 1-800-463-3339
@@ -75,12 +83,14 @@ All 6 shipping carriers have been configured in the database. This document deta
 - **Status**: Requires FedEx Developer Portal registration
 
 **Available APIs**:
+
 - Ship API (standard shipments)
 - Open Ship API (batch operations, 5-day window)
 - Track API (monitor up to 30 tracking numbers)
 - Proof of delivery documents
 
 **Key Features**:
+
 - Support for FedEx Express, Ground, Ground Economy
 - Return labels
 - Pickup scheduling
@@ -88,6 +98,7 @@ All 6 shipping carriers have been configured in the database. This document deta
 - Multiple label formats (PDF, PNG, ZPL, EPL)
 
 **Required for Production**:
+
 1. Register at FedEx Developer Portal
 2. Obtain production API credentials
 3. Update api_endpoint with production URL
@@ -96,6 +107,7 @@ All 6 shipping carriers have been configured in the database. This document deta
 ---
 
 ### ⚠️ UPS (REQUIRES DEVELOPER PORTAL ACCESS)
+
 - **Carrier ID**: CARR-UPS
 - **API Endpoint**: `https://api.ups.com` (placeholder)
 - **Contact**: 1-800-742-5877
@@ -103,11 +115,13 @@ All 6 shipping carriers have been configured in the database. This document deta
 - **Status**: Requires UPS Developer Portal registration
 
 **Available APIs**:
+
 - Shipping Package API
 - Track API
 - Track Alert API (real-time events)
 
 **Required for Production**:
+
 1. Register at UPS Developer Portal
 2. Obtain OAuth credentials
 3. Update api_endpoint with production URL
@@ -116,6 +130,7 @@ All 6 shipping carriers have been configured in the database. This document deta
 ---
 
 ### ⚠️ DHL Express (REQUIRES DEVELOPER PORTAL ACCESS)
+
 - **Carrier ID**: CARR-DHL
 - **API Endpoint**: `https://api.dhl.com` (placeholder)
 - **Contact**: 1-800-225-5345
@@ -123,6 +138,7 @@ All 6 shipping carriers have been configured in the database. This document deta
 - **Status**: Requires DHL Developer Portal registration
 
 **Required for Production**:
+
 1. Register at DHL Developer Portal
 2. Obtain API credentials
 3. Update api_endpoint with production URL
@@ -131,6 +147,7 @@ All 6 shipping carriers have been configured in the database. This document deta
 ---
 
 ### ⚠️ US Postal Service (REQUIRES DEVELOPER PORTAL ACCESS)
+
 - **Carrier ID**: CARR-USPS
 - **API Endpoint**: `https://api.usps.com` (placeholder)
 - **Contact**: 1-800-275-8777
@@ -138,6 +155,7 @@ All 6 shipping carriers have been configured in the database. This document deta
 - **Status**: Requires USPS Web Tools registration
 
 **Required for Production**:
+
 1. Register at USPS Web Tools
 2. Obtain API Key
 3. Update api_endpoint with production URL
@@ -148,10 +166,12 @@ All 6 shipping carriers have been configured in the database. This document deta
 ## Production Readiness Checklist
 
 ### Ready for Development Testing
+
 - ✅ NZ Courier (sandbox configured)
 - ✅ Mainfreight (production endpoint ready)
 
 ### Needs Developer Portal Setup
+
 - ⚠️ FedEx
 - ⚠️ UPS
 - ⚠️ DHL Express
@@ -162,6 +182,7 @@ All 6 shipping carriers have been configured in the database. This document deta
 ## Implementation Notes
 
 ### For NZ Courier Integration
+
 1. Contact NZ Couriers integration team
 2. Obtain client_id and client_secret
 3. Implement OAuth 2.0 token management
@@ -170,6 +191,7 @@ All 6 shipping carriers have been configured in the database. This document deta
 6. Test in sandbox before production
 
 ### For Mainfreight Integration
+
 1. Register at developer.mainfreight.com
 2. Obtain API key
 3. Implement Bearer token authentication
@@ -178,6 +200,7 @@ All 6 shipping carriers have been configured in the database. This document deta
 6. Validate all required fields before submission
 
 ### For International Carriers (FedEx, UPS, DHL, USPS)
+
 1. Visit respective developer portals
 2. Register for API access
 3. Download SDKs/documentation
@@ -190,24 +213,28 @@ All 6 shipping carriers have been configured in the database. This document deta
 ## Best Practices
 
 ### Authentication
+
 - Store API keys securely (environment variables)
 - Implement token refresh logic for OAuth
 - Use HTTPS for all API calls
 - Never log sensitive credentials
 
 ### Error Handling
+
 - Implement exponential backoff for rate limits
 - Log all API failures for debugging
 - Validate responses before processing
 - Handle partial failures gracefully
 
 ### Performance
+
 - Cache rate quotes when appropriate
 - Use webhooks instead of polling
 - Batch requests where possible
 - Monitor API usage limits
 
 ### Testing
+
 - Test in sandbox environments first
 - Verify all field validations
 - Test error scenarios
@@ -264,30 +291,36 @@ CARR-USPS  | US Postal Service | USPS         | https://api.usps.com            
 ## Documentation References
 
 ### NZ Courier
+
 - Developer Portal: Freightways Integration API
 - Documentation: Open API 3.0 Specification
 - Support: integration team (2-day setup)
 
 ### Mainfreight
+
 - Developer Portal: developer.mainfreight.com/global/en/
 - API Documentation: Transport API, Tracking API, Webhooks
 - Terms of Use: Available through developer portal
 
 ### FedEx
+
 - Developer Portal: FedEx Developer Resource Center
 - APIs: Ship API, Open Ship API, Track API
 - WebServices: Developer Guides available
 
 ### UPS
+
 - Developer Portal: UPS Developer Portal
 - Postman Collections: Available via GitHub
 - APIs: Shipping Package API, Track API, Track Alert API
 
 ### DHL Express
+
 - Developer Portal: Requires registration
 - API Documentation: Available after account setup
 
 ### USPS
+
 - Developer Portal: USPS Web Tools
 - API Key: Required for access
 - Documentation: Available after registration

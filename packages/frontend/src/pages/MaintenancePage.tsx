@@ -78,7 +78,9 @@ function EquipmentStatusCard({
 
       <div className="flex items-start justify-between mb-3 pl-3">
         <div className="flex-1">
-          <h3 className="text-lg font-semibold text-white group-hover:text-primary-400 transition-colors">{equipment.name}</h3>
+          <h3 className="text-lg font-semibold text-white group-hover:text-primary-400 transition-colors">
+            {equipment.name}
+          </h3>
           <p className="text-sm text-gray-400 mt-1">{equipment.location}</p>
         </div>
         <div className={`p-2 rounded-lg bg-${config.color}-500/10`}>
@@ -89,17 +91,19 @@ function EquipmentStatusCard({
       <div className="grid grid-cols-2 gap-3 pl-3">
         <div className="bg-white/5 p-2 rounded-lg">
           <p className="text-xs text-gray-400">Last Service</p>
-          <p className="text-sm text-white">{new Date(equipment.lastService).toLocaleDateString()}</p>
+          <p className="text-sm text-white">
+            {new Date(equipment.lastService).toLocaleDateString()}
+          </p>
         </div>
         <div className="bg-white/5 p-2 rounded-lg">
           <p className="text-xs text-gray-400">Next Service</p>
-          <p className="text-sm text-white">{new Date(equipment.nextService).toLocaleDateString()}</p>
+          <p className="text-sm text-white">
+            {new Date(equipment.nextService).toLocaleDateString()}
+          </p>
         </div>
       </div>
 
-      <div className={`mt-3 pl-3 text-xs font-medium text-${config.color}-400`}>
-        {config.label}
-      </div>
+      <div className={`mt-3 pl-3 text-xs font-medium text-${config.color}-400`}>{config.label}</div>
     </button>
   );
 }
@@ -120,7 +124,9 @@ function StatusBadge({ status }: { status: string }) {
   };
 
   return (
-    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${styles[status] || styles.PENDING}`}>
+    <span
+      className={`px-3 py-1 rounded-full text-xs font-semibold ${styles[status] || styles.PENDING}`}
+    >
       {labels[status] || status}
     </span>
   );
@@ -375,7 +381,8 @@ function MaintenancePage() {
                     </span>
                     <span className="flex items-center gap-2">
                       <span className="w-3 h-3 rounded-full bg-warning-500"></span>
-                      Needs Service ({equipment.filter(e => e.status === 'NEEDS_MAINTENANCE').length})
+                      Needs Service (
+                      {equipment.filter(e => e.status === 'NEEDS_MAINTENANCE').length})
                     </span>
                     <span className="flex items-center gap-2">
                       <span className="w-3 h-3 rounded-full bg-error-500"></span>
@@ -390,11 +397,13 @@ function MaintenancePage() {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {equipment.map((eq) => (
+                  {equipment.map(eq => (
                     <EquipmentStatusCard
                       key={eq.id}
                       equipment={eq}
-                      onClick={() => {/* Navigate to equipment details */}}
+                      onClick={() => {
+                        /* Navigate to equipment details */
+                      }}
                     />
                   ))}
                 </div>
@@ -413,7 +422,7 @@ function MaintenancePage() {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {requests.slice(0, 2).map((request) => (
+                  {requests.slice(0, 2).map(request => (
                     <MaintenanceRequestCard key={request.requestId} request={request} />
                   ))}
                 </div>
@@ -437,7 +446,7 @@ function MaintenancePage() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {requests.map((request) => (
+              {requests.map(request => (
                 <MaintenanceRequestCard key={request.requestId} request={request} />
               ))}
             </div>
@@ -471,11 +480,13 @@ function MaintenancePage() {
             <Card variant="glass">
               <CardContent className="p-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {equipment.map((eq) => (
+                  {equipment.map(eq => (
                     <EquipmentStatusCard
                       key={eq.id}
                       equipment={eq}
-                      onClick={() => {/* Navigate to equipment details */}}
+                      onClick={() => {
+                        /* Navigate to equipment details */
+                      }}
                     />
                   ))}
                 </div>

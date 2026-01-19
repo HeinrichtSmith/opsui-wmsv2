@@ -80,10 +80,7 @@ Create or edit the `claude_desktop_config.json` file with the following content:
     },
     "github": {
       "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-github"
-      ],
+      "args": ["-y", "@modelcontextprotocol/server-github"],
       "env": {
         "GITHUB_TOKEN": "YOUR_GITHUB_TOKEN_HERE"
       }
@@ -97,11 +94,13 @@ Create or edit the `claude_desktop_config.json` file with the following content:
 **Important**: Replace the following paths in the configuration:
 
 1. **Windows** (update `YOUR_USERNAME`):
+
    ```
    C:\Users\YOUR_USERNAME\Documents\Warehouse Management System
    ```
 
 2. **macOS/Linux**:
+
    ```
    /Users/YOUR_USERNAME/Documents/Warehouse Management System
    ```
@@ -111,6 +110,7 @@ Create or edit the `claude_desktop_config.json` file with the following content:
 ### Step 4: Restart Claude Desktop
 
 After saving the configuration file, completely restart Claude Desktop:
+
 1. Quit Claude Desktop (make sure it's not running in the background)
 2. Reopen Claude Desktop
 3. The MCP servers should now be available
@@ -140,18 +140,18 @@ Claude: [Uses the wms-domain tool from the MCP server to analyze the code]
 
 The WMS Dev Accelerator provides these specialized tools:
 
-| Tool | Description |
-|------|-------------|
-| `code-analysis` | Analyze code structure, find dependencies, identify patterns |
-| `code-generation` | Generate code following WMS patterns |
-| `context-compression` | Compress large context for better AI understanding |
-| `ml-predictions` | Get predictions for order duration, picker performance |
-| `multi-agent` | Coordinate multiple AI agents for complex tasks |
-| `pattern-extraction` | Extract approved patterns from the codebase |
-| `project` | Query project structure, file ownership, module info |
-| `telemetry` | Track and analyze development metrics |
-| `test-generation` | Generate tests based on existing code |
-| `wms-domain` | Access WMS-specific business logic and rules |
+| Tool                  | Description                                                  |
+| --------------------- | ------------------------------------------------------------ |
+| `code-analysis`       | Analyze code structure, find dependencies, identify patterns |
+| `code-generation`     | Generate code following WMS patterns                         |
+| `context-compression` | Compress large context for better AI understanding           |
+| `ml-predictions`      | Get predictions for order duration, picker performance       |
+| `multi-agent`         | Coordinate multiple AI agents for complex tasks              |
+| `pattern-extraction`  | Extract approved patterns from the codebase                  |
+| `project`             | Query project structure, file ownership, module info         |
+| `telemetry`           | Track and analyze development metrics                        |
+| `test-generation`     | Generate tests based on existing code                        |
+| `wms-domain`          | Access WMS-specific business logic and rules                 |
 
 ## Troubleshooting
 
@@ -165,6 +165,7 @@ The WMS Dev Accelerator provides these specialized tools:
 ### Permission Errors
 
 If you get permission errors:
+
 1. Make sure the workspace path is correct
 2. On Windows, use double backslashes in paths: `C:\\Users\\...`
 3. Ensure the user running Claude Desktop has read access to the project
@@ -172,6 +173,7 @@ If you get permission errors:
 ### Server Not Listed
 
 If the server doesn't appear in Claude:
+
 1. Completely quit and restart Claude Desktop
 2. Check the JSON syntax in `claude_desktop_config.json` (use a JSON validator)
 3. Verify the file is in the correct location for your OS
@@ -228,12 +230,14 @@ If you work with multiple workspaces, you can configure multiple instances:
 When setting up for the first time:
 
 1. **Clone the repository**:
+
    ```bash
    git clone https://github.com/HeinrichtSmith/opsui-wmsv2.git
    cd opsui-wmsv2
    ```
 
 2. **Install dependencies**:
+
    ```bash
    npm install
    cd tools/mcp-server && npm install && npm run build
@@ -246,6 +250,7 @@ When setting up for the first time:
 ## Support
 
 If you encounter issues:
+
 - Check the [MCP Documentation](https://modelcontextprotocol.io/docs)
 - Review the MCP server logs in Claude Desktop
 - Open an issue on the GitHub repository

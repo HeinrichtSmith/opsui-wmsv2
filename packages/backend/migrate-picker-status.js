@@ -2,7 +2,8 @@ const { Client } = require('pg');
 
 async function migrate() {
   const client = new Client({
-    connectionString: process.env.DATABASE_URL || 'postgresql://wms_user:wms_password@localhost:5432/wms_db'
+    connectionString:
+      process.env.DATABASE_URL || 'postgresql://wms_user:wms_password@localhost:5432/wms_db',
   });
 
   try {

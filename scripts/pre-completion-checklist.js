@@ -221,12 +221,12 @@ async function runChecklist() {
   const results = [];
 
   // Group by category
-  const categories = Array.from(new Set(checklist.map((item) => item.category)));
+  const categories = Array.from(new Set(checklist.map(item => item.category)));
 
   for (const category of categories) {
     log(`\n${colors.bright}${colors.blue}Category: ${category}${colors.reset}`);
 
-    const categoryItems = checklist.filter((item) => item.category === category);
+    const categoryItems = checklist.filter(item => item.category === category);
 
     for (const item of categoryItems) {
       const result = await runChecklistItem(item);
@@ -239,18 +239,20 @@ async function runChecklist() {
   log('║                      SUMMARY                                ║', colors.cyan);
   log('╚════════════════════════════════════════════════════════════╝\n', colors.cyan);
 
-  const requiredPassed = results.filter(
-    (r) => r.item.required && r.passed
-  ).length;
-  const requiredTotal = results.filter((r) => r.item.required).length;
+  const requiredPassed = results.filter(r => r.item.required && r.passed).length;
+  const requiredTotal = results.filter(r => r.item.required).length;
 
-  const optionalPassed = results.filter(
-    (r) => !r.item.required && r.passed
-  ).length;
-  const optionalTotal = results.filter((r) => !r.item.required).length;
+  const optionalPassed = results.filter(r => !r.item.required && r.passed).length;
+  const optionalTotal = results.filter(r => !r.item.required).length;
 
-  log(`${colors.bright}Required Checks:${colors.reset} ${requiredPassed}/${requiredTotal}`, colors.reset);
-  log(`${colors.bright}Optional Checks:${colors.reset} ${optionalPassed}/${optionalTotal}\n`, colors.reset);
+  log(
+    `${colors.bright}Required Checks:${colors.reset} ${requiredPassed}/${requiredTotal}`,
+    colors.reset
+  );
+  log(
+    `${colors.bright}Optional Checks:${colors.reset} ${optionalPassed}/${optionalTotal}\n`,
+    colors.reset
+  );
 
   // Details
   for (const result of results) {
@@ -271,9 +273,7 @@ async function runChecklist() {
   } else {
     log('❌ SOME REQUIRED CHECKS FAILED\n', colors.red);
 
-    const failedRequired = results.filter(
-      (r) => r.item.required && !r.passed
-    );
+    const failedRequired = results.filter(r => r.item.required && !r.passed);
 
     log('Failed required checks:', colors.red);
     for (const result of failedRequired) {
@@ -286,7 +286,7 @@ async function runChecklist() {
 }
 
 // Run checklist
-runChecklist().catch((error) => {
+runChecklist().catch(error => {
   log(`\n❌ Fatal error: ${error.message}`, colors.red);
   console.error(error);
   process.exit(1);

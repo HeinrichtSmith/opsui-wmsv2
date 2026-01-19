@@ -19,7 +19,7 @@ export enum ReportType {
   CYCLE_COUNTS = 'CYCLE_COUNTS',
   LOCATION_UTILIZATION = 'LOCATION_UTILIZATION',
   USER_PERFORMANCE = 'USER_PERFORMANCE',
-  CUSTOM = 'CUSTOM'
+  CUSTOM = 'CUSTOM',
 }
 
 export enum ReportFormat {
@@ -27,7 +27,7 @@ export enum ReportFormat {
   EXCEL = 'EXCEL',
   CSV = 'CSV',
   HTML = 'HTML',
-  JSON = 'JSON'
+  JSON = 'JSON',
 }
 
 export enum ReportStatus {
@@ -36,7 +36,7 @@ export enum ReportStatus {
   RUNNING = 'RUNNING',
   COMPLETED = 'COMPLETED',
   FAILED = 'FAILED',
-  CANCELLED = 'CANCELLED'
+  CANCELLED = 'CANCELLED',
 }
 
 export enum ScheduleFrequency {
@@ -46,7 +46,7 @@ export enum ScheduleFrequency {
   WEEKLY = 'WEEKLY',
   MONTHLY = 'MONTHLY',
   QUARTERLY = 'QUARTERLY',
-  YEARLY = 'YEARLY'
+  YEARLY = 'YEARLY',
 }
 
 export enum ChartType {
@@ -57,7 +57,7 @@ export enum ChartType {
   AREA = 'AREA',
   SCATTER = 'SCATTER',
   GAUGE = 'GAUGE',
-  HEATMAP = 'HEATMAP'
+  HEATMAP = 'HEATMAP',
 }
 
 export enum AggregationType {
@@ -68,7 +68,7 @@ export enum AggregationType {
   MAX = 'MAX',
   DISTINCT_COUNT = 'DISTINCT_COUNT',
   MEDIAN = 'MEDIAN',
-  PERCENTILE = 'PERCENTILE'
+  PERCENTILE = 'PERCENTILE',
 }
 
 // ============================================================================
@@ -96,7 +96,15 @@ export interface ReportField {
 export interface ReportFilter {
   filterId: string;
   field: string;
-  operator: 'equals' | 'not_equals' | 'contains' | 'not_contains' | 'greater_than' | 'less_than' | 'between' | 'in';
+  operator:
+    | 'equals'
+    | 'not_equals'
+    | 'contains'
+    | 'not_contains'
+    | 'greater_than'
+    | 'less_than'
+    | 'between'
+    | 'in';
   value: any;
   value2?: any; // For between operations
   displayName?: string;

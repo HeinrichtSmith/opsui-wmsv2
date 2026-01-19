@@ -12,6 +12,7 @@
 > **"Leave the codebase cleaner than you found it."**
 
 Every time Cline makes changes, it should:
+
 1. Remove unused code
 2. Organize imports
 3. Follow consistent formatting
@@ -25,6 +26,7 @@ Every time Cline makes changes, it should:
 Cline should automatically clean up when:
 
 ### Before Completing Any Task
+
 - [ ] Check for unused imports
 - [ ] Check for unused variables/functions
 - [ ] Check for duplicate code
@@ -33,6 +35,7 @@ Cline should automatically clean up when:
 - [ ] Check for circular dependencies
 
 ### After Making Changes
+
 - [ ] Remove any code that became unused
 - [ ] Reorganize imports (alphabetical, grouped)
 - [ ] Format consistently (prettier/eslint)
@@ -40,6 +43,7 @@ Cline should automatically clean up when:
 - [ ] Update barrel exports
 
 ### On File Creation
+
 - [ ] Place in correct directory
 - [ ] Export from appropriate barrel file
 - [ ] Add to index if needed
@@ -83,16 +87,16 @@ packages/
 
 ### File Naming Conventions
 
-| Type | Pattern | Example |
-|------|---------|---------|
-| Components | PascalCase | `UserProfile.tsx` |
-| Utilities | camelCase | `formatDate.ts` |
-| Types | camelCase | `orderTypes.ts` |
-| Hooks | camelCase with 'use' prefix | `useAuth.ts` |
-| Services | camelCase | `orderService.ts` |
-| Controllers | camelCase | `orderController.ts` |
-| Repositories | camelCase | `orderRepository.ts` |
-| Constants | UPPER_SNAKE_CASE | `API_CONSTANTS.ts` |
+| Type         | Pattern                     | Example              |
+| ------------ | --------------------------- | -------------------- |
+| Components   | PascalCase                  | `UserProfile.tsx`    |
+| Utilities    | camelCase                   | `formatDate.ts`      |
+| Types        | camelCase                   | `orderTypes.ts`      |
+| Hooks        | camelCase with 'use' prefix | `useAuth.ts`         |
+| Services     | camelCase                   | `orderService.ts`    |
+| Controllers  | camelCase                   | `orderController.ts` |
+| Repositories | camelCase                   | `orderRepository.ts` |
+| Constants    | UPPER_SNAKE_CASE            | `API_CONSTANTS.ts`   |
 
 ---
 
@@ -133,6 +137,7 @@ export * from './userService';
 ```
 
 This allows clean imports:
+
 ```typescript
 import { orderService, inventoryService } from '../services';
 ```
@@ -197,15 +202,11 @@ function calculateTotal(items: OrderItem[]): number {
 ```typescript
 // ❌ BEFORE - Duplicated logic
 async function getOrdersByStatus(status: string) {
-  return await db('orders')
-    .where({ status })
-    .select('*');
+  return await db('orders').where({ status }).select('*');
 }
 
 async function getOrdersByCustomer(customerId: string) {
-  return await db('orders')
-    .where({ customer_id: customerId })
-    .select('*');
+  return await db('orders').where({ customer_id: customerId }).select('*');
 }
 
 async function getOrdersByDateRange(start: Date, end: Date) {
@@ -216,9 +217,7 @@ async function getOrdersByDateRange(start: Date, end: Date) {
 
 // ✅ AFTER - Consolidated
 async function getOrders(whereClause: object): Promise<Order[]> {
-  return await db('orders')
-    .where(whereClause)
-    .select('*');
+  return await db('orders').where(whereClause).select('*');
 }
 
 // Usage
@@ -240,12 +239,13 @@ function calculatePickScore(task: PickTask): number {
 // ✅ AFTER - Named constants
 const PICK_SCORE = {
   MAX_AGE_SCORE: 100,
-  URGENT_BONUS: 50
+  URGENT_BONUS: 50,
 } as const;
 
 function calculatePickScore(task: PickTask): number {
   const ageScore = Math.max(0, PICK_SCORE.MAX_AGE_SCORE - task.ageInMinutes);
-  const priorityBonus = task.priority === OrderPriority.URGENT ? PICK_SCORE.URGENT_BONUS : 0;
+  const priorityBonus =
+    task.priority === OrderPriority.URGENT ? PICK_SCORE.URGENT_BONUS : 0;
   return ageScore + priorityBonus;
 }
 ```
@@ -257,7 +257,8 @@ function calculatePickScore(task: PickTask): number {
 async function processOrder(orderId: string) {
   const order = await getOrder(orderId);
   if (!order) throw new NotFoundError('Order not found');
-  if (order.status !== 'PENDING') throw new ValidationError('Order not pending');
+  if (order.status !== 'PENDING')
+    throw new ValidationError('Order not pending');
   const picker = await getPicker(order.pickerId);
   if (!picker) throw new NotFoundError('Picker not found');
   if (!picker.active) throw new ValidationError('Picker not active');
@@ -265,7 +266,8 @@ async function processOrder(orderId: string) {
   for (const item of items) {
     const inventory = await getInventory(item.sku);
     if (!inventory) throw new NotFoundError('Inventory not found');
-    if (inventory.available < item.quantity) throw new ValidationError('Insufficient inventory');
+    if (inventory.available < item.quantity)
+      throw new ValidationError('Insufficient inventory');
     await reserveInventory(item.sku, item.quantity);
   }
   await updateOrderStatus(orderId, 'PICKING');
@@ -309,19 +311,31 @@ Each file/module should have one reason to change:
 ```typescript
 // ❌ WRONG - Multiple responsibilities
 // orderService.ts handles orders, users, and inventory
-export async function createOrder(data) { /* ... */ }
-export async function createUser(data) { /* ... */ }
-export async function updateInventory(sku, qty) { /* ... */ }
+export async function createOrder(data) {
+  /* ... */
+}
+export async function createUser(data) {
+  /* ... */
+}
+export async function updateInventory(sku, qty) {
+  /* ... */
+}
 
 // ✅ CORRECT - One responsibility per file
 // orderService.ts - only orders
-export async function createOrder(data) { /* ... */ }
+export async function createOrder(data) {
+  /* ... */
+}
 
 // userService.ts - only users
-export async function createUser(data) { /* ... */ }
+export async function createUser(data) {
+  /* ... */
+}
 
 // inventoryService.ts - only inventory
-export async function updateInventory(sku, qty) { /* ... */ }
+export async function updateInventory(sku, qty) {
+  /* ... */
+}
 ```
 
 ### 2. Clear Dependencies
@@ -392,17 +406,18 @@ npm test
 
 ### Maximum File Sizes
 
-| File Type | Max Lines | Rationale |
-|-----------|-----------|-----------|
-| Components | 300 | Break into smaller components |
-| Services | 400 | Extract helper functions |
-| Controllers | 200 | Move logic to services |
-| Utilities | 200 | Group related functions |
-| Tests | 500 | Split into multiple test files |
+| File Type   | Max Lines | Rationale                      |
+| ----------- | --------- | ------------------------------ |
+| Components  | 300       | Break into smaller components  |
+| Services    | 400       | Extract helper functions       |
+| Controllers | 200       | Move logic to services         |
+| Utilities   | 200       | Group related functions        |
+| Tests       | 500       | Split into multiple test files |
 
 ### When to Split Files
 
 **Signals a file is too large**:
+
 - Hard to find specific code
 - Multiple unrelated functions
 - Deeply nested logic
@@ -417,14 +432,14 @@ npm test
 
 Track these metrics:
 
-| Metric | Target | Tool |
-|--------|--------|------|
-| Cyclomatic complexity | < 10 | eslint-plugin-complexity |
-| Function length | < 50 lines | eslint |
-| File length | < 500 lines | eslint |
-| Parameter count | < 5 | eslint |
-| Nesting depth | < 4 | eslint |
-| Duplicate code | < 3% | sonarjs |
+| Metric                | Target      | Tool                     |
+| --------------------- | ----------- | ------------------------ |
+| Cyclomatic complexity | < 10        | eslint-plugin-complexity |
+| Function length       | < 50 lines  | eslint                   |
+| File length           | < 500 lines | eslint                   |
+| Parameter count       | < 5         | eslint                   |
+| Nesting depth         | < 4         | eslint                   |
+| Duplicate code        | < 3%        | sonarjs                  |
 
 ### ESLint Configuration
 
@@ -474,7 +489,7 @@ const orderValidator = {
     if (!data.items || data.items.length === 0) {
       throw new ValidationError('Items required');
     }
-  }
+  },
 };
 
 function createOrder(data) {
@@ -494,12 +509,14 @@ function updateOrder(id, data) {
 ### Types of Unused Code to Remove
 
 1. **Unused imports**
+
    ```typescript
    import { Order, User, PickTask } from './types';
    // Only Order is used
    ```
 
 2. **Unused variables**
+
    ```typescript
    const result = await operation();
    const temp = calculateSomething(); // Never used
@@ -507,21 +524,31 @@ function updateOrder(id, data) {
    ```
 
 3. **Unused functions**
+
    ```typescript
-   function helper() { /* ... */ } // Never called
-   function main() { /* ... */ }
+   function helper() {
+     /* ... */
+   } // Never called
+   function main() {
+     /* ... */
+   }
    ```
 
 4. **Commented-out code**
+
    ```typescript
    // function oldMethod() { /* ... */ } // Remove this!
-   function newMethod() { /* ... */ }
+   function newMethod() {
+     /* ... */
+   }
    ```
 
 5. **Dead TODOs**
    ```typescript
    // TODO: Remove this function in v2.0
-   function deprecated() { /* ... */ } // Either remove or do it
+   function deprecated() {
+     /* ... */
+   } // Either remove or do it
    ```
 
 ---
@@ -531,6 +558,7 @@ function updateOrder(id, data) {
 Before completing any task, Cline MUST verify:
 
 ### Code Cleanup
+
 - [ ] Removed unused imports
 - [ ] Removed unused variables
 - [ ] Removed unused functions
@@ -540,6 +568,7 @@ Before completing any task, Cline MUST verify:
 - [ ] Organized imports (alphabetical, grouped)
 
 ### File Organization
+
 - [ ] Files in correct directories
 - [ ] File names follow conventions
 - [ ] Barrel exports updated
@@ -547,6 +576,7 @@ Before completing any task, Cline MUST verify:
 - [ ] No duplicate files
 
 ### Code Quality
+
 - [ ] Formatting consistent (prettier)
 - [ ] No linting errors
 - [ ] No TypeScript errors
@@ -554,6 +584,7 @@ Before completing any task, Cline MUST verify:
 - [ ] Complexity within limits
 
 ### Documentation
+
 - [ ] Updated relevant docs
 - [ ] Removed outdated comments
 - [ ] Added inline docs for complex logic
@@ -564,6 +595,7 @@ Before completing any task, Cline MUST verify:
 ## Industry Standards We Follow
 
 ### Clean Code Principles
+
 1. **Meaningful names** - Intent-revealing
 2. **Functions should do one thing** - Single responsibility
 3. **Small functions** - < 50 lines ideally
@@ -571,6 +603,7 @@ Before completing any task, Cline MUST verify:
 5. **KISS** - Keep it simple, stupid
 
 ### SOLID Principles
+
 1. **S**ingle Responsibility
 2. **O**pen/Closed
 3. **L**iskov Substitution
@@ -578,6 +611,7 @@ Before completing any task, Cline MUST verify:
 5. **D**ependency Inversion
 
 ### Module Design
+
 1. **Cohesion** - Related code together
 2. **Coupling** - Minimal dependencies
 3. **Encapsulation** - Hide implementation
@@ -592,12 +626,14 @@ Before completing any task, Cline MUST verify:
 After making changes, Cline should:
 
 1. **Scan for unused imports**
+
    ```typescript
    // Detect and remove
    import { unusedImport } from './types';
    ```
 
 2. **Reorganize imports**
+
    ```typescript
    // Group and sort
    import { a, b, c } from 'external';
@@ -605,16 +641,19 @@ After making changes, Cline should:
    ```
 
 3. **Format code**
+
    ```bash
    npm run format
    ```
 
 4. **Fix linting issues**
+
    ```bash
    npm run lint:fix
    ```
 
 5. **Type check**
+
    ```bash
    npm run type-check
    ```
@@ -632,7 +671,13 @@ After making changes, Cline should:
 
 ```typescript
 // orderController.ts
-import { Order, OrderStatus, User, PickTask, Inventory } from '@wms/shared/types';
+import {
+  Order,
+  OrderStatus,
+  User,
+  PickTask,
+  Inventory,
+} from '@wms/shared/types';
 import { orderService } from '../services/orderService';
 import { userService } from '../services/userService';
 import { inventoryService } from '../services/inventoryService';
@@ -688,15 +733,15 @@ async function createOrder(req: Request, res: Response): Promise<void> {
 
 Track these to ensure codebase quality:
 
-| Metric | Target | How to Measure |
-|--------|--------|----------------|
-| Unused imports | 0 | ESLint |
-| Duplicate code | < 3% | SonarQube |
-| Average function length | < 30 lines | Code climate |
-| Average file length | < 300 lines | Code climate |
-| Cyclomatic complexity | < 10 | ESLint |
-| Code coverage | > 80% | Jest |
-| Technical debt | Low | SonarQube |
+| Metric                  | Target      | How to Measure |
+| ----------------------- | ----------- | -------------- |
+| Unused imports          | 0           | ESLint         |
+| Duplicate code          | < 3%        | SonarQube      |
+| Average function length | < 30 lines  | Code climate   |
+| Average file length     | < 300 lines | Code climate   |
+| Cyclomatic complexity   | < 10        | ESLint         |
+| Code coverage           | > 80%       | Jest           |
+| Technical debt          | Low         | SonarQube      |
 
 ---
 

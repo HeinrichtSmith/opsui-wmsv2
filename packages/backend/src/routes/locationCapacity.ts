@@ -44,7 +44,13 @@ router.post(
     } = req.body;
 
     // Validate required fields
-    if (!ruleName || !capacityType || !capacityUnit || !appliesTo || maximumCapacity === undefined) {
+    if (
+      !ruleName ||
+      !capacityType ||
+      !capacityUnit ||
+      !appliesTo ||
+      maximumCapacity === undefined
+    ) {
       return res.status(400).json({
         error: 'Missing required fields',
         code: 'MISSING_FIELDS',
@@ -190,7 +196,12 @@ router.get(
   '/alerts',
   asyncHandler(async (req: AuthenticatedRequest, res) => {
     const filters = {
-      acknowledged: req.query.acknowledged === 'true' ? true : req.query.acknowledged === 'false' ? false : undefined,
+      acknowledged:
+        req.query.acknowledged === 'true'
+          ? true
+          : req.query.acknowledged === 'false'
+            ? false
+            : undefined,
       alertType: req.query.alertType as 'WARNING' | 'EXCEEDED' | 'CRITICAL' | undefined,
       limit: req.query.limit ? parseInt(req.query.limit as string) : 50,
       offset: req.query.offset ? parseInt(req.query.offset as string) : 0,

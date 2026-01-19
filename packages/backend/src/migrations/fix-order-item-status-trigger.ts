@@ -76,10 +76,10 @@ export async function up() {
 
 export async function down() {
   console.log('Rolling back order_items status trigger fix...\n');
-  
+
   await query(`DROP TRIGGER IF EXISTS trigger_update_order_progress ON order_items`);
   await query(`DROP FUNCTION IF EXISTS update_order_progress()`);
-  
+
   console.log('✅ Rollback complete');
 }
 
@@ -90,7 +90,7 @@ if (require.main === module) {
       console.log('\n✨ Fix completed successfully!');
       process.exit(0);
     })
-    .catch((error) => {
+    .catch(error => {
       console.error('\n❌ Migration failed:', error.message);
       process.exit(1);
     });

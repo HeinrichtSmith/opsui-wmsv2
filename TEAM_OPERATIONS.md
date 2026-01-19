@@ -11,11 +11,11 @@
 
 ### Current Team (3 People)
 
-| Role | Owner | Scope | Responsibilities |
-|------|-------|-------|------------------|
-| **Picking Module** | Friend 1 | `packages/frontend/src/pages/picking/`<br>`packages/backend/src/services/picking*`<br>`packages/backend/src/controllers/picking*` | Picker workflow, pick task management, bin location validation |
-| **Packing Module** | Friend 2 | `packages/frontend/src/pages/packing/`<br>`packages/backend/src/services/packing*`<br>`packages/backend/src/controllers/packing*` | Packer workflow, shipment preparation, packaging verification |
-| **Admin Dashboard** | You | `packages/frontend/src/pages/admin/`<br>`packages/backend/src/services/analytics*`<br>`packages/backend/src/services/user*` | User management, reports, settings, supervision |
+| Role                | Owner    | Scope                                                                                                                             | Responsibilities                                               |
+| ------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| **Picking Module**  | Friend 1 | `packages/frontend/src/pages/picking/`<br>`packages/backend/src/services/picking*`<br>`packages/backend/src/controllers/picking*` | Picker workflow, pick task management, bin location validation |
+| **Packing Module**  | Friend 2 | `packages/frontend/src/pages/packing/`<br>`packages/backend/src/services/packing*`<br>`packages/backend/src/controllers/packing*` | Packer workflow, shipment preparation, packaging verification  |
+| **Admin Dashboard** | You      | `packages/frontend/src/pages/admin/`<br>`packages/backend/src/services/analytics*`<br>`packages/backend/src/services/user*`       | User management, reports, settings, supervision                |
 
 ### Shared/Conflict Zones (REQUIRES COORDINATION)
 
@@ -28,7 +28,7 @@ packages/backend/src/models/  # Data models - coordinate with owner of related m
 packages/ml/                  # ML pipeline - specialist only or team decision
 ```
 
-**Rule**: Before touching shared code, post in team chat: *"Planning to modify X, anyone working on dependent code?"*
+**Rule**: Before touching shared code, post in team chat: _"Planning to modify X, anyone working on dependent code?"_
 
 ---
 
@@ -37,6 +37,7 @@ packages/ml/                  # ML pipeline - specialist only or team decision
 ### 1. Morning Sync (15 minutes, async OK)
 
 Each person posts:
+
 ```
 🟢 Working on: [feature/bug]
 📍 Files: [expected scope]
@@ -45,6 +46,7 @@ Each person posts:
 ```
 
 **Example**:
+
 ```
 🟢 Working on: Pick task batch claiming feature
 📍 Files: packages/frontend/src/pages/picking/, packages/backend/src/services/picking/
@@ -57,6 +59,7 @@ Each person posts:
 **Each person works independently on their owned modules.**
 
 When you need shared code changed:
+
 1. **Check if someone else is touching it** (see morning sync)
 2. **Propose the change** in team chat with context
 3. **Wait for approval** (5-10 min typically)
@@ -65,6 +68,7 @@ When you need shared code changed:
 ### 3. End of Day (5 minutes, async)
 
 Each person posts:
+
 ```
 ✅ Completed: [what shipped]
 🚧 WIP: [what's in progress]
@@ -120,6 +124,7 @@ git push origin main
 ```
 
 **Conflict Resolution**:
+
 - If conflict is in **your module**: You decide
 - If conflict is in **shared code**: Discuss in team chat
 - If conflict is in **someone else's module**: Ask them to resolve
@@ -131,6 +136,7 @@ git push origin main
 ### When to Coordinate
 
 **Required coordination for:**
+
 - Changing `packages/shared/src/types/`
 - Modifying database schema
 - Changing API contracts between modules
@@ -138,6 +144,7 @@ git push origin main
 - Performance changes that affect other modules
 
 **Independent work (no coordination needed):**
+
 - Bug fixes in your owned modules
 - UI changes in your owned pages
 - New features in your owned modules
@@ -146,12 +153,14 @@ git push origin main
 ### Decision Making
 
 **Quick decisions (< 5 min discussion):**
+
 - Bug fixes
 - Small refactorings
 - Test improvements
 - Documentation updates
 
 **Team decisions (requires all 3):**
+
 - Database schema changes
 - New shared types
 - Breaking changes to APIs
@@ -167,6 +176,7 @@ git push origin main
 ### Picking Module (Friend 1)
 
 **Owns**:
+
 ```
 packages/frontend/src/pages/picking/*
 packages/frontend/src/components/PickTaskList*
@@ -177,16 +187,19 @@ packages/backend/src/repositories/picking*
 ```
 
 **Can modify without asking**:
+
 - Any of the above files
 - Create new components in their module
 
 **Must coordinate before changing**:
+
 - `packages/shared/src/types/` (if adding PickTask-related types)
 - `packages/backend/src/services/order*` (if order service needs changes)
 
 ### Packing Module (Friend 2)
 
 **Owns**:
+
 ```
 packages/frontend/src/pages/packing/*
 packages/frontend/src/components/PackingList*
@@ -197,16 +210,19 @@ packages/backend/src/repositories/packing*
 ```
 
 **Can modify without asking**:
+
 - Any of the above files
 - Create new components in their module
 
 **Must coordinate before changing**:
+
 - `packages/shared/src/types/` (if adding Shipment-related types)
 - `packages/backend/src/services/order*` (if order service needs changes)
 
 ### Admin Dashboard (You)
 
 **Owns**:
+
 ```
 packages/frontend/src/pages/admin/*
 packages/frontend/src/components/Analytics*
@@ -218,10 +234,12 @@ packages/backend/src/repositories/user*
 ```
 
 **Can modify without asking**:
+
 - Any of the above files
 - Create new components in their module
 
 **Must coordinate before changing**:
+
 - `packages/shared/src/types/` (if adding Admin-related types)
 - Auth/permission system (affects everyone)
 
@@ -249,7 +267,7 @@ Before AI makes changes, verify:
 const isOwnedFile = (filePath: string) => {
   const ownedPaths = [
     'packages/frontend/src/pages/picking/',
-    'packages/backend/src/services/picking/'
+    'packages/backend/src/services/picking/',
     // ... your owned paths
   ];
 
@@ -258,7 +276,9 @@ const isOwnedFile = (filePath: string) => {
 
 // If AI wants to modify non-owned file, it should ask:
 if (!isOwnedFile(aiSuggestedFile)) {
-  console.log('⚠️ This file is outside my owned module. I need to coordinate with the team.');
+  console.log(
+    '⚠️ This file is outside my owned module. I need to coordinate with the team.'
+  );
 }
 ```
 
@@ -267,12 +287,14 @@ if (!isOwnedFile(aiSuggestedFile)) {
 When you need shared code changed:
 
 **Step 1**: Ask AI to analyze impact
+
 ```typescript
 "Analyze what changes are needed in packages/shared/src/types/
 to support my new feature. List all files that would be affected."
 ```
 
 **Step 2**: Propose to team
+
 ```
 "Hey team, I'm adding [feature]. This requires changes to:
 - packages/shared/src/types/index.ts (add NewFeatureDTO)
@@ -400,6 +422,7 @@ jobs:
 **Key principle**: Modules communicate through well-defined APIs, not shared mutable state.
 
 **Good**:
+
 ```typescript
 // Picking module exposes clean API
 export class PickingService {
@@ -410,6 +433,7 @@ export class PickingService {
 ```
 
 **Bad**:
+
 ```typescript
 // Picking module reaches into other module's internals
 import { OrderService } from './order';
@@ -569,12 +593,14 @@ When modifying shared code:
 ### Adding a 4th Person
 
 **New module options**:
+
 - Shipping/Carrier integration
 - Inventory management
 - Reporting/Analytics (separate from admin)
 - Mobile apps (Picking/Packing mobile apps)
 
 **Process**:
+
 1. Define new module boundaries
 2. Update this document with new ownership
 3. Create new branch for new module
@@ -591,6 +617,7 @@ Picking Module → Picking Core + Picking Analytics
 ```
 
 **Process**:
+
 1. Team decision on split
 2. Define new boundaries
 3. Migrate tests
@@ -602,13 +629,13 @@ Picking Module → Picking Core + Picking Analytics
 
 Track these metrics weekly:
 
-| Metric | Target | How to Measure |
-|--------|--------|----------------|
-| Merge conflicts | < 2 per week | Git logs |
-| Test failures | < 5% of commits | CI/CD logs |
-| Shared code changes | < 10 per week | Git diff stats |
-| Time to merge | < 1 day | PR cycle time |
-| Bugs per module | < 3 per week | Issue tracker |
+| Metric              | Target          | How to Measure |
+| ------------------- | --------------- | -------------- |
+| Merge conflicts     | < 2 per week    | Git logs       |
+| Test failures       | < 5% of commits | CI/CD logs     |
+| Shared code changes | < 10 per week   | Git diff stats |
+| Time to merge       | < 1 day         | PR cycle time  |
+| Bugs per module     | < 3 per week    | Issue tracker  |
 
 **Review metrics in weekly team sync** (30 min, Friday afternoon).
 
@@ -617,24 +644,28 @@ Track these metrics weekly:
 ## Industry Standards We're Following
 
 ### DevOps Practices
+
 - ✅ Feature branches
 - ✅ Automated testing
 - ✅ CI/CD pipeline (recommended)
 - ✅ Peer review (AI-assisted)
 
 ### Agile Practices
+
 - ✅ Daily standup (async)
 - ✅ Iterative development
 - ✅ Task ownership
 - ✅ Continuous integration
 
 ### Software Engineering
+
 - ✅ Module boundaries
 - ✅ Type safety
 - ✅ Testing standards
 - ✅ Documentation
 
 ### AI-Specific
+
 - ✅ AI rule files
 - ✅ Invariant enforcement
 - ✅ Schema synchronization
@@ -645,6 +676,7 @@ Track these metrics weekly:
 ## Quick Reference
 
 ### DO ✅
+
 - Work independently on owned modules
 - Coordinate before touching shared code
 - Run tests before merging
@@ -653,6 +685,7 @@ Track these metrics weekly:
 - Review AI-generated changes
 
 ### DON'T ❌
+
 - Modify someone else's module without asking
 - Skip tests before merging
 - Change database schema without team decision
@@ -686,4 +719,4 @@ This workflow is **experimental** but based on solid software engineering princi
 
 ---
 
-*Remember: The AI agents are tools, not team members. You and your friends are responsible for the software. The AI helps you work faster, but you own the quality and coordination.*
+_Remember: The AI agents are tools, not team members. You and your friends are responsible for the software. The AI helps you work faster, but you own the quality and coordination._

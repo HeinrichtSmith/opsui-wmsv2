@@ -22,7 +22,10 @@ async function testPickerActivity() {
 
     console.log('Step 1 - Active pickers found:');
     console.log('  Count:', activePickers.rows.length);
-    console.log('  PickerIds:', activePickers.rows.map(r => r.user_id));
+    console.log(
+      '  PickerIds:',
+      activePickers.rows.map(r => r.user_id)
+    );
     console.log('  Pickers:', JSON.stringify(activePickers.rows, null, 2));
     console.log('');
 
@@ -33,30 +36,39 @@ async function testPickerActivity() {
 
     // Step 2: Build picker activity data
     const pickerIds = activePickers.rows.map(r => r.user_id);
-    const activityPromises = pickerIds.map(async (pickerId) => {
-      const activeOrder = await pool.query(`
+    const activityPromises = pickerIds.map(async pickerId => {
+      const activeOrder = await pool.query(
+        `
         SELECT order_id, status, progress, updated_at
         FROM orders
         WHERE picker_id = $1 AND status = 'PICKING'
         ORDER BY updated_at DESC
         LIMIT 1
-      `, [pickerId]);
+      `,
+        [pickerId]
+      );
 
-      const recentOrder = await pool.query(`
+      const recentOrder = await pool.query(
+        `
         SELECT order_id, status, progress, updated_at
         FROM orders
         WHERE picker_id = $1
         ORDER BY updated_at DESC
         LIMIT 1
-      `, [pickerId]);
+      `,
+        [pickerId]
+      );
 
-      const recentTask = await pool.query(`
+      const recentTask = await pool.query(
+        `
         SELECT pick_task_id, started_at, completed_at
         FROM pick_tasks
         WHERE picker_id = $1
         ORDER BY started_at DESC
         LIMIT 1
-      `, [pickerId]);
+      `,
+        [pickerId]
+      );
 
       return {
         pickerId,
@@ -69,7 +81,7 @@ async function testPickerActivity() {
     const activityData = await Promise.all(activityPromises);
 
     // Step 3: Map to response format
-    const result = activityData.map((data) => {
+    const result = activityData.map(data => {
       const now = new Date();
       const fiveMinutesAgo = new Date(now.getTime() - 5 * 60 * 1000);
 
@@ -125,7 +137,6 @@ async function testPickerActivity() {
       console.log('  pickerId:', picker.pickerId);
       console.log('  pickerName:', picker.pickerName);
     });
-
   } catch (error) {
     console.error('Error:', error);
   } finally {

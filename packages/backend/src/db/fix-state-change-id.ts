@@ -30,7 +30,6 @@ async function fixStateChangeIdGeneration(): Promise<void> {
     // Test the new function
     const result = await query(`SELECT generate_state_change_id() as test_id`);
     console.log('🧪 Test ID:', result.rows[0].testId);
-
   } catch (error) {
     console.error('❌ Failed to fix state change ID generation:', error);
     throw error;
@@ -44,7 +43,7 @@ fixStateChangeIdGeneration()
     console.log('\n✅ State change ID generation fix completed successfully!');
     process.exit(0);
   })
-  .catch((error) => {
+  .catch(error => {
     console.error('\n❌ Fix failed:', error);
     process.exit(1);
   });

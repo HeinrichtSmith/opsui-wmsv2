@@ -26,7 +26,7 @@ declare global {
 
 /**
  * Generate and attach unique request ID to each request
- * 
+ *
  * Request IDs are used for:
  * - Log correlation across services
  * - Debugging and troubleshooting

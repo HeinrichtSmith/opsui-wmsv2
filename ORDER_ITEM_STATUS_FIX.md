@@ -46,12 +46,14 @@ END
 ## Changes Made
 
 ### Applied Migration
+
 ✅ Dropped old `trigger_update_order_progress` trigger
 ✅ Dropped old `update_order_progress()` function
 ✅ Recreated `update_order_progress()` function with explicit enum casting
 ✅ Recreated `trigger_update_order_progress` trigger
 
 ### Database Impact
+
 - The trigger now correctly handles `order_item_status` enum values
 - Order item status updates automatically when `picked_quantity` changes
 - Status values transition correctly: `PENDING` → `PARTIAL_PICKED` → `FULLY_PICKED`
@@ -61,11 +63,13 @@ END
 To verify the fix works:
 
 1. **Start the backend server** (if not running):
+
    ```bash
    npm run dev
    ```
 
 2. **Start the frontend** (if not running):
+
    ```bash
    cd packages/frontend
    npm run dev
@@ -78,12 +82,13 @@ To verify the fix works:
    - Verify the item is picked without errors
 
 4. **Verify database state**:
+
    ```sql
    -- Check order item status
-   SELECT order_item_id, sku, quantity, picked_quantity, status 
-   FROM order_items 
+   SELECT order_item_id, sku, quantity, picked_quantity, status
+   FROM order_items
    WHERE order_id = 'ORD-20260114-0001';
-   
+
    -- Status should be:
    - 'PENDING' when picked_quantity = 0
    - 'PARTIAL_PICKED' when 0 < picked_quantity < quantity
@@ -110,6 +115,7 @@ Then re-run the original schema if needed.
 ## Future Deployments
 
 The fix has been incorporated into `packages/backend/src/db/schema.sql`, so:
+
 - Fresh database installations will automatically have the fix
 - No additional migrations needed for new deployments
 - The fix is now part of the canonical schema
@@ -117,6 +123,7 @@ The fix has been incorporated into `packages/backend/src/db/schema.sql`, so:
 ## Related Issues
 
 This fix resolves the 500 Internal Server Error that occurred when:
+
 - Clicking on items in the picking interface
 - Scanning item barcodes
 - Any operation that updates `order_items.picked_quantity`

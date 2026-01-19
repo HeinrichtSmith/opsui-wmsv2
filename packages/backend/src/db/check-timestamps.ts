@@ -61,7 +61,6 @@ async function checkTimestamps(): Promise<void> {
     } else {
       console.log('\n✅ Timestamps are in sync.');
     }
-
   } catch (error) {
     console.error('❌ Error:', error);
     throw error;

@@ -9,9 +9,7 @@ async function runMigration() {
     console.log('Running add_active_role migration...');
 
     // Execute migration - add active_role column
-    await query(
-      `ALTER TABLE users ADD COLUMN IF NOT EXISTS active_role user_role`
-    );
+    await query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS active_role user_role`);
 
     console.log('Migration completed successfully!');
     await closePool();

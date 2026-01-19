@@ -15,6 +15,7 @@ server.headersTimeout = 66000; // Slightly higher than keep-alive timeout
 ```
 
 **Benefits:**
+
 - Prevents connection timeouts after inactivity
 - Keeps database connections alive
 - Higher timeout values work better with load balancers
@@ -37,6 +38,7 @@ proxy: {
 ```
 
 **Benefits:**
+
 - Polling is more reliable than file system events
 - Prevents HMR (Hot Module Replacement) failures after sleep
 - Longer proxy timeouts prevent API call failures
@@ -44,6 +46,7 @@ proxy: {
 ### 3. Keep-Alive Monitor Script (scripts/keep-alive.js)
 
 A standalone script that:
+
 - Monitors both servers every 10 seconds
 - Automatically restarts servers if they stop
 - Keeps a count of restart attempts
@@ -67,6 +70,7 @@ npm run dev:all
 ```
 
 This will:
+
 1. Start the backend server
 2. Start the frontend server
 3. Start the keep-alive monitor
@@ -105,6 +109,7 @@ The keep-alive monitor:
 ## Monitor Output Examples
 
 ### Normal Operation
+
 ```
 🔍 Keep-Alive Monitor Started
    Checking servers every 10 seconds
@@ -114,6 +119,7 @@ The keep-alive monitor:
 ```
 
 ### Server Failure Detected
+
 ```
 ======================================
 🔄 RESTARTING SERVERS
@@ -126,24 +132,27 @@ The keep-alive monitor:
 ```
 
 ### Recovery
+
 ```
 ✅ Servers are back online
 ```
 
 ### Safety Limit Reached
+
 ```
 ⚠️  MAX RESTART LIMIT REACHED. Stopping monitor.
 ```
 
 ## Troubleshooting
 
-### Q: I see "DEPRECATION WARNING" about util._extend
+### Q: I see "DEPRECATION WARNING" about util.\_extend
 
 **A:** This is a warning from a dependency, not an error. It doesn't affect functionality.
 
 ### Q: Servers still stop after sleep
 
-**A:** 
+**A:**
+
 1. Make sure you're using `npm run dev:all` (includes monitor)
 2. Check that the monitor terminal is still open
 3. The monitor will auto-restart servers within 20 seconds of wake-up
@@ -151,6 +160,7 @@ The keep-alive monitor:
 ### Q: Monitor keeps restarting servers repeatedly
 
 **A:** This usually means:
+
 1. Database is not running
 2. Port conflicts with another application
 3. Application code has errors
@@ -172,6 +182,7 @@ The monitor will stop after 10 restart attempts to prevent issues.
 ## How It Works After Sleep
 
 ### Before This Setup
+
 ```
 1. Laptop goes to sleep
 2. Development servers pause/stop
@@ -181,6 +192,7 @@ The monitor will stop after 10 restart attempts to prevent issues.
 ```
 
 ### With This Setup
+
 ```
 1. Laptop goes to sleep
 2. Development servers pause/stop
@@ -196,9 +208,9 @@ The monitor will stop after 10 restart attempts to prevent issues.
 You can customize the monitor by editing `scripts/keep-alive.js`:
 
 ```javascript
-const CHECK_INTERVAL = 10000;  // How often to check (ms)
-const MAX_RESTARTS = 10;      // Max auto-restarts
-const RESTART_DELAY = 5000;     // Delay before restart (ms)
+const CHECK_INTERVAL = 10000; // How often to check (ms)
+const MAX_RESTARTS = 10; // Max auto-restarts
+const RESTART_DELAY = 5000; // Delay before restart (ms)
 ```
 
 ## Next Steps

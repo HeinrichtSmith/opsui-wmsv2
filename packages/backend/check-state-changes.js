@@ -26,19 +26,16 @@ async function checkStateChanges() {
       WHERE table_name = 'order_state_changes'
       ORDER BY ordinal_position
     `);
-    
+
     console.log('\norder_state_changes columns:');
     columnsResult.rows.forEach(col => {
       console.log(`  ${col.column_name}: ${col.data_type} (nullable: ${col.is_nullable})`);
     });
 
     // Get sample data
-    const dataResult = await client.query(
-      'SELECT * FROM order_state_changes LIMIT 5'
-    );
+    const dataResult = await client.query('SELECT * FROM order_state_changes LIMIT 5');
     console.log('\nSample data:');
     console.log(JSON.stringify(dataResult.rows, null, 2));
-
   } catch (error) {
     console.error('Error:', error.message);
   } finally {

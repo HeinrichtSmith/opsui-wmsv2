@@ -114,7 +114,7 @@ export function parseBinLocation(binId: string): {
   return {
     zone: match[1],
     aisle: match[2],
-    shelf: match[3]
+    shelf: match[3],
   };
 }
 

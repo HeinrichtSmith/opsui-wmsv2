@@ -1,7 +1,9 @@
 # Undo Verification Fix - Race Condition Resolution
 
 ## Issue Description
+
 When attempting to undo a packing verification in the PackingPage, users encountered an error:
+
 ```
 Cannot undo more items than verified (verified: 0, trying to undo: 1)
 ```
@@ -11,6 +13,7 @@ This error occurred even when the UI showed the item had verified quantity > 0.
 ## Root Cause Analysis
 
 ### Race Condition Between UI State and Backend State
+
 1. **Timeline of Events:**
    - User clicks "Undo Verify" button on an item showing verified: 2/2
    - Frontend fetches latest order data from API
@@ -29,14 +32,17 @@ This error occurred even when the UI showed the item had verified quantity > 0.
 ## Solution Implemented
 
 ### 1. Added Loading State Tracking
+
 ```typescript
 const [undoLoading, setUndoLoading] = useState<Record<number, boolean>>({});
 ```
+
 - Tracks loading state per item index
 - Prevents multiple simultaneous undo operations on the same item
 - Provides visual feedback to users
 
 ### 2. Enhanced Undo Button with Loading State
+
 ```typescript
 <button
   onClick={(e) => {
@@ -58,6 +64,7 @@ const [undoLoading, setUndoLoading] = useState<Record<number, boolean>>({});
 ```
 
 **Features:**
+
 - Disabled during undo operation
 - Shows spinner icon when loading
 - Text changes to "Undoing..."
@@ -65,19 +72,22 @@ const [undoLoading, setUndoLoading] = useState<Record<number, boolean>>({});
 - Prevents cursor hover effects when disabled
 
 ### 3. Guarded Against Concurrent Operations
+
 ```typescript
 const handleUndoVerification = async (index: number) => {
   // Prevent multiple simultaneous undo operations on the same item
   if (undoLoading[index]) {
-    console.log('[handleUndoVerification] Undo already in progress for item', index);
+    console.log(
+      '[handleUndoVerification] Undo already in progress for item',
+      index
+    );
     return;
   }
 
   try {
     setUndoLoading(prev => ({ ...prev, [index]: true }));
-    
+
     // ... rest of undo logic ...
-    
   } finally {
     setUndoLoading(prev => ({ ...prev, [index]: false }));
   }
@@ -85,12 +95,14 @@ const handleUndoVerification = async (index: number) => {
 ```
 
 **Protection:**
+
 - Early return if undo already in progress
 - Loading state set before any API calls
 - Cleanup in finally block ensures state is always reset
 - No way for concurrent operations to execute
 
 ### 4. Improved Error Handling
+
 ```typescript
 try {
   await apiClient.post(`/orders/${orderId}/undo-packing-verification`, {
@@ -101,7 +113,7 @@ try {
 
   showSuccess('Verification undone!');
   await refetch();
-  
+
   // Navigate if needed
   if (index < currentItemIndex) {
     setCurrentItemIndex(index);
@@ -110,9 +122,12 @@ try {
   }
 } catch (error: any) {
   console.error('Undo verification error:', error);
-  
-  const errorMsg = error.response?.data?.error || error.message || 'Failed to undo verification';
-  
+
+  const errorMsg =
+    error.response?.data?.error ||
+    error.message ||
+    'Failed to undo verification';
+
   if (errorMsg.includes('Cannot undo more items than verified')) {
     // State changed between our fetch and request - refresh and inform user
     await refetch();
@@ -125,12 +140,14 @@ try {
 ```
 
 **Error Recovery:**
+
 - Detects state mismatch errors specifically
 - Refreshes state to show current reality
 - Provides user-friendly error message
 - Always refreshes on any error to sync state
 
 ### 5. Pre-flight Validation
+
 ```typescript
 // Can only undo if there's something verified
 const currentVerified = item.verifiedQuantity || 0;
@@ -142,6 +159,7 @@ if (currentVerified <= 0) {
 ```
 
 **Validation:**
+
 - Checks verified quantity before prompting user
 - Prevents unnecessary prompts
 - Refreshes state if mismatch detected
@@ -149,17 +167,20 @@ if (currentVerified <= 0) {
 ## Benefits
 
 ### User Experience
+
 1. **Clear Feedback:** Users see loading state and know the operation is in progress
 2. **Prevented Errors:** Multiple rapid clicks are prevented
 3. **Better Recovery:** State mismatches are handled gracefully
 4. **Reduced Confusion:** Error messages are clear and actionable
 
 ### System Stability
+
 1. **No Race Conditions:** Concurrent operations are prevented
 2. **Consistent State:** State is always refreshed after errors
 3. **Preventative:** Early validation catches issues before prompts
 
 ### Code Quality
+
 1. **Defensive Programming:** Multiple layers of protection
 2. **Clear Intent:** Loading state makes code behavior explicit
 3. **Error Handling:** Comprehensive catch blocks with specific handling
@@ -168,6 +189,7 @@ if (currentVerified <= 0) {
 ## Testing Recommendations
 
 ### Manual Testing Scenarios
+
 1. **Normal Undo Flow:**
    - Verify an item (e.g., scan 2 items)
    - Click "Undo Verify"
@@ -192,7 +214,9 @@ if (currentVerified <= 0) {
    - Verify buttons are appropriately disabled
 
 ### Automated Testing
+
 Consider adding tests for:
+
 - Loading state management
 - Concurrent operation prevention
 - Error handling and recovery
@@ -201,6 +225,7 @@ Consider adding tests for:
 ## Files Modified
 
 ### packages/frontend/src/pages/PackingPage.tsx
+
 - Added `undoLoading` state
 - Enhanced `handleUndoVerification` function
 - Updated undo button with loading state
@@ -209,6 +234,7 @@ Consider adding tests for:
 ## Related Issues
 
 This fix addresses the race condition issue that could also affect other similar operations:
+
 - Undo pick operation (pickers)
 - Skip item operations
 - Any operation that modifies state after a read-modify-write cycle
@@ -223,6 +249,7 @@ This fix addresses the race condition issue that could also affect other similar
 ## Conclusion
 
 This fix resolves the race condition by:
+
 1. Preventing concurrent undo operations
 2. Providing clear visual feedback
 3. Handling state mismatches gracefully

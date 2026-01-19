@@ -62,7 +62,15 @@ export class QualityControlService {
           (checklist_id, checklist_name, description, inspection_type, sku, category, created_by)
          VALUES ($1, $2, $3, $4, $5, $6, $7)
          RETURNING *`,
-        [checklistId, data.checklistName, data.description || null, data.inspectionType, data.sku || null, data.category || null, data.createdBy]
+        [
+          checklistId,
+          data.checklistName,
+          data.description || null,
+          data.inspectionType,
+          data.sku || null,
+          data.category || null,
+          data.createdBy,
+        ]
       );
 
       // Create checklist items
@@ -72,13 +80,24 @@ export class QualityControlService {
           `INSERT INTO inspection_checklist_items
             (item_id, checklist_id, item_description, item_type, is_required, display_order, options)
            VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-          [itemId, checklistId, item.itemDescription, item.itemType, item.isRequired, item.displayOrder, item.options ? JSON.stringify(item.options) : null]
+          [
+            itemId,
+            checklistId,
+            item.itemDescription,
+            item.itemType,
+            item.isRequired,
+            item.displayOrder,
+            item.options ? JSON.stringify(item.options) : null,
+          ]
         );
       }
 
       await client.query('COMMIT');
 
-      logger.info('Inspection checklist created', { checklistId, checklistName: data.checklistName });
+      logger.info('Inspection checklist created', {
+        checklistId,
+        checklistName: data.checklistName,
+      });
       return await this.getInspectionChecklist(checklistId);
     } catch (error) {
       await client.query('ROLLBACK');
@@ -160,7 +179,7 @@ export class QualityControlService {
     );
 
     const checklists = await Promise.all(
-      result.rows.map(async (row) => {
+      result.rows.map(async row => {
         const checklist = this.mapRowToChecklist(row);
         const itemsResult = await client.query(
           `SELECT * FROM inspection_checklist_items WHERE checklist_id = $1 ORDER BY display_order`,
@@ -190,10 +209,9 @@ export class QualityControlService {
       const inspectionId = `QI-${nanoid(10)}`.toUpperCase();
 
       // Get inspector name
-      const userResult = await client.query(
-        `SELECT name FROM users WHERE user_id = $1`,
-        [dto.inspectorId]
-      );
+      const userResult = await client.query(`SELECT name FROM users WHERE user_id = $1`, [
+        dto.inspectorId,
+      ]);
 
       const inspectorName = userResult.rows[0]?.name || 'Unknown';
 
@@ -405,7 +423,10 @@ export class QualityControlService {
 
       await client.query('COMMIT');
 
-      logger.info('Inspection status updated', { inspectionId: dto.inspectionId, status: dto.status });
+      logger.info('Inspection status updated', {
+        inspectionId: dto.inspectionId,
+        status: dto.status,
+      });
       return await this.getQualityInspection(dto.inspectionId);
     } catch (error) {
       await client.query('ROLLBACK');
@@ -460,7 +481,15 @@ export class QualityControlService {
         (result_id, inspection_id, checklist_item_id, result, passed, notes, image_url)
        VALUES ($1, $2, $3, $4, $5, $6, $7)
        RETURNING *`,
-      [resultId, data.inspectionId, data.checklistItemId, data.result, data.passed, data.notes || null, data.imageUrl || null]
+      [
+        resultId,
+        data.inspectionId,
+        data.checklistItemId,
+        data.result,
+        data.passed,
+        data.notes || null,
+        data.imageUrl || null,
+      ]
     );
 
     logger.info('Inspection result saved', { resultId, inspectionId: data.inspectionId });
@@ -474,10 +503,9 @@ export class QualityControlService {
   async getInspectionResults(inspectionId: string): Promise<InspectionResult[]> {
     const client = await getPool();
 
-    const result = await client.query(
-      `SELECT * FROM inspection_results WHERE inspection_id = $1`,
-      [inspectionId]
-    );
+    const result = await client.query(`SELECT * FROM inspection_results WHERE inspection_id = $1`, [
+      inspectionId,
+    ]);
 
     return result.rows.map(row => this.mapRowToInspectionResult(row));
   }
@@ -504,7 +532,17 @@ export class QualityControlService {
            authorized_by, total_refund_amount, restocking_fee, notes)
          VALUES ($1, $2, $3, $4, $5, NOW(), $6, $7, $8, $9)
          RETURNING *`,
-        [returnId, dto.orderId, dto.customerId, dto.customerName, dto.returnReason, dto.authorizedBy, dto.totalRefundAmount, dto.restockingFee || null, dto.notes || null]
+        [
+          returnId,
+          dto.orderId,
+          dto.customerId,
+          dto.customerName,
+          dto.returnReason,
+          dto.authorizedBy,
+          dto.totalRefundAmount,
+          dto.restockingFee || null,
+          dto.notes || null,
+        ]
       );
 
       // Create return items
@@ -514,7 +552,17 @@ export class QualityControlService {
           `INSERT INTO return_items
             (return_item_id, return_id, order_item_id, sku, name, quantity, return_reason, condition, refund_amount)
            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
-          [returnItemId, returnId, item.orderItemId, item.sku, item.name, item.quantity, item.returnReason, item.condition, item.refundAmount]
+          [
+            returnItemId,
+            returnId,
+            item.orderItemId,
+            item.sku,
+            item.name,
+            item.quantity,
+            item.returnReason,
+            item.condition,
+            item.refundAmount,
+          ]
         );
       }
 
@@ -535,10 +583,9 @@ export class QualityControlService {
   async getReturnAuthorization(returnId: string): Promise<ReturnAuthorization> {
     const client = await getPool();
 
-    const result = await client.query(
-      `SELECT * FROM return_authorizations WHERE return_id = $1`,
-      [returnId]
-    );
+    const result = await client.query(`SELECT * FROM return_authorizations WHERE return_id = $1`, [
+      returnId,
+    ]);
 
     if (result.rows.length === 0) {
       throw new Error(`Return authorization ${returnId} not found`);
@@ -547,10 +594,9 @@ export class QualityControlService {
     const returnAuth = this.mapRowToReturnAuthorization(result.rows[0]);
 
     // Get return items
-    const itemsResult = await client.query(
-      `SELECT * FROM return_items WHERE return_id = $1`,
-      [returnId]
-    );
+    const itemsResult = await client.query(`SELECT * FROM return_items WHERE return_id = $1`, [
+      returnId,
+    ]);
 
     returnAuth.items = itemsResult.rows.map(row => this.mapRowToReturnItem(row));
 
@@ -613,12 +659,11 @@ export class QualityControlService {
     );
 
     const returns = await Promise.all(
-      result.rows.map(async (row) => {
+      result.rows.map(async row => {
         const returnAuth = this.mapRowToReturnAuthorization(row);
-        const itemsResult = await client.query(
-          `SELECT * FROM return_items WHERE return_id = $1`,
-          [returnAuth.returnId]
-        );
+        const itemsResult = await client.query(`SELECT * FROM return_items WHERE return_id = $1`, [
+          returnAuth.returnId,
+        ]);
         returnAuth.items = itemsResult.rows.map(r => this.mapRowToReturnItem(r));
         return returnAuth;
       })

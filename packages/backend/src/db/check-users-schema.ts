@@ -31,16 +31,17 @@ async function checkSchema(): Promise<void> {
       LIMIT 5;
     `);
 
-    console.table(pickerData.rows.map((row: any) => ({
-      userId: row.userId,
-      email: row.email,
-      name: row.name,
-      role: row.role,
-      active: row.active,
-      currentView: row.currentView,
-      currentViewUpdatedAt: row.currentViewUpdatedAt
-    })));
-
+    console.table(
+      pickerData.rows.map((row: any) => ({
+        userId: row.userId,
+        email: row.email,
+        name: row.name,
+        role: row.role,
+        active: row.active,
+        currentView: row.currentView,
+        currentViewUpdatedAt: row.currentViewUpdatedAt,
+      }))
+    );
   } catch (error) {
     console.error('❌ Error:', error);
     throw error;

@@ -50,7 +50,6 @@ async function resetSimple() {
     console.log(`Total orders: ${summary.total_orders}`);
     console.log(`Pending orders: ${summary.pending_orders}`);
     console.log('\n✓ Simple reset complete!');
-
   } catch (error) {
     console.error('Error resetting database:', error);
     process.exit(1);

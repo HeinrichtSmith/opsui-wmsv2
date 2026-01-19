@@ -309,10 +309,7 @@ export class StockControlService {
   }> {
     try {
       // Get SKU details
-      const skuResult = await getPool().query(
-        'SELECT * FROM skus WHERE sku = $1',
-        [sku]
-      );
+      const skuResult = await getPool().query('SELECT * FROM skus WHERE sku = $1', [sku]);
 
       if (skuResult.rows.length === 0) {
         throw new NotFoundError('SKU', sku);
@@ -392,10 +389,9 @@ export class StockControlService {
       const countId = `SC-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`;
 
       // Check if bin exists
-      const binResult = await getPool().query(
-        'SELECT * FROM bin_locations WHERE bin_id = $1',
-        [binLocation]
-      );
+      const binResult = await getPool().query('SELECT * FROM bin_locations WHERE bin_id = $1', [
+        binLocation,
+      ]);
 
       if (binResult.rows.length === 0) {
         throw new NotFoundError('Bin location', binLocation);
@@ -448,10 +444,9 @@ export class StockControlService {
       await client.query('BEGIN');
 
       // Get stock count details
-      const countResult = await client.query(
-        'SELECT * FROM stock_counts WHERE count_id = $1',
-        [countId]
-      );
+      const countResult = await client.query('SELECT * FROM stock_counts WHERE count_id = $1', [
+        countId,
+      ]);
 
       if (countResult.rows.length === 0) {
         throw new NotFoundError('Stock count', countId);
@@ -477,7 +472,15 @@ export class StockControlService {
         await client.query(
           `INSERT INTO stock_count_items (count_item_id, count_id, sku, expected_quantity, counted_quantity, variance, notes)
            VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-          [countItemId, countId, item.sku, expectedQuantity, item.countedQuantity, variance, item.notes || '']
+          [
+            countItemId,
+            countId,
+            item.sku,
+            expectedQuantity,
+            item.countedQuantity,
+            variance,
+            item.notes || '',
+          ]
         );
 
         if (variance !== 0) {
@@ -519,11 +522,7 @@ export class StockControlService {
   // GET STOCK COUNTS
   // --------------------------------------------------------------------------
 
-  async getStockCounts(filters: {
-    status?: string;
-    limit: number;
-    offset: number;
-  }): Promise<{
+  async getStockCounts(filters: { status?: string; limit: number; offset: number }): Promise<{
     counts: StockCount[];
     total: number;
   }> {
@@ -547,9 +546,7 @@ export class StockControlService {
       const total = parseInt(countResult.rows[0].count);
 
       // Add ordering and pagination
-      query += ` ORDER BY created_at DESC LIMIT $${paramCount} OFFSET $${
-        paramCount + 1
-      }`;
+      query += ` ORDER BY created_at DESC LIMIT $${paramCount} OFFSET $${paramCount + 1}`;
       params.push(filters.limit, filters.offset);
 
       const result = await getPool().query(query, params);
@@ -829,9 +826,7 @@ export class StockControlService {
       const total = parseInt(countResult.rows[0].count);
 
       // Add ordering and pagination
-      query += ` ORDER BY timestamp DESC LIMIT $${paramCount} OFFSET $${
-        paramCount + 1
-      }`;
+      query += ` ORDER BY timestamp DESC LIMIT $${paramCount} OFFSET $${paramCount + 1}`;
       params.push(filters.limit, filters.offset);
 
       const result = await getPool().query(query, params);
@@ -1015,10 +1010,7 @@ export class StockControlService {
   // GET BIN LOCATIONS
   // --------------------------------------------------------------------------
 
-  async getBinLocations(filters: {
-    zone?: string;
-    active?: boolean;
-  }): Promise<BinLocation[]> {
+  async getBinLocations(filters: { zone?: string; active?: boolean }): Promise<BinLocation[]> {
     try {
       let query = 'SELECT * FROM bin_locations WHERE 1=1';
       const params: any[] = [];

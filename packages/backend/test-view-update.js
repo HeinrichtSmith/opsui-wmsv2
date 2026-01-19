@@ -28,7 +28,9 @@ async function testViewUpdate() {
 
   console.log('   ✅ Found columns:');
   columnsResult.rows.forEach(col => {
-    console.log(`      - ${col.column_name}: ${col.data_type} (${col.is_nullable ? 'NULL' : 'NOT NULL'})`);
+    console.log(
+      `      - ${col.column_name}: ${col.data_type} (${col.is_nullable ? 'NULL' : 'NOT NULL'})`
+    );
   });
 
   // 2. Get current state of pickers
@@ -58,33 +60,38 @@ async function testViewUpdate() {
     console.log(`\n3. Attempting to update ${firstPicker.email}'s view...`);
 
     try {
-      const updateResult = await query(`
+      const updateResult = await query(
+        `
         UPDATE users
         SET current_view = $1,
             current_view_updated_at = NOW()
         WHERE user_id = $2
         RETURNING current_view, current_view_updated_at
-      `, ['Order Queue (Test)', firstPicker.user_id]);
+      `,
+        ['Order Queue (Test)', firstPicker.user_id]
+      );
 
       console.log('   ✅ Update successful!');
       console.log(`      current_view: ${updateResult.rows[0].current_view}`);
       console.log(`      current_view_updated_at: ${updateResult.rows[0].current_view_updated_at}`);
 
       // Verify it was actually updated
-      const verifyResult = await query(`
+      const verifyResult = await query(
+        `
         SELECT 
           current_view,
           current_view_updated_at,
           EXTRACT(EPOCH FROM (NOW() - current_view_updated_at))/60 as seconds_ago
         FROM users
         WHERE user_id = $1
-      `, [firstPicker.user_id]);
+      `,
+        [firstPicker.user_id]
+      );
 
       console.log('\n4. Verification:');
       console.log(`   current_view: ${verifyResult.rows[0].current_view}`);
       console.log(`   current_view_updated_at: ${verifyResult.rows[0].current_view_updated_at}`);
       console.log(`   Seconds ago: ${verifyResult.rows[0].seconds_ago.toFixed(2)}s`);
-
     } catch (error) {
       console.log('   ❌ Update FAILED!');
       console.log(`   Error: ${error.message}`);
@@ -97,7 +104,7 @@ async function testViewUpdate() {
 
 testViewUpdate()
   .then(() => process.exit(0))
-  .catch((error) => {
+  .catch(error => {
     console.error('Error:', error);
     process.exit(1);
   });

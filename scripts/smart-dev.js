@@ -48,13 +48,13 @@ const serverState = {
 // ============================================================================
 
 const CRITICAL_PATTERNS = [
-  /routes\/.*\.ts$/,        // Route changes affect API
-  /services\/.*\.ts$/,       // Business logic changes
-  /middleware\/.*\.ts$/,     // Middleware affects all requests
-  /app\.ts$/,                // Main app file
-  /index\.ts$/,              // Entry point
-  /db\/client\.ts$/,         // Database client
-  /config\/.*\.ts$/,         // Config changes
+  /routes\/.*\.ts$/, // Route changes affect API
+  /services\/.*\.ts$/, // Business logic changes
+  /middleware\/.*\.ts$/, // Middleware affects all requests
+  /app\.ts$/, // Main app file
+  /index\.ts$/, // Entry point
+  /db\/client\.ts$/, // Database client
+  /config\/.*\.ts$/, // Config changes
 ];
 
 const IGNORABLE_PATTERNS = [
@@ -96,7 +96,7 @@ function classifyChange(filePath) {
 // ============================================================================
 
 async function checkHealth(url) {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     const options = {
       method: 'GET',
       timeout: 3000,
@@ -105,7 +105,7 @@ async function checkHealth(url) {
       path: '/health',
     };
 
-    const req = http.request(options, (res) => {
+    const req = http.request(options, res => {
       resolve(res.statusCode === 200);
     });
 
@@ -200,21 +200,21 @@ function startBackend() {
   serverState.backend.pid = backendProcess.pid;
   serverState.backend.lastRestart = new Date();
 
-  backendProcess.stdout.on('data', (data) => {
+  backendProcess.stdout.on('data', data => {
     const msg = data.toString().trim();
     if (msg) {
       console.log('[Backend]', msg);
     }
   });
 
-  backendProcess.stderr.on('data', (data) => {
+  backendProcess.stderr.on('data', data => {
     const msg = data.toString().trim();
     if (msg && !msg.includes('Watching')) {
       console.error('[Backend Error]', msg);
     }
   });
 
-  backendProcess.on('error', (err) => {
+  backendProcess.on('error', err => {
     console.error('❌ Backend error:', err.message);
   });
 
@@ -251,21 +251,21 @@ function startFrontend() {
   serverState.frontend.pid = frontendProcess.pid;
   serverState.frontend.lastRestart = new Date();
 
-  frontendProcess.stdout.on('data', (data) => {
+  frontendProcess.stdout.on('data', data => {
     const msg = data.toString().trim();
     if (msg && !msg.includes('watching')) {
       console.log('[Frontend]', msg);
     }
   });
 
-  frontendProcess.stderr.on('data', (data) => {
+  frontendProcess.stderr.on('data', data => {
     const msg = data.toString().trim();
     if (msg) {
       console.error('[Frontend Error]', msg);
     }
   });
 
-  frontendProcess.on('error', (err) => {
+  frontendProcess.on('error', err => {
     console.error('❌ Frontend error:', err.message);
   });
 
@@ -394,8 +394,16 @@ async function monitor() {
   const frontendHealthy = await waitForHealth(FRONTEND_URL, 15000);
   serverState.frontend.healthy = frontendHealthy;
 
-  console.log(backendHealthy ? '✅' : '⚠️ ', 'Backend:', backendHealthy ? 'Healthy' : 'Not responding');
-  console.log(frontendHealthy ? '✅' : '⚠️ ', 'Frontend:', frontendHealthy ? 'Healthy' : 'Not responding');
+  console.log(
+    backendHealthy ? '✅' : '⚠️ ',
+    'Backend:',
+    backendHealthy ? 'Healthy' : 'Not responding'
+  );
+  console.log(
+    frontendHealthy ? '✅' : '⚠️ ',
+    'Frontend:',
+    frontendHealthy ? 'Healthy' : 'Not responding'
+  );
 
   // Show initial status
   showStatus();
@@ -427,7 +435,7 @@ process.stdin.setRawMode(true);
 process.stdin.resume();
 process.stdin.setEncoding('utf8');
 
-process.stdin.on('data', (key) => {
+process.stdin.on('data', key => {
   if (key === 's') {
     showStatus();
   }
@@ -440,7 +448,7 @@ process.stdin.on('data', (key) => {
 process.on('SIGINT', shutdown);
 process.on('SIGTERM', shutdown);
 
-monitor().catch((err) => {
+monitor().catch(err => {
   console.error('❌ Failed to start:', err);
   process.exit(1);
 });

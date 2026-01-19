@@ -71,17 +71,13 @@ describe('Badge Component', () => {
     });
 
     it('merges custom className', () => {
-      const { container } = renderWithProviders(
-        <Badge className="custom-class">Custom</Badge>
-      );
+      const { container } = renderWithProviders(<Badge className="custom-class">Custom</Badge>);
       const badge = container.querySelector('span');
       expect(badge).toHaveClass('custom-class');
     });
 
     it('passes through HTML attributes', () => {
-      const { container } = renderWithProviders(
-        <Badge data-testid="test-badge">Test</Badge>
-      );
+      const { container } = renderWithProviders(<Badge data-testid="test-badge">Test</Badge>);
       const badge = container.querySelector('span');
       expect(badge).toHaveAttribute('data-testid', 'test-badge');
     });
@@ -99,7 +95,7 @@ describe('Badge Component', () => {
       'BACKORDER',
     ];
 
-    it.each(statuses)('renders OrderStatusBadge for %s', (status) => {
+    it.each(statuses)('renders OrderStatusBadge for %s', status => {
       renderWithProviders(<OrderStatusBadge status={status} />);
       expect(screen.getByText(status)).toBeInTheDocument();
     });
@@ -132,7 +128,7 @@ describe('Badge Component', () => {
   describe('OrderPriorityBadge', () => {
     const priorities: OrderPriority[] = ['LOW', 'NORMAL', 'HIGH', 'URGENT'];
 
-    it.each(priorities)('renders OrderPriorityBadge for %s', (priority) => {
+    it.each(priorities)('renders OrderPriorityBadge for %s', priority => {
       renderWithProviders(<OrderPriorityBadge priority={priority} />);
       expect(screen.getByText(priority)).toBeInTheDocument();
     });
@@ -161,7 +157,7 @@ describe('Badge Component', () => {
   describe('UserRoleBadge', () => {
     const roles: UserRole[] = ['PICKER', 'PACKER', 'SUPERVISOR', 'ADMIN'];
 
-    it.each(roles)('renders UserRoleBadge for %s', (role) => {
+    it.each(roles)('renders UserRoleBadge for %s', role => {
       renderWithProviders(<UserRoleBadge role={role} />);
       expect(screen.getByText(role)).toBeInTheDocument();
     });
@@ -170,7 +166,7 @@ describe('Badge Component', () => {
   describe('TaskStatusBadge', () => {
     const taskStatuses: TaskStatus[] = ['PENDING', 'IN_PROGRESS', 'COMPLETED', 'SKIPPED'];
 
-    it.each(taskStatuses)('renders TaskStatusBadge for %s', (status) => {
+    it.each(taskStatuses)('renders TaskStatusBadge for %s', status => {
       renderWithProviders(<TaskStatusBadge status={status} />);
       expect(screen.getByText(status)).toBeInTheDocument();
     });

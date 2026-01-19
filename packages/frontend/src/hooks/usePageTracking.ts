@@ -78,7 +78,9 @@ export function usePageTracking({ view, enabled = true }: UsePageTrackingOptions
       );
 
       if (hasOtherActiveTracking) {
-        console.log(`[PageTracking] [${trackingId}] Skipping IDLE - other tracking instances active`);
+        console.log(
+          `[PageTracking] [${trackingId}] Skipping IDLE - other tracking instances active`
+        );
         return;
       }
 
@@ -131,10 +133,14 @@ export function usePageTracking({ view, enabled = true }: UsePageTrackingOptions
       const hasOtherActiveTracking = Array.from(activeTrackingIds.values()).some(Boolean);
 
       if (!hasOtherActiveTracking) {
-        console.log(`[PageTracking] [${trackingId}] No other tracking instances - setting IDLE on cleanup`);
+        console.log(
+          `[PageTracking] [${trackingId}] No other tracking instances - setting IDLE on cleanup`
+        );
         setIdle();
       } else {
-        console.log(`[PageTracking] [${trackingId}] Other tracking instances still active - skipping IDLE on cleanup`);
+        console.log(
+          `[PageTracking] [${trackingId}] Other tracking instances still active - skipping IDLE on cleanup`
+        );
       }
     };
   }, [view, enabled]); // Only depend on view and enabled

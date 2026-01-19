@@ -17,27 +17,27 @@ export enum OrderStatus {
   PACKED = 'PACKED',
   SHIPPED = 'SHIPPED',
   CANCELLED = 'CANCELLED',
-  BACKORDER = 'BACKORDER'
+  BACKORDER = 'BACKORDER',
 }
 
 export enum OrderPriority {
   LOW = 'LOW',
   NORMAL = 'NORMAL',
   HIGH = 'HIGH',
-  URGENT = 'URGENT'
+  URGENT = 'URGENT',
 }
 
 export enum OrderItemStatus {
   PENDING = 'PENDING',
   PARTIAL_PICKED = 'PARTIAL_PICKED',
-  FULLY_PICKED = 'FULLY_PICKED'
+  FULLY_PICKED = 'FULLY_PICKED',
 }
 
 export enum TaskStatus {
   PENDING = 'PENDING',
   IN_PROGRESS = 'IN_PROGRESS',
   COMPLETED = 'COMPLETED',
-  SKIPPED = 'SKIPPED'
+  SKIPPED = 'SKIPPED',
 }
 
 export enum UserRole {
@@ -50,17 +50,27 @@ export enum UserRole {
   PRODUCTION = 'PRODUCTION',
   SALES = 'SALES',
   MAINTENANCE = 'MAINTENANCE',
-  RMA = 'RMA'
+  RMA = 'RMA',
 }
 
 // String literal type for backward compatibility
-export type UserRoleValue = 'PICKER' | 'PACKER' | 'STOCK_CONTROLLER' | 'INWARDS' | 'SUPERVISOR' | 'ADMIN' | 'PRODUCTION' | 'SALES' | 'MAINTENANCE' | 'RMA';
+export type UserRoleValue =
+  | 'PICKER'
+  | 'PACKER'
+  | 'STOCK_CONTROLLER'
+  | 'INWARDS'
+  | 'SUPERVISOR'
+  | 'ADMIN'
+  | 'PRODUCTION'
+  | 'SALES'
+  | 'MAINTENANCE'
+  | 'RMA';
 
 export enum BinType {
   SHELF = 'SHELF',
   FLOOR = 'FLOOR',
   RACK = 'RACK',
-  BIN = 'BIN'
+  BIN = 'BIN',
 }
 
 export enum TransactionType {
@@ -68,7 +78,7 @@ export enum TransactionType {
   DEDUCTION = 'DEDUCTION',
   CANCELLATION = 'CANCELLATION',
   ADJUSTMENT = 'ADJUSTMENT',
-  RECEIPT = 'RECEIPT'
+  RECEIPT = 'RECEIPT',
 }
 
 /**
@@ -76,17 +86,17 @@ export enum TransactionType {
  * Categories of issues that can occur during order fulfillment
  */
 export enum ExceptionType {
-  SHORT_PICK = 'SHORT_PICK',           // Less quantity picked than ordered
+  SHORT_PICK = 'SHORT_PICK', // Less quantity picked than ordered
   SHORT_PICK_BACKORDER = 'SHORT_PICK_BACKORDER', // Short pick that triggers backorder
-  DAMAGE = 'DAMAGE',                   // Item damaged during picking/handling
-  DEFECTIVE = 'DEFECTIVE',             // Item found defective (quality issue)
-  WRONG_ITEM = 'WRONG_ITEM',           // Wrong item picked
-  SUBSTITUTION = 'SUBSTITUTION',       // Item substituted with alternative
-  OUT_OF_STOCK = 'OUT_OF_STOCK',       // Item unavailable in inventory
-  BIN_MISMATCH = 'BIN_MISMATCH',       // Item not in expected bin location
+  DAMAGE = 'DAMAGE', // Item damaged during picking/handling
+  DEFECTIVE = 'DEFECTIVE', // Item found defective (quality issue)
+  WRONG_ITEM = 'WRONG_ITEM', // Wrong item picked
+  SUBSTITUTION = 'SUBSTITUTION', // Item substituted with alternative
+  OUT_OF_STOCK = 'OUT_OF_STOCK', // Item unavailable in inventory
+  BIN_MISMATCH = 'BIN_MISMATCH', // Item not in expected bin location
   BARCODE_MISMATCH = 'BARCODE_MISMATCH', // Scanned barcode doesn't match expected
-  EXPIRED = 'EXPIRED',                 // Item past expiration date
-  OTHER = 'OTHER'                      // Other exception
+  EXPIRED = 'EXPIRED', // Item past expiration date
+  OTHER = 'OTHER', // Other exception
 }
 
 /**
@@ -94,12 +104,12 @@ export enum ExceptionType {
  * Lifecycle states for exception handling
  */
 export enum ExceptionStatus {
-  OPEN = 'OPEN',                       // Exception logged, awaiting resolution
-  REVIEWING = 'REVIEWING',             // Under review by supervisor
-  APPROVED = 'APPROVED',               // Resolution approved
-  REJECTED = 'REJECTED',               // Resolution rejected
-  RESOLVED = 'RESOLVED',               // Exception resolved and closed
-  CANCELLED = 'CANCELLED'              // Order cancelled due to exception
+  OPEN = 'OPEN', // Exception logged, awaiting resolution
+  REVIEWING = 'REVIEWING', // Under review by supervisor
+  APPROVED = 'APPROVED', // Resolution approved
+  REJECTED = 'REJECTED', // Resolution rejected
+  RESOLVED = 'RESOLVED', // Exception resolved and closed
+  CANCELLED = 'CANCELLED', // Order cancelled due to exception
 }
 
 /**
@@ -107,16 +117,16 @@ export enum ExceptionStatus {
  * Standard actions for resolving exceptions
  */
 export enum ExceptionResolution {
-  BACKORDER = 'BACKORDER',             // Place item on backorder
-  SUBSTITUTE = 'SUBSTITUTE',           // Substitute with alternative SKU
-  CANCEL_ITEM = 'CANCEL_ITEM',         // Cancel line item
-  CANCEL_ORDER = 'CANCEL_ORDER',       // Cancel entire order
+  BACKORDER = 'BACKORDER', // Place item on backorder
+  SUBSTITUTE = 'SUBSTITUTE', // Substitute with alternative SKU
+  CANCEL_ITEM = 'CANCEL_ITEM', // Cancel line item
+  CANCEL_ORDER = 'CANCEL_ORDER', // Cancel entire order
   ADJUST_QUANTITY = 'ADJUST_QUANTITY', // Adjust ordered quantity
   RETURN_TO_STOCK = 'RETURN_TO_STOCK', // Return damaged item to stock
-  WRITE_OFF = 'WRITE_OFF',             // Write off damaged/lost item
-  TRANSFER_BIN = 'TRANSFER_BIN',       // Transfer from different bin location
+  WRITE_OFF = 'WRITE_OFF', // Write off damaged/lost item
+  TRANSFER_BIN = 'TRANSFER_BIN', // Transfer from different bin location
   CONTACT_CUSTOMER = 'CONTACT_CUSTOMER', // Await customer decision
-  MANUAL_OVERRIDE = 'MANUAL_OVERRIDE'  // Manual supervisor override
+  MANUAL_OVERRIDE = 'MANUAL_OVERRIDE', // Manual supervisor override
 }
 
 // ============================================================================
@@ -521,17 +531,17 @@ export enum ASNStatus {
   IN_TRANSIT = 'IN_TRANSIT',
   RECEIVED = 'RECEIVED',
   PARTIALLY_RECEIVED = 'PARTIALLY_RECEIVED',
-  CANCELLED = 'CANCELLED'
+  CANCELLED = 'CANCELLED',
 }
 
 /**
  * Receipt Type - Type of receipt
  */
 export enum ReceiptType {
-  PO = 'PO',           // Purchase Order
-  RETURN = 'RETURN',   // Customer Return
+  PO = 'PO', // Purchase Order
+  RETURN = 'RETURN', // Customer Return
   TRANSFER = 'TRANSFER', // Warehouse Transfer
-  ADJUSTMENT = 'ADJUSTMENT' // Inventory Adjustment
+  ADJUSTMENT = 'ADJUSTMENT', // Inventory Adjustment
 }
 
 /**
@@ -540,7 +550,7 @@ export enum ReceiptType {
 export enum ReceiptStatus {
   RECEIVING = 'RECEIVING',
   COMPLETED = 'COMPLETED',
-  CANCELLED = 'CANCELLED'
+  CANCELLED = 'CANCELLED',
 }
 
 /**
@@ -550,7 +560,7 @@ export enum QualityStatus {
   PENDING = 'PENDING',
   PASSED = 'PASSED',
   FAILED = 'FAILED',
-  PARTIAL = 'PARTIAL'
+  PARTIAL = 'PARTIAL',
 }
 
 /**
@@ -560,7 +570,7 @@ export enum PutawayStatus {
   PENDING = 'PENDING',
   IN_PROGRESS = 'IN_PROGRESS',
   COMPLETED = 'COMPLETED',
-  CANCELLED = 'CANCELLED'
+  CANCELLED = 'CANCELLED',
 }
 
 /**
@@ -570,7 +580,7 @@ export enum ASNLineStatus {
   PENDING = 'PENDING',
   PARTIALLY_RECEIVED = 'PARTIALLY_RECEIVED',
   FULLY_RECEIVED = 'FULLY_RECEIVED',
-  CANCELLED = 'CANCELLED'
+  CANCELLED = 'CANCELLED',
 }
 
 /**
@@ -751,7 +761,7 @@ export enum ShipmentStatus {
   OUT_FOR_DELIVERY = 'OUT_FOR_DELIVERY',
   DELIVERED = 'DELIVERED',
   EXCEPTION = 'EXCEPTION',
-  CANCELLED = 'CANCELLED'
+  CANCELLED = 'CANCELLED',
 }
 
 /**
@@ -761,7 +771,7 @@ export enum LabelFormat {
   PDF = 'PDF',
   PNG = 'PNG',
   ZPLII = 'ZPLII',
-  EPL2 = 'EPL2'
+  EPL2 = 'EPL2',
 }
 
 /**
@@ -933,29 +943,29 @@ export enum CycleCountStatus {
   IN_PROGRESS = 'IN_PROGRESS',
   COMPLETED = 'COMPLETED',
   CANCELLED = 'CANCELLED',
-  RECONCILED = 'RECONCILED'
+  RECONCILED = 'RECONCILED',
 }
 
 /**
  * Cycle Count Type - Different types of cycle counts
  */
 export enum CycleCountType {
-  ABC = 'ABC',              // ABC analysis based counting (high-value items more frequently)
-  BLANKET = 'BLANKET',      // Count all items in a location
+  ABC = 'ABC', // ABC analysis based counting (high-value items more frequently)
+  BLANKET = 'BLANKET', // Count all items in a location
   SPOT_CHECK = 'SPOT_CHECK', // Random spot checks
-  RECEIVING = 'RECEIVING',    // Count during receiving
-  SHIPPING = 'SHIPPING',    // Count during shipping
-  AD_HOC = 'AD_HOC'         // Unscheduled counts
+  RECEIVING = 'RECEIVING', // Count during receiving
+  SHIPPING = 'SHIPPING', // Count during shipping
+  AD_HOC = 'AD_HOC', // Unscheduled counts
 }
 
 /**
  * Count Variance Status - Status of variance resolution
  */
 export enum VarianceStatus {
-  PENDING = 'PENDING',           // Variance detected, awaiting review
-  APPROVED = 'APPROVED',         // Adjustment approved
-  REJECTED = 'REJECTED',         // Adjustment rejected
-  AUTO_ADJUSTED = 'AUTO_ADJUSTED' // Automatically adjusted within tolerance
+  PENDING = 'PENDING', // Variance detected, awaiting review
+  APPROVED = 'APPROVED', // Adjustment approved
+  REJECTED = 'REJECTED', // Adjustment rejected
+  AUTO_ADJUSTED = 'AUTO_ADJUSTED', // Automatically adjusted within tolerance
 }
 
 /**
@@ -1078,19 +1088,19 @@ export interface ReconcileCycleCountDTO {
 export enum CapacityType {
   WEIGHT = 'WEIGHT',
   VOLUME = 'VOLUME',
-  QUANTITY = 'QUANTITY'
+  QUANTITY = 'QUANTITY',
 }
 
 /**
  * Capacity Unit - Units for capacity measurement
  */
 export enum CapacityUnit {
-  LBS = 'LBS',           // Pounds
-  KG = 'KG',             // Kilograms
+  LBS = 'LBS', // Pounds
+  KG = 'KG', // Kilograms
   CUBIC_FT = 'CUBIC_FT', // Cubic feet
-  CUBIC_M = 'CUBIC_M',   // Cubic meters
-  UNITS = 'UNITS',       // Individual units
-  PALLET = 'PALLET'      // Pallet positions
+  CUBIC_M = 'CUBIC_M', // Cubic meters
+  UNITS = 'UNITS', // Individual units
+  PALLET = 'PALLET', // Pallet positions
 }
 
 /**
@@ -1100,7 +1110,7 @@ export enum CapacityRuleStatus {
   ACTIVE = 'ACTIVE',
   INACTIVE = 'INACTIVE',
   WARNING = 'WARNING',
-  EXCEEDED = 'EXCEEDED'
+  EXCEEDED = 'EXCEEDED',
 }
 
 /**
@@ -1209,21 +1219,21 @@ export enum InspectionStatus {
   PASSED = 'PASSED',
   FAILED = 'FAILED',
   CONDITIONAL_PASSED = 'CONDITIONAL_PASSED', // Passed with conditions
-  CANCELLED = 'CANCELLED'
+  CANCELLED = 'CANCELLED',
 }
 
 /**
  * Inspection Type - Type of quality inspection
  */
 export enum InspectionType {
-  INCOMING = 'INCOMING',           // Inspect incoming goods
-  OUTGOING = 'OUTGOING',           // Inspect outgoing goods
-  INVENTORY = 'INVENTORY',         // Regular inventory inspection
-  QUALITY_HOLD = 'QUALITY_HOLD',   // Items placed on quality hold
-  RETURN = 'RETURN',               // Returned items inspection
-  DAMAGE = 'DAMAGE',               // Damage inspection
-  EXPIRATION = 'EXPIRATION',       // Expiration date check
-  SPECIAL = 'SPECIAL'              // Special inspection request
+  INCOMING = 'INCOMING', // Inspect incoming goods
+  OUTGOING = 'OUTGOING', // Inspect outgoing goods
+  INVENTORY = 'INVENTORY', // Regular inventory inspection
+  QUALITY_HOLD = 'QUALITY_HOLD', // Items placed on quality hold
+  RETURN = 'RETURN', // Returned items inspection
+  DAMAGE = 'DAMAGE', // Damage inspection
+  EXPIRATION = 'EXPIRATION', // Expiration date check
+  SPECIAL = 'SPECIAL', // Special inspection request
 }
 
 /**
@@ -1239,7 +1249,7 @@ export enum DefectType {
   MISLABELED = 'MISLABELED',
   PACKAGING = 'PACKAGING',
   CONTAMINATED = 'CONTAMINATED',
-  OTHER = 'OTHER'
+  OTHER = 'OTHER',
 }
 
 /**
@@ -1254,7 +1264,7 @@ export enum DispositionAction {
   DISCOUNT = 'DISCOUNT',
   DONATE = 'DONATE',
   CUSTOMER_RETURN = 'CUSTOMER_RETURN',
-  OTHER = 'OTHER'
+  OTHER = 'OTHER',
 }
 
 /**
@@ -1343,7 +1353,14 @@ export interface ReturnAuthorization {
   customerName: string;
   returnReason: string;
   returnDate: Date;
-  status: 'PENDING' | 'APPROVED' | 'RECEIVED' | 'INSPECTED' | 'PROCESSED' | 'REJECTED' | 'COMPLETED';
+  status:
+    | 'PENDING'
+    | 'APPROVED'
+    | 'RECEIVED'
+    | 'INSPECTED'
+    | 'PROCESSED'
+    | 'REJECTED'
+    | 'COMPLETED';
   authorizedBy: string;
   receivedBy?: string;
   inspectedBy?: string;

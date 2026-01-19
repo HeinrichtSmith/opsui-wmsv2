@@ -49,11 +49,7 @@ router.get(
       endDate.setTime(new Date(req.query.endDate as string).getTime());
     }
 
-    const performance = await metricsService.getPickerPerformance(
-      pickerId,
-      startDate,
-      endDate
-    );
+    const performance = await metricsService.getPickerPerformance(pickerId, startDate, endDate);
     res.json(performance);
   })
 );
@@ -76,10 +72,7 @@ router.get(
       endDate.setTime(new Date(req.query.endDate as string).getTime());
     }
 
-    const performance = await metricsService.getAllPickersPerformance(
-      startDate,
-      endDate
-    );
+    const performance = await metricsService.getAllPickersPerformance(startDate, endDate);
     res.json(performance);
   })
 );
@@ -118,9 +111,7 @@ router.get(
   '/skus/top-picked',
   authorize(UserRole.SUPERVISOR, UserRole.ADMIN),
   asyncHandler(async (req: AuthenticatedRequest, res) => {
-    const limit = req.query.limit
-      ? parseInt(req.query.limit as string)
-      : 10;
+    const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
     const topSKUs = await metricsService.getTopSKUsByPickFrequency(limit);
     res.json(topSKUs);
   })

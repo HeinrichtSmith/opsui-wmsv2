@@ -9,7 +9,7 @@ const { query } = require('./src/db/client.js');
       ORDER BY ordinal_position
     `);
     console.log('View-related columns:', JSON.stringify(result.rows, null, 2));
-    
+
     // Also check current data
     const currentData = await query(`
       SELECT user_id, name, current_view, current_view_updated_at, NOW() as server_time

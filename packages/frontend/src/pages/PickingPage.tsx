@@ -8,11 +8,28 @@ import { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { useOrder, usePickItem, useCompleteOrder, useLogException } from '@/services/api';
-import { Card, CardHeader, CardTitle, CardContent, ScanInput, Button, Header } from '@/components/shared';
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  ScanInput,
+  Button,
+  Header,
+} from '@/components/shared';
 import { TaskStatusBadge } from '@/components/shared';
 import { formatBinLocation } from '@/lib/utils';
 import { showSuccess, showError, useAuthStore } from '@/stores';
-import { CheckIcon, XMarkIcon, ExclamationTriangleIcon, ArrowPathIcon, MinusCircleIcon, ExclamationCircleIcon, ArrowLeftIcon, WrenchScrewdriverIcon } from '@heroicons/react/24/outline';
+import {
+  CheckIcon,
+  XMarkIcon,
+  ExclamationTriangleIcon,
+  ArrowPathIcon,
+  MinusCircleIcon,
+  ExclamationCircleIcon,
+  ArrowLeftIcon,
+  WrenchScrewdriverIcon,
+} from '@heroicons/react/24/outline';
 import { apiClient } from '@/lib/api-client';
 import { usePageTracking, PageViews } from '@/hooks/usePageTracking';
 import { TaskStatus, ExceptionType } from '@opsui/shared';
@@ -25,8 +42,8 @@ export function PickingPage() {
   const { orderId } = useParams<{ orderId: string }>();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const currentUser = useAuthStore((state) => state.user);
-  const userRole = useAuthStore((state) => state.user?.role);
+  const currentUser = useAuthStore(state => state.user);
+  const userRole = useAuthStore(state => state.user?.role);
 
   // Track current page for admin dashboard
   usePageTracking({ view: orderId ? PageViews.PICKING(orderId) : 'Picking' });
@@ -48,22 +65,22 @@ export function PickingPage() {
   const pickMutation = usePickItem();
   const completeMutation = useCompleteOrder();
   const logExceptionMutation = useLogException();
-  
+
   // Ref to track if we've already attempted to claim this order
   const hasClaimedRef = useRef(false);
-  
+
   // Ref to prevent race conditions during claim
   const isClaimingRef = useRef(false);
-  
+
   // Claim order mutation
   const claimMutation = useMutation({
     mutationFn: async (orderId: string) => {
       const response = await apiClient.post(`/orders/${orderId}/claim`, {
-        pickerId: useAuthStore.getState().user?.userId
+        pickerId: useAuthStore.getState().user?.userId,
       });
       return response.data;
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       console.log('[PickingPage] Order claimed successfully:', data);
       hasClaimedRef.current = true;
       isClaimingRef.current = false;
@@ -74,13 +91,13 @@ export function PickingPage() {
       console.error('[PickingPage] Claim error:', error);
       isClaimingRef.current = false;
       const errorMsg = error.response?.data?.error || error.message || 'Failed to claim order';
-      
+
       // Don't reset hasClaimedRef on conflict errors (409) - order might actually be claimed
       const isConflict = error.response?.status === 409;
       if (!isConflict) {
         hasClaimedRef.current = false; // Only reset on non-conflict errors
       }
-      
+
       // Handle specific claim errors
       if (errorMsg.includes('already claimed')) {
         setClaimError(`Order is already claimed by another picker`);
@@ -91,9 +108,9 @@ export function PickingPage() {
       } else {
         setClaimError(`Failed to claim order: ${errorMsg}`);
       }
-      
+
       showError(errorMsg);
-    }
+    },
   });
 
   // Reset claim ref when orderId changes
@@ -109,16 +126,23 @@ export function PickingPage() {
     if (orderId && order) {
       console.log(`[PickingPage] Checking if order needs to be claimed: ${orderId}`);
       console.log(`[PickingPage] Order status: ${order.status}, pickerId: ${order.pickerId}`);
-      console.log(`[PickingPage] hasClaimedRef: ${hasClaimedRef.current}, isClaiming: ${isClaimingRef.current}, isPending: ${claimMutation.isPending}`);
+      console.log(
+        `[PickingPage] hasClaimedRef: ${hasClaimedRef.current}, isClaiming: ${isClaimingRef.current}, isPending: ${claimMutation.isPending}`
+      );
 
       // Check if this is a view-only scenario (admin/supervisor viewing someone else's order OR viewing a PICKED order)
       const currentUserId = useAuthStore.getState().user?.userId;
-      const isViewOnlyOrder = order.status === 'PICKED' || order.status === 'SHIPPED' ||
-                              (order.pickerId && order.pickerId !== currentUserId &&
-                               (userRole === 'ADMIN' || userRole === 'SUPERVISOR'));
+      const isViewOnlyOrder =
+        order.status === 'PICKED' ||
+        order.status === 'SHIPPED' ||
+        (order.pickerId &&
+          order.pickerId !== currentUserId &&
+          (userRole === 'ADMIN' || userRole === 'SUPERVISOR'));
 
       if (isViewOnlyOrder) {
-        console.log(`[PickingPage] Order is in view-only mode (status: ${order.status}), skipping claim logic`);
+        console.log(
+          `[PickingPage] Order is in view-only mode (status: ${order.status}), skipping claim logic`
+        );
         return;
       }
 
@@ -128,7 +152,12 @@ export function PickingPage() {
 
       // Prevent multiple claim attempts - use ref + isPending check + isClaiming check + isError check
       // This prevents race conditions from rapid useEffect triggers
-      if (isClaimingRef.current || claimMutation.isPending || hasClaimedRef.current || claimMutation.isError) {
+      if (
+        isClaimingRef.current ||
+        claimMutation.isPending ||
+        hasClaimedRef.current ||
+        claimMutation.isError
+      ) {
         console.log(`[PickingPage] Already claiming, claimed, or had error, skipping`);
         return;
       }
@@ -136,7 +165,9 @@ export function PickingPage() {
       if (isAlreadyClaimed || isAlreadyInProgress) {
         console.log(`[PickingPage] Order already claimed or in progress: ${orderId}`);
         if (isAlreadyInProgress && !isAlreadyClaimed) {
-          console.log(`[PickingPage] Order is in ${order.status} status but not claimed by current user. Showing warning.`);
+          console.log(
+            `[PickingPage] Order is in ${order.status} status but not claimed by current user. Showing warning.`
+          );
           // Don't block the user - they might be resuming their work
         }
         hasClaimedRef.current = true; // Mark as claimed since we're working on it
@@ -144,13 +175,17 @@ export function PickingPage() {
         // Validate order status one more time before claiming to prevent race conditions
         // This double-checks the order state right before the mutation call
         if (order.status !== 'PENDING') {
-          console.log(`[PickingPage] Order status changed to ${order.status} before claim, skipping`);
+          console.log(
+            `[PickingPage] Order status changed to ${order.status} before claim, skipping`
+          );
           hasClaimedRef.current = true;
           return;
         }
 
         if (order.pickerId && order.pickerId !== currentUserId) {
-          console.log(`[PickingPage] Order claimed by another picker (${order.pickerId}), skipping`);
+          console.log(
+            `[PickingPage] Order claimed by another picker (${order.pickerId}), skipping`
+          );
           hasClaimedRef.current = true;
           return;
         }
@@ -171,7 +206,7 @@ export function PickingPage() {
   useEffect(() => {
     if (orderId && !claimError && !claimMutation.isPending) {
       console.log(`[PickingPage] Calling getNextTask API for: ${orderId}`);
-      
+
       const callGetNextTask = async () => {
         try {
           const response = await apiClient.get(`/orders/${orderId}/next-task`);
@@ -183,7 +218,7 @@ export function PickingPage() {
           console.error(`[PickingPage] getNextTask error for ${orderId}:`, error);
         }
       };
-      
+
       callGetNextTask();
     }
   }, [orderId, claimError, claimMutation.isPending, queryClient]);
@@ -192,14 +227,18 @@ export function PickingPage() {
   useEffect(() => {
     const handleVisibilityChange = () => {
       const isVisible = document.visibilityState === 'visible';
-      console.log(`[PickingPage] Window visibility: ${isVisible ? 'VISIBLE (ACTIVE)' : 'HIDDEN (IDLE)'}`);
+      console.log(
+        `[PickingPage] Window visibility: ${isVisible ? 'VISIBLE (ACTIVE)' : 'HIDDEN (IDLE)'}`
+      );
 
       if (orderId) {
-        apiClient.put(`/orders/${orderId}/picker-status`, {
-          status: isVisible ? 'ACTIVE' : 'IDLE'
-        }).catch((error) => {
-          console.error(`[PickingPage] Failed to update picker status:`, error);
-        });
+        apiClient
+          .put(`/orders/${orderId}/picker-status`, {
+            status: isVisible ? 'ACTIVE' : 'IDLE',
+          })
+          .catch(error => {
+            console.error(`[PickingPage] Failed to update picker status:`, error);
+          });
       }
     };
 
@@ -218,8 +257,11 @@ export function PickingPage() {
   // Real-time updates for view mode (admin viewing picker's work)
   useEffect(() => {
     // Calculate if we're in view mode
-    const isViewMode = order && order.pickerId && order.pickerId !== currentUser?.userId &&
-                       (userRole === 'ADMIN' || userRole === 'SUPERVISOR');
+    const isViewMode =
+      order &&
+      order.pickerId &&
+      order.pickerId !== currentUser?.userId &&
+      (userRole === 'ADMIN' || userRole === 'SUPERVISOR');
 
     // Only poll when in view mode (admin/supervisor viewing someone else's work)
     if (!isViewMode) {
@@ -246,7 +288,8 @@ export function PickingPage() {
 
   // Calculate progress
   const totalTasks = order?.items.length || 0;
-  const completedTasks = order?.items.filter((item) => item.pickedQuantity >= item.quantity).length || 0;
+  const completedTasks =
+    order?.items.filter(item => item.pickedQuantity >= item.quantity).length || 0;
 
   // Reset scan error when current task changes
   useEffect(() => {
@@ -257,7 +300,7 @@ export function PickingPage() {
   useEffect(() => {
     if (order && order.items.length > 0) {
       const firstIncompleteIndex = order.items.findIndex(
-        (item) => item.pickedQuantity < item.quantity
+        item => item.pickedQuantity < item.quantity
       );
       if (firstIncompleteIndex !== -1 && firstIncompleteIndex !== currentTaskIndex) {
         setCurrentTaskIndex(firstIncompleteIndex);
@@ -297,10 +340,12 @@ export function PickingPage() {
               <Button variant="secondary" onClick={() => navigate('/orders')}>
                 Back to Order Queue
               </Button>
-              <Button onClick={() => {
-                setClaimError(null);
-                claimMutation.mutate(orderId!);
-              }}>
+              <Button
+                onClick={() => {
+                  setClaimError(null);
+                  claimMutation.mutate(orderId!);
+                }}
+              >
                 Try Again
               </Button>
             </div>
@@ -343,18 +388,15 @@ export function PickingPage() {
 
     // Use barcode if available, otherwise use SKU
     const scanValue = value.trim();
-    
+
     // Validate scan matches either barcode OR SKU
     // This allows scanning either the barcode or SKU code
-    const isValidScan = 
-      (currentTask.barcode && scanValue === currentTask.barcode) ||
-      scanValue === currentTask.sku;
-    
+    const isValidScan =
+      (currentTask.barcode && scanValue === currentTask.barcode) || scanValue === currentTask.sku;
+
     if (!isValidScan) {
       // Show barcode as primary expected value, with SKU as subtle alternative
-      const expectedBarcodes = currentTask.barcode 
-        ? currentTask.barcode 
-        : currentTask.sku;
+      const expectedBarcodes = currentTask.barcode ? currentTask.barcode : currentTask.sku;
       setScanError(`Wrong scan! Expected: ${expectedBarcodes}, scanned: ${scanValue}`);
       showError(`Wrong barcode scanned`);
       return;
@@ -398,19 +440,19 @@ export function PickingPage() {
 
   const handleCompleteOrder = async () => {
     // Check for skipped items
-    const skippedItems = order?.items.filter((item) => item.status === 'SKIPPED');
-    
+    const skippedItems = order?.items.filter(item => item.status === 'SKIPPED');
+
     if (skippedItems && skippedItems.length > 0) {
       // Show confirmation dialog for skipped items
-      const itemSummary = skippedItems.map(item => 
-        `" ${item.name} (${item.sku}) - ${item.skipReason || 'No reason provided'}`
-      ).join('\n');
-      
+      const itemSummary = skippedItems
+        .map(item => `" ${item.name} (${item.sku}) - ${item.skipReason || 'No reason provided'}`)
+        .join('\n');
+
       const confirmed = confirm(
         `The following items were skipped and could not be found:\n\n${itemSummary}\n\n` +
-        `Are you sure you want to complete this order? These items will remain unpicked.`
+          `Are you sure you want to complete this order? These items will remain unpicked.`
       );
-      
+
       if (!confirmed) {
         return;
       }
@@ -435,16 +477,14 @@ export function PickingPage() {
     const item = order?.items[index];
     if (!item) return;
 
-    const confirmed = confirm(
-      `Do you want to revert the skip for ${item.name} (${item.sku})?`
-    );
-    
+    const confirmed = confirm(`Do you want to revert the skip for ${item.name} (${item.sku})?`);
+
     if (!confirmed) return;
 
     try {
       // Update pick task status back to PENDING
       await apiClient.put(`/orders/${orderId}/pick-task/${item.orderItemId}`, {
-        status: 'PENDING'
+        status: 'PENDING',
       });
 
       showSuccess('Skip reverted successfully!');
@@ -475,24 +515,26 @@ export function PickingPage() {
     let reason = '';
 
     if (wasCompleted) {
-      reason = prompt(
-        `You're about to remove items from ${item.name} (${item.sku}).\n\n` +
-        `This was fully picked (${item.pickedQuantity}/${item.quantity}).\n\n` +
-        `Please provide a reason for undoing this pick:`
-      ) || '';
-      
+      reason =
+        prompt(
+          `You're about to remove items from ${item.name} (${item.sku}).\n\n` +
+            `This was fully picked (${item.pickedQuantity}/${item.quantity}).\n\n` +
+            `Please provide a reason for undoing this pick:`
+        ) || '';
+
       if (!reason.trim()) {
         showError('Reason is required to undo a completed item');
         return;
       }
     } else {
       // For partially picked items, still ask for reason
-      reason = prompt(
-        `Remove 1 item from ${item.name} (${item.sku})?\n\n` +
-        `Current: ${item.pickedQuantity}/${item.quantity}\n\n` +
-        `After undo: ${item.pickedQuantity - 1}/${item.quantity}\n\n` +
-        `Please provide a reason:`
-      ) || '';
+      reason =
+        prompt(
+          `Remove 1 item from ${item.name} (${item.sku})?\n\n` +
+            `Current: ${item.pickedQuantity}/${item.quantity}\n\n` +
+            `After undo: ${item.pickedQuantity - 1}/${item.quantity}\n\n` +
+            `Please provide a reason:`
+        ) || '';
 
       if (!reason.trim()) {
         showError('Reason is required to undo a pick');
@@ -527,10 +569,10 @@ export function PickingPage() {
   const handleUnclaimOrder = async () => {
     const reason = prompt(
       `You are about to unclaim this order and revert all your changes.\n\n` +
-      `All picked items will be reset to zero.\n` +
-      `Skipped items will be unskipped.\n` +
-      `The order will return to PENDING status.\n\n` +
-      `Please provide a reason for unclaiming:`
+        `All picked items will be reset to zero.\n` +
+        `Skipped items will be unskipped.\n` +
+        `The order will return to PENDING status.\n\n` +
+        `Please provide a reason for unclaiming:`
     );
 
     if (!reason || !reason.trim()) {
@@ -540,8 +582,8 @@ export function PickingPage() {
 
     const confirmed = confirm(
       `Are you sure you want to unclaim order ${orderId}?\n\n` +
-      `This action cannot be undone.\n\n` +
-      `Reason: ${reason.trim()}`
+        `This action cannot be undone.\n\n` +
+        `Reason: ${reason.trim()}`
     );
 
     if (!confirmed) {
@@ -550,7 +592,7 @@ export function PickingPage() {
 
     try {
       await apiClient.post(`/orders/${orderId}/unclaim`, {
-        reason: reason.trim()
+        reason: reason.trim(),
       });
 
       showSuccess('Order unclaimed and reset to PENDING!');
@@ -594,9 +636,12 @@ export function PickingPage() {
       }
 
       // Prepare exception data with proper handling for optional fields
-      const quantityActual = exceptionType === ExceptionType.SHORT_PICK
-        ? (exceptionQuantity > 0 ? exceptionQuantity : 0)
-        : currentTask.pickedQuantity;
+      const quantityActual =
+        exceptionType === ExceptionType.SHORT_PICK
+          ? exceptionQuantity > 0
+            ? exceptionQuantity
+            : 0
+          : currentTask.pickedQuantity;
 
       const exceptionData: any = {
         orderId: orderId!,
@@ -606,9 +651,10 @@ export function PickingPage() {
         quantityExpected: currentTask.quantity,
         quantityActual: quantityActual,
         reason: exceptionReason || `Exception reported: ${exceptionType}`,
-        substituteSku: exceptionType === ExceptionType.SUBSTITUTION && substituteSku.trim()
-          ? substituteSku
-          : undefined,
+        substituteSku:
+          exceptionType === ExceptionType.SUBSTITUTION && substituteSku.trim()
+            ? substituteSku
+            : undefined,
       };
 
       console.log('[PickingPage] Logging exception with data:', exceptionData);
@@ -643,9 +689,12 @@ export function PickingPage() {
   // This is true when:
   // 1. Admin viewing another picker's active order
   // 2. Admin viewing completed (PICKED/SHIPPED) orders
-  const isViewMode = order && (userRole === 'ADMIN' || userRole === 'SUPERVISOR') &&
-                     ((order.pickerId && order.pickerId !== currentUser?.userId) ||
-                      (order.status === 'PICKED' || order.status === 'SHIPPED'));
+  const isViewMode =
+    order &&
+    (userRole === 'ADMIN' || userRole === 'SUPERVISOR') &&
+    ((order.pickerId && order.pickerId !== currentUser?.userId) ||
+      order.status === 'PICKED' ||
+      order.status === 'SHIPPED');
 
   return (
     <div className="min-h-screen">
@@ -659,7 +708,7 @@ export function PickingPage() {
               <p className="text-sm font-semibold text-white">
                 {order.status === 'PICKED' || order.status === 'SHIPPED'
                   ? 'Viewing completed order'
-                  : 'Viewing this picker\'s work in real-time'}
+                  : "Viewing this picker's work in real-time"}
               </p>
               <p className="text-xs text-gray-400 mt-1">
                 You are in view-only mode. Interactions are disabled.
@@ -683,7 +732,9 @@ export function PickingPage() {
               </Button>
             )}
             <div className="min-w-0 flex-1">
-              <h1 className="text-xl sm:text-3xl font-bold text-white tracking-tight truncate">{order.orderId}</h1>
+              <h1 className="text-xl sm:text-3xl font-bold text-white tracking-tight truncate">
+                {order.orderId}
+              </h1>
               <p className="mt-2 text-gray-400 text-sm truncate">{order.customerName}</p>
             </div>
           </div>
@@ -698,7 +749,11 @@ export function PickingPage() {
                 >
                   Unclaim Order
                 </Button>
-                <Button variant="secondary" onClick={() => navigate('/orders')} className="touch-target">
+                <Button
+                  variant="secondary"
+                  onClick={() => navigate('/orders')}
+                  className="touch-target"
+                >
                   Exit
                 </Button>
               </>
@@ -731,9 +786,7 @@ export function PickingPage() {
               <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 rounded-full bg-success-500/20 flex items-center justify-center animate-scale-in">
                 <CheckIcon className="h-8 w-8 sm:h-10 sm:w-10 text-success-400" />
               </div>
-              <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">
-                All Items Picked!
-              </h2>
+              <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">All Items Picked!</h2>
               <p className="text-gray-400 text-sm sm:text-base mb-6 sm:mb-8">
                 Order is ready to be completed and sent to packing.
               </p>
@@ -755,16 +808,20 @@ export function PickingPage() {
             <CardHeader>
               <CardTitle className="flex items-center justify-between text-base sm:text-lg">
                 <span className="text-white">Current Pick Task</span>
-                <TaskStatusBadge status={
-                  currentTask.pickedQuantity > 0 ? TaskStatus.IN_PROGRESS : TaskStatus.PENDING
-                } />
+                <TaskStatusBadge
+                  status={
+                    currentTask.pickedQuantity > 0 ? TaskStatus.IN_PROGRESS : TaskStatus.PENDING
+                  }
+                />
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 sm:space-y-6">
               {/* Item Info */}
               <div className="flex items-start gap-4">
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight">{currentTask.name}</h3>
+                  <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+                    {currentTask.name}
+                  </h3>
                   {currentTask.barcode && (
                     <p className="text-lg sm:text-2xl font-mono text-gray-300 mt-3 tracking-wider bg-white/[0.02] inline-block px-3 sm:px-4 py-2 rounded-lg border border-white/[0.08] text-sm sm:text-base break-all">
                       {currentTask.barcode}
@@ -781,14 +838,18 @@ export function PickingPage() {
               {/* Quantity */}
               <div className="flex items-center justify-center gap-4 sm:gap-6 py-4 sm:py-6 bg-white/[0.02] rounded-xl border border-white/[0.08]">
                 <div className="text-center">
-                  <p className="text-xs sm:text-sm text-gray-400 uppercase tracking-wider mb-2">Picked</p>
+                  <p className="text-xs sm:text-sm text-gray-400 uppercase tracking-wider mb-2">
+                    Picked
+                  </p>
                   <p className="text-3xl sm:text-4xl font-bold text-primary-400">
                     {currentTask.pickedQuantity}
                   </p>
                 </div>
                 <div className="text-4xl sm:text-5xl text-gray-600">/</div>
                 <div className="text-center">
-                  <p className="text-xs sm:text-sm text-gray-400 uppercase tracking-wider mb-2">Needed</p>
+                  <p className="text-xs sm:text-sm text-gray-400 uppercase tracking-wider mb-2">
+                    Needed
+                  </p>
                   <p className="text-3xl sm:text-4xl font-bold text-white">
                     {currentTask.quantity}
                   </p>
@@ -797,7 +858,9 @@ export function PickingPage() {
 
               {/* Location */}
               <div className="bg-primary-500/10 rounded-xl p-4 sm:p-5 border border-primary-500/30">
-                <p className="text-xs sm:text-sm text-gray-400 mb-2 uppercase tracking-wider">Go to bin location:</p>
+                <p className="text-xs sm:text-sm text-gray-400 mb-2 uppercase tracking-wider">
+                  Go to bin location:
+                </p>
                 <p className="text-2xl sm:text-3xl font-bold text-primary-400 font-mono tracking-wider break-all">
                   {formatBinLocation(currentTask.binLocation)}
                 </p>
@@ -809,13 +872,18 @@ export function PickingPage() {
                   value={scanValue}
                   onChange={setScanValue}
                   onScan={handleScan}
-                  placeholder={currentTask.barcode ? "Scan barcode..." : "Scan or enter item code..."}
+                  placeholder={
+                    currentTask.barcode ? 'Scan barcode...' : 'Scan or enter item code...'
+                  }
                   error={scanError || undefined}
                   disabled={isViewMode ? true : undefined}
                 />
                 {currentTask.barcode && (
                   <p className="mt-3 text-sm text-gray-400 bg-white/[0.02] inline-block px-3 sm:px-4 py-2 rounded-lg border border-white/[0.08]">
-                    Scan this barcode: <span className="font-mono font-semibold text-primary-400 break-all">{currentTask.barcode}</span>
+                    Scan this barcode:{' '}
+                    <span className="font-mono font-semibold text-primary-400 break-all">
+                      {currentTask.barcode}
+                    </span>
                   </p>
                 )}
                 {!currentTask.barcode && (
@@ -877,10 +945,10 @@ export function PickingPage() {
                       isCompleted
                         ? 'border-success-500/50 bg-success-500/10 shadow-glow'
                         : isSkipped
-                        ? 'border-warning-500/50 bg-warning-500/10'
-                        : isCurrent
-                        ? 'border-primary-500/50 bg-primary-500/10 shadow-glow'
-                        : 'border-white/[0.08] bg-white/[0.02] hover:bg-white/[0.05]'
+                          ? 'border-warning-500/50 bg-warning-500/10'
+                          : isCurrent
+                            ? 'border-primary-500/50 bg-primary-500/10 shadow-glow'
+                            : 'border-white/[0.08] bg-white/[0.02] hover:bg-white/[0.05]'
                     } ${isCurrent ? 'ring-2 ring-primary-500/30' : ''}`}
                   >
                     <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
@@ -894,7 +962,7 @@ export function PickingPage() {
                             <ExclamationTriangleIcon className="h-5 w-5 sm:h-6 sm:w-6 text-warning-400" />
                             {!isViewMode && (
                               <button
-                                onClick={(e) => {
+                                onClick={e => {
                                   e.stopPropagation();
                                   handleUnskipItem(index);
                                 }}
@@ -911,18 +979,26 @@ export function PickingPage() {
                       {/* Item Info */}
                       <div className="flex-1 min-w-0">
                         <div>
-                          <p className={`font-semibold text-base sm:text-lg ${
-                            isCompleted ? 'text-success-300' :
-                            isSkipped ? 'text-warning-300' :
-                            'text-white'
-                          }`}>
+                          <p
+                            className={`font-semibold text-base sm:text-lg ${
+                              isCompleted
+                                ? 'text-success-300'
+                                : isSkipped
+                                  ? 'text-warning-300'
+                                  : 'text-white'
+                            }`}
+                          >
                             {item.name}
                           </p>
                           {!item.barcode && (
-                            <p className="text-xs text-warning-400 font-mono mt-1">No barcode assigned</p>
+                            <p className="text-xs text-warning-400 font-mono mt-1">
+                              No barcode assigned
+                            </p>
                           )}
                           {item.barcode && (
-                            <p className="text-xs sm:text-sm text-gray-500 font-mono truncate">{item.barcode}</p>
+                            <p className="text-xs sm:text-sm text-gray-500 font-mono truncate">
+                              {item.barcode}
+                            </p>
                           )}
                           {isSkipped && item.skipReason && (
                             <p className="text-xs sm:text-sm text-warning-300 mt-2 bg-warning-500/10 inline-block px-2 py-1 rounded">
@@ -934,19 +1010,25 @@ export function PickingPage() {
 
                       {/* Quantity */}
                       <div className="text-right flex-shrink-0">
-                        <p className={`font-semibold text-base sm:text-lg ${
-                          isCompleted ? 'text-success-300' :
-                          isSkipped ? 'text-warning-300' :
-                          'text-white'
-                        }`}>
+                        <p
+                          className={`font-semibold text-base sm:text-lg ${
+                            isCompleted
+                              ? 'text-success-300'
+                              : isSkipped
+                                ? 'text-warning-300'
+                                : 'text-white'
+                          }`}
+                        >
                           {isSkipped ? 'Skipped' : `${item.pickedQuantity} / ${item.quantity}`}
                         </p>
-                        <p className="text-xs sm:text-sm text-gray-500 font-mono">{item.binLocation}</p>
+                        <p className="text-xs sm:text-sm text-gray-500 font-mono">
+                          {item.binLocation}
+                        </p>
 
                         {/* Undo Pick button */}
                         {item.pickedQuantity > 0 && !isSkipped && !isViewMode && (
                           <button
-                            onClick={(e) => {
+                            onClick={e => {
                               e.stopPropagation();
                               handleUndoPick(index);
                             }}
@@ -990,36 +1072,60 @@ export function PickingPage() {
               <div className="px-4 sm:px-6 py-2 sm:py-3 bg-white/[0.05] border-b border-white/[0.08]">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1 sm:gap-2">
-                    <div className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs sm:text-sm font-bold ${
-                      exceptionStep === 'type' ? 'bg-warning-500 text-white' :
-                      exceptionStep === 'details' || exceptionStep === 'confirm' ? 'bg-success-500 text-white' :
-                      'bg-gray-600 text-gray-400'
-                    }`}>
+                    <div
+                      className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs sm:text-sm font-bold ${
+                        exceptionStep === 'type'
+                          ? 'bg-warning-500 text-white'
+                          : exceptionStep === 'details' || exceptionStep === 'confirm'
+                            ? 'bg-success-500 text-white'
+                            : 'bg-gray-600 text-gray-400'
+                      }`}
+                    >
                       {exceptionStep === 'type' ? '1' : '✓'}
                     </div>
-                    <span className="text-xs sm:text-sm font-medium text-white hidden xs:inline">Type</span>
+                    <span className="text-xs sm:text-sm font-medium text-white hidden xs:inline">
+                      Type
+                    </span>
                   </div>
-                  <div className={`h-0.5 w-6 sm:w-12 ${
-                    exceptionStep === 'details' || exceptionStep === 'confirm' ? 'bg-success-500' : 'bg-gray-600'
-                  }`}></div>
+                  <div
+                    className={`h-0.5 w-6 sm:w-12 ${
+                      exceptionStep === 'details' || exceptionStep === 'confirm'
+                        ? 'bg-success-500'
+                        : 'bg-gray-600'
+                    }`}
+                  ></div>
                   <div className="flex items-center gap-1 sm:gap-2">
-                    <div className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs sm:text-sm font-bold ${
-                      exceptionStep === 'details' ? 'bg-warning-500 text-white' :
-                      exceptionStep === 'confirm' ? 'bg-success-500 text-white' :
-                      'bg-gray-600 text-gray-400'
-                    }`}>
+                    <div
+                      className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs sm:text-sm font-bold ${
+                        exceptionStep === 'details'
+                          ? 'bg-warning-500 text-white'
+                          : exceptionStep === 'confirm'
+                            ? 'bg-success-500 text-white'
+                            : 'bg-gray-600 text-gray-400'
+                      }`}
+                    >
                       {exceptionStep === 'details' ? '2' : exceptionStep === 'confirm' ? '✓' : '2'}
                     </div>
-                    <span className="text-xs sm:text-sm font-medium text-white hidden sm:inline">Details</span>
+                    <span className="text-xs sm:text-sm font-medium text-white hidden sm:inline">
+                      Details
+                    </span>
                   </div>
-                  <div className={`h-0.5 w-6 sm:w-12 ${exceptionStep === 'confirm' ? 'bg-success-500' : 'bg-gray-600'}`}></div>
+                  <div
+                    className={`h-0.5 w-6 sm:w-12 ${exceptionStep === 'confirm' ? 'bg-success-500' : 'bg-gray-600'}`}
+                  ></div>
                   <div className="flex items-center gap-1 sm:gap-2">
-                    <div className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs sm:text-sm font-bold ${
-                      exceptionStep === 'confirm' ? 'bg-warning-500 text-white' : 'bg-gray-600 text-gray-400'
-                    }`}>
+                    <div
+                      className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs sm:text-sm font-bold ${
+                        exceptionStep === 'confirm'
+                          ? 'bg-warning-500 text-white'
+                          : 'bg-gray-600 text-gray-400'
+                      }`}
+                    >
                       3
                     </div>
-                    <span className="text-xs sm:text-sm font-medium text-white hidden sm:inline">Confirm</span>
+                    <span className="text-xs sm:text-sm font-medium text-white hidden sm:inline">
+                      Confirm
+                    </span>
                   </div>
                 </div>
               </div>
@@ -1028,7 +1134,9 @@ export function PickingPage() {
               <div className="p-4 sm:p-6">
                 {exceptionStep === 'type' && (
                   <div>
-                    <p className="text-white mb-4 text-sm sm:text-base">Select type of exception:</p>
+                    <p className="text-white mb-4 text-sm sm:text-base">
+                      Select type of exception:
+                    </p>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <button
                         onClick={() => setExceptionType(ExceptionType.OUT_OF_STOCK)}
@@ -1039,7 +1147,9 @@ export function PickingPage() {
                         }`}
                       >
                         <div className="font-semibold text-white text-sm">Out of Stock</div>
-                        <div className="text-xs sm:text-sm text-gray-400">Item not available in bin</div>
+                        <div className="text-xs sm:text-sm text-gray-400">
+                          Item not available in bin
+                        </div>
                       </button>
 
                       <button
@@ -1063,7 +1173,9 @@ export function PickingPage() {
                         }`}
                       >
                         <div className="font-semibold text-white text-sm">Defective</div>
-                        <div className="text-xs sm:text-sm text-gray-400">Item has quality issues</div>
+                        <div className="text-xs sm:text-sm text-gray-400">
+                          Item has quality issues
+                        </div>
                       </button>
 
                       <button
@@ -1075,7 +1187,9 @@ export function PickingPage() {
                         }`}
                       >
                         <div className="font-semibold text-white text-sm">Wrong Item</div>
-                        <div className="text-xs sm:text-sm text-gray-400">Incorrect item in bin</div>
+                        <div className="text-xs sm:text-sm text-gray-400">
+                          Incorrect item in bin
+                        </div>
                       </button>
 
                       <button
@@ -1087,7 +1201,9 @@ export function PickingPage() {
                         }`}
                       >
                         <div className="font-semibold text-white text-sm">Short Pick</div>
-                        <div className="text-xs sm:text-sm text-gray-400">Insufficient quantity</div>
+                        <div className="text-xs sm:text-sm text-gray-400">
+                          Insufficient quantity
+                        </div>
                       </button>
 
                       <button
@@ -1111,7 +1227,9 @@ export function PickingPage() {
                         }`}
                       >
                         <div className="font-semibold text-white text-sm">Substitution</div>
-                        <div className="text-xs sm:text-sm text-gray-400">Customer accepts substitute</div>
+                        <div className="text-xs sm:text-sm text-gray-400">
+                          Customer accepts substitute
+                        </div>
                       </button>
 
                       <button
@@ -1123,7 +1241,9 @@ export function PickingPage() {
                         }`}
                       >
                         <div className="font-semibold text-white text-sm">Barcode Issue</div>
-                        <div className="text-xs sm:text-sm text-gray-400">Barcode doesn't match</div>
+                        <div className="text-xs sm:text-sm text-gray-400">
+                          Barcode doesn't match
+                        </div>
                       </button>
                     </div>
                   </div>
@@ -1144,7 +1264,7 @@ export function PickingPage() {
                         </label>
                         <textarea
                           value={exceptionReason}
-                          onChange={(e) => setExceptionReason(e.target.value)}
+                          onChange={e => setExceptionReason(e.target.value)}
                           rows={3}
                           className="mobile-input w-full px-3 py-2 bg-white/[0.05] border border-white/[0.08] rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white placeholder-gray-500"
                           placeholder="Provide details about the exception..."
@@ -1160,7 +1280,7 @@ export function PickingPage() {
                           <input
                             type="text"
                             value={substituteSku}
-                            onChange={(e) => setSubstituteSku(e.target.value.toUpperCase())}
+                            onChange={e => setSubstituteSku(e.target.value.toUpperCase())}
                             className="mobile-input w-full px-3 py-2 bg-white/[0.05] border border-white/[0.08] rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white placeholder-gray-500"
                             placeholder="Enter substitute SKU..."
                           />
@@ -1176,7 +1296,7 @@ export function PickingPage() {
                             type="number"
                             min={0}
                             value={exceptionQuantity}
-                            onChange={(e) => setExceptionQuantity(parseInt(e.target.value) || 0)}
+                            onChange={e => setExceptionQuantity(parseInt(e.target.value) || 0)}
                             className="mobile-input w-full px-3 py-2 bg-white/[0.05] border border-white/[0.08] rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white placeholder-gray-500"
                             placeholder="Enter actual quantity..."
                           />
@@ -1202,11 +1322,15 @@ export function PickingPage() {
                         <>
                           <div className="flex justify-between">
                             <span className="text-sm font-medium text-gray-400">SKU:</span>
-                            <span className="text-sm font-semibold text-white">{currentTask.sku}</span>
+                            <span className="text-sm font-semibold text-white">
+                              {currentTask.sku}
+                            </span>
                           </div>
                           <div className="flex justify-between">
                             <span className="text-sm font-medium text-gray-400">Expected Qty:</span>
-                            <span className="text-sm font-semibold text-white">{currentTask.quantity}</span>
+                            <span className="text-sm font-semibold text-white">
+                              {currentTask.quantity}
+                            </span>
                           </div>
                         </>
                       )}
@@ -1221,22 +1345,26 @@ export function PickingPage() {
                       {exceptionType === ExceptionType.SUBSTITUTION && substituteSku && (
                         <div className="flex justify-between">
                           <span className="text-sm font-medium text-gray-400">Substitute SKU:</span>
-                          <span className="text-sm font-semibold text-primary-400">{substituteSku}</span>
+                          <span className="text-sm font-semibold text-primary-400">
+                            {substituteSku}
+                          </span>
                         </div>
                       )}
 
                       {exceptionType === ExceptionType.SHORT_PICK && exceptionQuantity > 0 && (
                         <div className="flex justify-between">
                           <span className="text-sm font-medium text-gray-400">Actual Qty:</span>
-                          <span className="text-sm font-semibold text-white">{exceptionQuantity}</span>
+                          <span className="text-sm font-semibold text-white">
+                            {exceptionQuantity}
+                          </span>
                         </div>
                       )}
                     </div>
 
                     <div className="mt-4 p-3 bg-primary-500/20 border border-primary-500/30 rounded-lg">
                       <p className="text-sm text-primary-300">
-                        <strong>Note:</strong> This exception will be logged and the item will be skipped.
-                        A supervisor will review and resolve this exception.
+                        <strong>Note:</strong> This exception will be logged and the item will be
+                        skipped. A supervisor will review and resolve this exception.
                       </p>
                     </div>
                   </div>
@@ -1247,7 +1375,11 @@ export function PickingPage() {
               <div className="px-4 sm:px-6 py-3 sm:py-4 bg-white/[0.02] border-t border-white/[0.08] rounded-b-xl flex flex-col sm:flex-row justify-between gap-3">
                 {exceptionStep === 'type' && (
                   <>
-                    <Button variant="ghost" onClick={() => setShowExceptionModal(false)} className="touch-target">
+                    <Button
+                      variant="ghost"
+                      onClick={() => setShowExceptionModal(false)}
+                      className="touch-target"
+                    >
                       Cancel
                     </Button>
                     <Button onClick={() => setExceptionStep('details')} className="touch-target">
@@ -1258,10 +1390,18 @@ export function PickingPage() {
 
                 {exceptionStep === 'details' && (
                   <>
-                    <Button variant="ghost" onClick={() => setExceptionStep('type')} className="touch-target">
+                    <Button
+                      variant="ghost"
+                      onClick={() => setExceptionStep('type')}
+                      className="touch-target"
+                    >
                       Back
                     </Button>
-                    <Button onClick={() => setExceptionStep('confirm')} disabled={!exceptionReason} className="touch-target">
+                    <Button
+                      onClick={() => setExceptionStep('confirm')}
+                      disabled={!exceptionReason}
+                      className="touch-target"
+                    >
                       Review
                     </Button>
                   </>
@@ -1269,10 +1409,19 @@ export function PickingPage() {
 
                 {exceptionStep === 'confirm' && (
                   <>
-                    <Button variant="ghost" onClick={() => setExceptionStep('details')} className="touch-target">
+                    <Button
+                      variant="ghost"
+                      onClick={() => setExceptionStep('details')}
+                      className="touch-target"
+                    >
                       Back
                     </Button>
-                    <Button variant="danger" onClick={handleLogException} isLoading={logExceptionMutation.isPending} className="touch-target">
+                    <Button
+                      variant="danger"
+                      onClick={handleLogException}
+                      isLoading={logExceptionMutation.isPending}
+                      className="touch-target"
+                    >
                       Log Exception & Skip
                     </Button>
                   </>

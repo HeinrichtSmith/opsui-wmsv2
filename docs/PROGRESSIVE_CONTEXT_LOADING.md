@@ -28,18 +28,21 @@ L4: Historical Context (10 minutes)  → Decisions, technical debt, domain knowl
 **Purpose**: Quick understanding of current file
 
 **What to Load**:
+
 1. The file being edited/worked on
 2. Direct imports (first-level dependencies)
 3. File annotations (if present)
 4. Related test file
 
 **When to Use**:
+
 - Quick fixes
 - Small refactorings
 - Adding a simple function
 - Fixing a typo
 
 **Example**: Adding a new method to OrderService.ts
+
 ```typescript
 // Load these files:
 1. packages/backend/src/services/OrderService.ts (the file itself)
@@ -56,6 +59,7 @@ L4: Historical Context (10 minutes)  → Decisions, technical debt, domain knowl
 **Purpose**: Understand the module and its relationships
 
 **What to Load**:
+
 - Everything from Layer 1
 - All files in the same directory
 - Related services and repositories
@@ -63,12 +67,14 @@ L4: Historical Context (10 minutes)  → Decisions, technical debt, domain knowl
 - Frontend components that use this module
 
 **When to Use**:
+
 - Adding features
 - Refactoring within a module
 - Understanding module interactions
 - Bug fixing in complex areas
 
 **Example**: Adding batch order claiming feature
+
 ```typescript
 // Load these files:
 From Layer 1:
@@ -92,6 +98,7 @@ Additional Layer 2:
 **Purpose**: Understand system architecture and patterns
 
 **What to Load**:
+
 - Everything from Layer 2
 - State machine definition
 - Approved patterns library
@@ -100,12 +107,14 @@ Additional Layer 2:
 - Security requirements
 
 **When to Use**:
+
 - Cross-module changes
 - Architectural decisions
 - State transitions
 - Complex feature implementation
 
 **Example**: Implementing order cancellation with inventory release
+
 ```typescript
 // Load these files:
 From Layer 2:
@@ -129,6 +138,7 @@ Additional Layer 3:
 **Purpose**: Full project context with historical decisions
 
 **What to Load**:
+
 - Everything from Layer 3
 - Architectural decision log
 - Project memory (recent decisions)
@@ -137,6 +147,7 @@ Additional Layer 3:
 - Known issues and workarounds
 
 **When to Use**:
+
 - Major refactoring
 - Breaking changes
 - Performance optimization
@@ -144,6 +155,7 @@ Additional Layer 3:
 - Planning future work
 
 **Example**: Redesigning the order fulfillment workflow
+
 ```typescript
 // Load these files:
 From Layer 3:
@@ -184,12 +196,14 @@ Task Complexity Matrix:
 ### Step 2: Load Appropriate Layer
 
 **For L1 Tasks** (Trivial/Low complexity):
+
 1. Read the target file
 2. Read direct imports
 3. Check for file annotations
 4. Make the change
 
 **For L2 Tasks** (Low-Medium complexity):
+
 1. Everything from L1
 2. Read all files in module directory
 3. Read related services/repositories
@@ -197,6 +211,7 @@ Task Complexity Matrix:
 5. Make the change
 
 **For L3 Tasks** (Medium-High complexity):
+
 1. Everything from L2
 2. Read state machine definition
 3. Read approved patterns
@@ -205,6 +220,7 @@ Task Complexity Matrix:
 6. Make the change
 
 **For L4 Tasks** (Very High complexity):
+
 1. Everything from L3
 2. Read architectural decisions
 3. Read project memory
@@ -216,6 +232,7 @@ Task Complexity Matrix:
 ### Step 3: Verify Context Sufficiency
 
 Before making changes, ask:
+
 - [ ] Do I understand the file's purpose?
 - [ ] Do I understand its dependencies?
 - [ ] Do I understand what will break?
@@ -291,6 +308,7 @@ L4: 10 minutes  - Major architectural work
 ### What to Remember Across Sessions
 
 Store in memory between sessions:
+
 1. **File summaries** - Brief description of each file read
 2. **Pattern matches** - What patterns were seen where
 3. **Dependencies discovered** - Import relationships found
@@ -299,6 +317,7 @@ Store in memory between sessions:
 ### What to Re-Load Each Session
 
 Always load fresh:
+
 1. **Current file state** - Files may have changed
 2. **Recent decisions** - `.cline-memory.md`
 3. **Test status** - What's currently passing/failing
@@ -311,6 +330,7 @@ Always load fresh:
 ### Scenario: Adding Undo Support for Order Picking
 
 **Step 1**: Start with L1 (5 seconds)
+
 ```typescript
 // Read:
 - packages/backend/src/services/OrderService.ts (current file)
@@ -324,6 +344,7 @@ Always load fresh:
 ```
 
 **Step 2**: Upgrade to L2 (2 minutes)
+
 ```typescript
 // Additional files:
 - packages/backend/src/repositories/PickTaskRepository.ts
@@ -339,6 +360,7 @@ Always load fresh:
 ```
 
 **Step 3**: Upgrade to L3 (5 minutes)
+
 ```typescript
 // Additional files:
 - packages/shared/src/types/workflow.ts (state transitions)
@@ -354,6 +376,7 @@ Always load fresh:
 ```
 
 **Step 4**: Implement with Full Context
+
 ```typescript
 // Now implement:
 1. Add soft delete to pick tasks
@@ -405,6 +428,7 @@ This progressive loading system integrates with:
 ## Best Practices
 
 ### For GLM 4.7
+
 - Start with L1 for all tasks
 - Upgrade to L2 if complexity increases
 - Use L3 for any state changes
@@ -412,6 +436,7 @@ This progressive loading system integrates with:
 - Remember file summaries between sessions
 
 ### For Users
+
 - Specify task complexity when asking GLM to help
 - Let GLM determine appropriate context level
 - Trust GLM to load what it needs
@@ -422,6 +447,7 @@ This progressive loading system integrates with:
 ## Monitoring and Optimization
 
 Track effectiveness:
+
 ```typescript
 interface ContextLoadMetrics {
   layer: number;
@@ -434,6 +460,7 @@ interface ContextLoadMetrics {
 ```
 
 Optimize based on:
+
 - Most frequently accessed files (preload in L1)
 - Common patterns (cache in memory)
 - Slow-to-load files (optimize or split)

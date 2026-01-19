@@ -30,14 +30,14 @@ async function testPageTracking() {
   console.log('\nTest 2: Checking database schema...');
   try {
     const { query } = await import('./src/db/client');
-    
+
     const schemaResult = await query(`
       SELECT column_name, data_type 
       FROM information_schema.columns 
       WHERE table_name = 'users' 
         AND column_name IN ('current_view', 'current_view_updated_at')
     `);
-    
+
     console.log('Columns found:');
     if (schemaResult.rows) {
       schemaResult.rows.forEach((row: any) => {
@@ -52,7 +52,7 @@ async function testPageTracking() {
   console.log('\nTest 3: Checking current values...');
   try {
     const { query } = await import('./src/db/client');
-    
+
     const valuesResult = await query(`
       SELECT user_id, email, current_view, current_view_updated_at,
              NOW() as server_time,
@@ -61,7 +61,7 @@ async function testPageTracking() {
       WHERE role = 'PICKER'
       ORDER BY current_view_updated_at DESC NULLS LAST
     `);
-    
+
     console.log('Current picker values:');
     if (valuesResult.rows) {
       valuesResult.rows.forEach((row: any) => {
@@ -84,7 +84,7 @@ testPageTracking()
     console.log('\n✅ Tests completed');
     process.exit(0);
   })
-  .catch((error) => {
+  .catch(error => {
     console.error('\n❌ Test failed:', error);
     process.exit(1);
   });

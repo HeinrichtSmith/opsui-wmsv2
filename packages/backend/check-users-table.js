@@ -30,11 +30,14 @@ async function checkUsersTable() {
   console.log('\n=== Specific User Check ===\n');
 
   // Check specific user
-  const user = await query(`
+  const user = await query(
+    `
     SELECT user_id, name, current_view, current_view_updated_at
     FROM users
     WHERE user_id = $1
-  `, ['USR-PICK01']);
+  `,
+    ['USR-PICK01']
+  );
 
   console.log('John Picker data:');
   console.log(JSON.stringify(user.rows[0] || 'Not found', null, 2));

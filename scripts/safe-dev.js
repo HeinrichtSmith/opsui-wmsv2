@@ -41,11 +41,11 @@ const frontend = spawn('npm', ['run', 'dev'], {
 });
 
 // Handle errors gracefully
-backend.on('error', (err) => {
+backend.on('error', err => {
   console.error('❌ Backend error:', err.message);
 });
 
-frontend.on('error', (err) => {
+frontend.on('error', err => {
   console.error('❌ Frontend error:', err.message);
 });
 

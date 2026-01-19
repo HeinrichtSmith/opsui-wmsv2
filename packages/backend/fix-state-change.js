@@ -5,10 +5,11 @@ const client = new Client({
   port: 5432,
   database: 'wms_db',
   user: 'wms_user',
-  password: 'wms_password'
+  password: 'wms_password',
 });
 
-client.connect()
+client
+  .connect()
   .then(async () => {
     const sql = `CREATE OR REPLACE FUNCTION public.generate_state_change_id()
 RETURNS character varying
@@ -16,7 +17,7 @@ LANGUAGE sql
 AS $function$
   SELECT 'OSC-' || TO_CHAR(NOW(), 'YYYYMMDD') || '-' || LPAD(FLOOR(EXTRACT(EPOCH FROM NOW()) * 1000)::TEXT, 11, '0');
 $function$`;
-    
+
     await client.query(sql);
     console.log('Fixed generate_state_change_id to use milliseconds');
     client.end();

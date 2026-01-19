@@ -134,9 +134,7 @@ router.get(
 router.get(
   '/alerts/low-stock',
   asyncHandler(async (req: AuthenticatedRequest, res) => {
-    const threshold = req.query.threshold
-      ? parseInt(req.query.threshold as string)
-      : 10;
+    const threshold = req.query.threshold ? parseInt(req.query.threshold as string) : 10;
     const alerts = await inventoryService.getLowStockAlerts(threshold);
     res.json(alerts);
   })
@@ -151,9 +149,7 @@ router.get(
   authorize(UserRole.ADMIN, UserRole.SUPERVISOR),
   asyncHandler(async (req: AuthenticatedRequest, res) => {
     validateSKU(req.params.sku);
-    const reconciliation = await inventoryService.reconcileInventory(
-      req.params.sku
-    );
+    const reconciliation = await inventoryService.reconcileInventory(req.params.sku);
     res.json(reconciliation);
   })
 );

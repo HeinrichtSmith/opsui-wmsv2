@@ -29,8 +29,8 @@ const ADMIN_PATHS = [
  */
 export function useAdminRoleAutoSwitch() {
   const location = useLocation();
-  const user = useAuthStore((state) => state.user);
-  const getEffectiveRole = useAuthStore((state) => state.getEffectiveRole);
+  const user = useAuthStore(state => state.user);
+  const getEffectiveRole = useAuthStore(state => state.getEffectiveRole);
   const setActiveRoleMutation = useSetActiveRole();
 
   useEffect(() => {

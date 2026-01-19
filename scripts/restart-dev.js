@@ -53,7 +53,7 @@ async function killDevProcesses() {
  * Kill process using a specific port
  */
 function killProcessOnPort(port) {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     log(`Checking port ${port}...`, 'yellow');
 
     // Windows: use netstat and taskkill
@@ -80,15 +80,16 @@ function killProcessOnPort(port) {
         }
 
         // Kill each PID
-        const killPromises = Array.from(pids).map(pid =>
-          new Promise(killResolve => {
-            exec(`taskkill /F /PID ${pid}`, (killError) => {
-              if (!killError) {
-                log(`  Port ${port}: killed PID ${pid}`, 'green');
-              }
-              killResolve();
-            });
-          })
+        const killPromises = Array.from(pids).map(
+          pid =>
+            new Promise(killResolve => {
+              exec(`taskkill /F /PID ${pid}`, killError => {
+                if (!killError) {
+                  log(`  Port ${port}: killed PID ${pid}`, 'green');
+                }
+                killResolve();
+              });
+            })
         );
 
         Promise.all(killPromises).then(() => resolve());
@@ -107,7 +108,7 @@ function killProcessOnPort(port) {
  * Kill processes by name pattern
  */
 function killByName(processName, pattern) {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     const isWindows = process.platform === 'win32';
 
     if (isWindows) {
@@ -137,11 +138,14 @@ function killByName(processName, pattern) {
           return;
         }
 
-        Promise.all(pids.map(pid =>
-          new Promise(killResolve => {
-            exec(`taskkill /F /PID ${pid}`, () => killResolve());
-          })
-        )).then(() => resolve());
+        Promise.all(
+          pids.map(
+            pid =>
+              new Promise(killResolve => {
+                exec(`taskkill /F /PID ${pid}`, () => killResolve());
+              })
+          )
+        ).then(() => resolve());
       });
     } else {
       exec(`pkill -f "${pattern}"`, () => resolve());
@@ -171,12 +175,12 @@ function startSmartDev() {
     shell: true,
   });
 
-  smartDev.on('error', (err) => {
+  smartDev.on('error', err => {
     log(`Failed to start: ${err.message}`, 'red');
     process.exit(1);
   });
 
-  smartDev.on('exit', (code) => {
+  smartDev.on('exit', code => {
     process.exit(code || 0);
   });
 }
@@ -195,7 +199,6 @@ async function main() {
 
     // Step 3: Start smart dev
     startSmartDev();
-
   } catch (error) {
     log(`\n❌ Error: ${error.message}`, 'red');
     process.exit(1);

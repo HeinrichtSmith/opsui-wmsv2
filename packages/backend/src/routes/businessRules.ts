@@ -24,44 +24,50 @@ router.use(authenticate);
  * GET /api/business-rules
  * Get all business rules with optional filtering
  */
-router.get('/', asyncHandler(async (req: Request, res: Response) => {
-  const { status, ruleType, includeInactive } = req.query;
+router.get(
+  '/',
+  asyncHandler(async (req: Request, res: Response) => {
+    const { status, ruleType, includeInactive } = req.query;
 
-  const rules = await businessRulesRepository.findAll({
-    status: status as RuleStatus,
-    ruleType: ruleType as RuleType,
-    includeInactive: includeInactive === 'true'
-  });
+    const rules = await businessRulesRepository.findAll({
+      status: status as RuleStatus,
+      ruleType: ruleType as RuleType,
+      includeInactive: includeInactive === 'true',
+    });
 
-  res.json({
-    success: true,
-    data: {
-      rules,
-      count: rules.length
-    }
-  });
-}));
+    res.json({
+      success: true,
+      data: {
+        rules,
+        count: rules.length,
+      },
+    });
+  })
+);
 
 /**
  * GET /api/business-rules/:ruleId
  * Get a specific business rule by ID
  */
-router.get('/:ruleId', asyncHandler(async (req: Request, res: Response) => {
-  const { ruleId } = req.params;
-  const rule = await businessRulesRepository.findById(ruleId);
+router.get(
+  '/:ruleId',
+  asyncHandler(async (req: Request, res: Response) => {
+    const { ruleId } = req.params;
+    const rule = await businessRulesRepository.findById(ruleId);
 
-  if (!rule) {
-    return res.status(404).json({
-      success: false,
-      error: 'Rule not found'
+    if (!rule) {
+      return res.status(404).json({
+        success: false,
+        error: 'Rule not found',
+      });
+    }
+
+    res.json({
+      success: true,
+      data: { rule },
     });
-  }
-
-  res.json({
-    success: true,
-    data: { rule }
-  });
-}));
+  })
+);
 
 /**
  * POST /api/business-rules
@@ -71,13 +77,14 @@ router.post(
   '/',
   authorize(UserRole.ADMIN, UserRole.SUPERVISOR),
   asyncHandler(async (req: Request, res: Response) => {
-    const ruleData: Omit<BusinessRule, 'ruleId' | 'createdAt' | 'executionCount' | 'version'> = req.body;
+    const ruleData: Omit<BusinessRule, 'ruleId' | 'createdAt' | 'executionCount' | 'version'> =
+      req.body;
 
     // Validate required fields
     if (!ruleData.name || !ruleData.ruleType || !ruleData.createdBy) {
       return res.status(400).json({
         success: false,
-        error: 'Missing required fields: name, ruleType, createdBy'
+        error: 'Missing required fields: name, ruleType, createdBy',
       });
     }
 
@@ -85,7 +92,7 @@ router.post(
 
     res.status(201).json({
       success: true,
-      data: { rule }
+      data: { rule },
     });
   })
 );
@@ -106,13 +113,13 @@ router.put(
     if (!rule) {
       return res.status(404).json({
         success: false,
-        error: 'Rule not found'
+        error: 'Rule not found',
       });
     }
 
     res.json({
       success: true,
-      data: { rule }
+      data: { rule },
     });
   })
 );
@@ -131,13 +138,13 @@ router.delete(
     if (!deleted) {
       return res.status(404).json({
         success: false,
-        error: 'Rule not found'
+        error: 'Rule not found',
       });
     }
 
     res.json({
       success: true,
-      message: 'Rule deleted successfully'
+      message: 'Rule deleted successfully',
     });
   })
 );
@@ -150,20 +157,23 @@ router.delete(
  * GET /api/business-rules/:ruleId/execution-logs
  * Get execution logs for a specific rule
  */
-router.get('/:ruleId/execution-logs', asyncHandler(async (req: Request, res: Response) => {
-  const { ruleId } = req.params;
-  const limit = parseInt(req.query.limit as string) || 100;
+router.get(
+  '/:ruleId/execution-logs',
+  asyncHandler(async (req: Request, res: Response) => {
+    const { ruleId } = req.params;
+    const limit = parseInt(req.query.limit as string) || 100;
 
-  const logs = await businessRulesRepository.findExecutionLogs(ruleId, limit);
+    const logs = await businessRulesRepository.findExecutionLogs(ruleId, limit);
 
-  res.json({
-    success: true,
-    data: {
-      logs,
-      count: logs.length
-    }
-  });
-}));
+    res.json({
+      success: true,
+      data: {
+        logs,
+        count: logs.length,
+      },
+    });
+  })
+);
 
 // ============================================================================
 // RULE TESTING
@@ -182,7 +192,7 @@ router.post(
     if (!rule || !entity) {
       return res.status(400).json({
         success: false,
-        error: 'Missing required fields: rule, entity'
+        error: 'Missing required fields: rule, entity',
       });
     }
 
@@ -191,7 +201,7 @@ router.post(
       entity,
       entityType: entityType || 'test',
       entityId: entityId || 'test-entity',
-      userId: 'test-user'
+      userId: 'test-user',
     };
 
     const evaluationResult = businessRulesService.evaluateRuleConditions(rule, context);
@@ -201,8 +211,8 @@ router.post(
       data: {
         shouldExecute: evaluationResult.shouldExecute,
         conditionsMet: evaluationResult.conditionsMet,
-        conditionResults: evaluationResult.conditionResults
-      }
+        conditionResults: evaluationResult.conditionResults,
+      },
     });
   })
 );
@@ -219,19 +229,19 @@ router.post(
 
     const rule = await businessRulesRepository.update(ruleId, {
       status: RuleStatus.ACTIVE,
-      updatedBy: (req as any).user?.userId || 'system'
+      updatedBy: (req as any).user?.userId || 'system',
     });
 
     if (!rule) {
       return res.status(404).json({
         success: false,
-        error: 'Rule not found'
+        error: 'Rule not found',
       });
     }
 
     res.json({
       success: true,
-      data: { rule }
+      data: { rule },
     });
   })
 );
@@ -248,19 +258,19 @@ router.post(
 
     const rule = await businessRulesRepository.update(ruleId, {
       status: RuleStatus.INACTIVE,
-      updatedBy: (req as any).user?.userId || 'system'
+      updatedBy: (req as any).user?.userId || 'system',
     });
 
     if (!rule) {
       return res.status(404).json({
         success: false,
-        error: 'Rule not found'
+        error: 'Rule not found',
       });
     }
 
     res.json({
       success: true,
-      data: { rule }
+      data: { rule },
     });
   })
 );
@@ -269,29 +279,32 @@ router.post(
  * GET /api/business-rules/stats/summary
  * Get summary statistics for business rules
  */
-router.get('/stats/summary', asyncHandler(async (req: Request, res: Response) => {
-  const allRules = await businessRulesRepository.findAll({ includeInactive: true });
+router.get(
+  '/stats/summary',
+  asyncHandler(async (req: Request, res: Response) => {
+    const allRules = await businessRulesRepository.findAll({ includeInactive: true });
 
-  const stats = {
-    total: allRules.length,
-    active: allRules.filter((r: BusinessRule) => r.status === RuleStatus.ACTIVE).length,
-    inactive: allRules.filter((r: BusinessRule) => r.status === RuleStatus.INACTIVE).length,
-    draft: allRules.filter((r: BusinessRule) => r.status === RuleStatus.DRAFT).length,
-    byType: {
-      ALLOCATION: allRules.filter((r: BusinessRule) => r.ruleType === 'ALLOCATION').length,
-      PICKING: allRules.filter((r: BusinessRule) => r.ruleType === 'PICKING').length,
-      SHIPPING: allRules.filter((r: BusinessRule) => r.ruleType === 'SHIPPING').length,
-      INVENTORY: allRules.filter((r: BusinessRule) => r.ruleType === 'INVENTORY').length,
-      VALIDATION: allRules.filter((r: BusinessRule) => r.ruleType === 'VALIDATION').length,
-      NOTIFICATION: allRules.filter((r: BusinessRule) => r.ruleType === 'NOTIFICATION').length
-    },
-    totalExecutions: allRules.reduce((sum: number, r: BusinessRule) => sum + r.executionCount, 0)
-  };
+    const stats = {
+      total: allRules.length,
+      active: allRules.filter((r: BusinessRule) => r.status === RuleStatus.ACTIVE).length,
+      inactive: allRules.filter((r: BusinessRule) => r.status === RuleStatus.INACTIVE).length,
+      draft: allRules.filter((r: BusinessRule) => r.status === RuleStatus.DRAFT).length,
+      byType: {
+        ALLOCATION: allRules.filter((r: BusinessRule) => r.ruleType === 'ALLOCATION').length,
+        PICKING: allRules.filter((r: BusinessRule) => r.ruleType === 'PICKING').length,
+        SHIPPING: allRules.filter((r: BusinessRule) => r.ruleType === 'SHIPPING').length,
+        INVENTORY: allRules.filter((r: BusinessRule) => r.ruleType === 'INVENTORY').length,
+        VALIDATION: allRules.filter((r: BusinessRule) => r.ruleType === 'VALIDATION').length,
+        NOTIFICATION: allRules.filter((r: BusinessRule) => r.ruleType === 'NOTIFICATION').length,
+      },
+      totalExecutions: allRules.reduce((sum: number, r: BusinessRule) => sum + r.executionCount, 0),
+    };
 
-  res.json({
-    success: true,
-    data: stats
-  });
-}));
+    res.json({
+      success: true,
+      data: stats,
+    });
+  })
+);
 
 export default router;

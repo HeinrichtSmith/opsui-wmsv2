@@ -21,7 +21,7 @@ export class RoleAssignmentRepository {
       ORDER BY granted_at DESC
     `;
     const result = await this.pool.query(query, [userId]);
-    return result.rows.map((row) => row.role as UserRole);
+    return result.rows.map(row => row.role as UserRole);
   }
 
   /**

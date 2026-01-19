@@ -19,6 +19,7 @@ The PickingPage component has complex order claiming logic with multiple safegua
 ## Current Behavior
 
 The component attempts to claim orders with these protections:
+
 - Checks if order is already claimed or in progress (PICKING/IN_PROGRESS)
 - Validates order status is PENDING before claiming
 - Validates pickerId before claiming
@@ -28,6 +29,7 @@ The component attempts to claim orders with these protections:
 ## Issue from Logs
 
 The logs show this sequence:
+
 ```
 [PickingPage] Order status: PENDING → Attempting to claim
 [PickingPage] Order status: PICKING → Attempting to claim  ← Second attempt before first completes!
@@ -35,6 +37,7 @@ POST /api/orders/ORD-20260114-6117/claim 409 (Conflict)
 ```
 
 This indicates that:
+
 1. Two claim attempts are being made nearly simultaneously
 2. The second attempt is triggered before the first one completes
 3. The backend rejects with 409 Conflict because the order status changed to PICKING (likely from the first claim)
@@ -48,8 +51,9 @@ This indicates that:
 ## Current Safeguards
 
 The component has these protections:
+
 1. ✅ `isClaimingRef` - Prevents re-claiming the same order
-2. ✅ `isClaimingRef` - Prevents multiple concurrent claim attempts  
+2. ✅ `isClaimingRef` - Prevents multiple concurrent claim attempts
 3. ✅ `claimMutation.isPending` - Prevents claiming while mutation is in progress
 4. ✅ `claimMutation.isError` - Prevents retrying after errors
 5. ✅ Status validation - Checks if order.status === 'PENDING' before claiming
@@ -60,6 +64,7 @@ The component has these protections:
 The issue is that when the order status changes from PENDING → PICKING due to the first claim, the refetch brings fresh order data, and a second `useLayoutEffect` trigger runs before the first mutation completes.
 
 The current code structure makes this scenario very difficult to prevent because:
+
 - The `useLayoutEffect` has `[order, order?.status, order?.pickerId]` in dependencies
 - Any status change in the order triggers a re-evaluation
 - The refs are reset when `orderId` changes, so `hasClaimedRef` becomes `false` again
@@ -128,6 +133,7 @@ This prevents multiple claim attempts because the UI state immediately shows "Cl
 ## Testing
 
 To verify the fix works:
+
 1. Navigate to a PENDING order
 2. Observe console logs - should only see ONE claim attempt
 3. If you see 409 Conflict errors, the race condition still exists

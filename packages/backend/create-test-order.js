@@ -89,9 +89,18 @@ async function createTestData() {
 
     // 5. Verify data
     console.log('\n5. Verifying data...');
-    const orderCount = await pool.query('SELECT COUNT(*) as count FROM orders WHERE order_id = $1', [orderId]);
-    const itemCount = await pool.query('SELECT COUNT(*) as count FROM order_items WHERE order_id = $1', [orderId]);
-    const pickTaskCount = await pool.query('SELECT COUNT(*) as count FROM pick_tasks WHERE order_id = $1', [orderId]);
+    const orderCount = await pool.query(
+      'SELECT COUNT(*) as count FROM orders WHERE order_id = $1',
+      [orderId]
+    );
+    const itemCount = await pool.query(
+      'SELECT COUNT(*) as count FROM order_items WHERE order_id = $1',
+      [orderId]
+    );
+    const pickTaskCount = await pool.query(
+      'SELECT COUNT(*) as count FROM pick_tasks WHERE order_id = $1',
+      [orderId]
+    );
 
     console.log('   Orders:', orderCount.rows[0].count);
     console.log('   Order Items:', itemCount.rows[0].count);
@@ -122,7 +131,6 @@ async function createTestData() {
     console.log('1. Refresh your picker page at http://localhost:5173');
     console.log('2. You should now see the order with items');
     console.log('3. Click on the order to claim it');
-
   } catch (error) {
     console.error('\n=== ERROR ===');
     console.error('Message:', error.message);

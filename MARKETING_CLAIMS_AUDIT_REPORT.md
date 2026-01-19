@@ -27,6 +27,7 @@ This audit reveals significant discrepancies between marketing claims and actual
 ### 1. ERP Integrations (CRITICAL - HIGH RISK)
 
 #### Marketing Claims
+
 - **NetSuite:** "Full order & inventory sync (bidirectional, real-time)" using "SuiteScript 2.1 + RESTlets"
 - **SAP Business One:** "Direct integration via DI API and Service Layer (REST)"
 - **Xero:** "Financial & inventory integration" with "OAuth 2.0 API"
@@ -53,6 +54,7 @@ private async syncErpSystem(integration: Integration): Promise<any> {
 ```
 
 **Type definitions exist** ([integrations.ts:106-138](packages/shared/src/types/integrations.ts#L106-L138)) for:
+
 - `NETSUITE`
 - `XERO`
 - `SAP`
@@ -60,16 +62,19 @@ private async syncErpSystem(integration: Integration): Promise<any> {
 **But no actual integration code exists.**
 
 **Required Fields Validation:**
+
 - SAP: host, port, username, client ([IntegrationsService.ts:450](packages/backend/src/services/IntegrationsService.ts#L450))
 - NetSuite: NOT defined in validation logic
 - Xero: NOT defined in validation logic
 
 **Risk Assessment:**
+
 - **Legal Risk:** False advertising claims
 - **Customer Risk:** Customers will expect working integrations
 - **Reputation Risk:** Failed integrations will damage credibility
 
 **Recommendation:**
+
 1. **Immediate:** Remove or downplay integration claims until implemented
 2. **Short-term:** Implement at least one ERP connector fully
 3. **Long-term:** Complete all three promised integrations
@@ -79,6 +84,7 @@ private async syncErpSystem(integration: Integration): Promise<any> {
 ### 2. Courier Integrations (CRITICAL - HIGH RISK)
 
 #### Marketing Claims
+
 - **NZ Post:** Label generation, tracking
 - **NZ Couriers:** Label generation, tracking
 - **Mainfreight:** Label generation, tracking
@@ -94,21 +100,25 @@ private async syncErpSystem(integration: Integration): Promise<any> {
 **Evidence:**
 
 File: [shipping.ts](packages/backend/src/routes/shipping.ts)
+
 - Generic shipping service exists
 - Carrier management exists
 - Label generation exists
 - **BUT:** No NZ-specific carrier implementations
 
 **Search Results:**
+
 - No files found for "NZ Post", "NZ Couriers", "Mainfreight", "Post Haste"
 - Only US carriers referenced in integration types: FEDEX, UPS, DHL, USPS ([integrations.ts:124-129](packages/shared/src/types/integrations.ts#L124-L129))
 
 **Risk Assessment:**
+
 - **High Risk:** Marketing specifically claims NZ courier support
 - **Zero Evidence:** No NZ courier code exists
 - **Customer Impact:** NZ customers will be unable to use core features
 
 **Recommendation:**
+
 1. **Immediate:** Remove NZ courier claims or mark as "Coming Soon"
 2. **Short-term:** Implement at least 2 NZ carriers (NZ Post + one other)
 3. **Long-term:** Implement all 4 promised carriers
@@ -118,6 +128,7 @@ File: [shipping.ts](packages/backend/src/routes/shipping.ts)
 ### 3. Batch Picking & Wave Management (HIGH RISK)
 
 #### Marketing Claims
+
 - **Batch Picking:** "Group multiple orders for efficient picking" (Ops Pro, Ops Elite)
 - **Wave Management:** "Organize picks into waves" (Ops Pro, Ops Elite)
 - **"Smart batch grouping"**
@@ -130,27 +141,32 @@ File: [shipping.ts](packages/backend/src/routes/shipping.ts)
 **Evidence:**
 
 **Business Rules Framework Exists:**
+
 - [business-rules.ts](packages/shared/src/types/business-rules.ts) defines allocation strategies
 - `WAVE_PICKING` strategy defined ([business-rules.ts:183](packages/shared/src/types/business-rules.ts#L183))
 - `BULK_PICKING` strategy defined ([business-rules.ts:184](packages/shared/src/types/business-rules.ts#L184))
 
 **But No Implementation:**
+
 - No batch picking service found
 - No wave management routes found
 - Order service handles individual orders only
 - No grouping logic found
 
 **Search Results:**
+
 - "batch" and "wave" only appear in:
   - Type definitions
   - Node_modules (external dependencies)
   - ML package (unrelated)
 
 **Risk Assessment:**
+
 - **Plan Violation:** Feature promised for Pro/Elite tiers
 - **Feature Gap:** Major efficiency feature missing
 
 **Recommendation:**
+
 1. **Remove from pricing** until implemented OR
 2. **Implement** batch picking logic for Pro tier
 
@@ -159,6 +175,7 @@ File: [shipping.ts](packages/backend/src/routes/shipping.ts)
 ### 4. Advanced Reporting & Analytics (MEDIUM RISK)
 
 #### Marketing Claims
+
 - **"Advanced Reporting & Analytics"** (Ops Elite only)
 - **Detailed operational metrics**
 
@@ -169,30 +186,36 @@ File: [shipping.ts](packages/backend/src/routes/shipping.ts)
 **Evidence:**
 
 **Framework Exists:**
+
 - [reporting.ts](packages/shared/src/types/reporting.ts) comprehensive type definitions
 - [reports.ts:13-321](packages/backend/src/routes/reports.ts) route handlers
 - Report types: INVENTORY, ORDERS, SHIPPING, PICKING_PERFORMANCE, etc.
 
 **But Implementation Gaps:**
+
 - Export job status: "not yet implemented" ([reports.ts:313-317](packages/backend/src/routes/reports.ts#L313-L317))
 - No actual report generation logic found
 - No dashboard widgets implemented
 
 **What Exists:**
+
 - CRUD for report definitions
 - Execution tracking
 - Export job framework
 
 **What's Missing:**
+
 - Actual data aggregation
 - Chart generation
 - Dashboard rendering
 
 **Risk Assessment:**
+
 - **Medium Risk:** Framework is solid, implementation incomplete
 - **Elite Feature:** Paying customers will expect this
 
 **Recommendation:**
+
 1. **Downgrade claim** to "Custom Report Builder"
 2. **Implement** basic reports before Elite launch
 
@@ -201,6 +224,7 @@ File: [shipping.ts](packages/backend/src/routes/shipping.ts)
 ### 5. Add-On Modules (HIGH RISK)
 
 #### Marketing Claims
+
 - **Production Management:** Track manufacturing, BOM, production scheduling ($80/month)
 - **Sales & CRM:** Customer relationships, sales pipeline ($60/month)
 - **Maintenance & Assets:** Equipment maintenance, asset tracking ($50/month)
@@ -210,16 +234,19 @@ File: [shipping.ts](packages/backend/src/routes/shipping.ts)
 **Status: NO EVIDENCE OF EXISTENCE**
 
 **Evidence:**
+
 - No production module found
 - No CRM module found
 - No maintenance module found
 - No pricing tier implementation found
 
 **Risk Assessment:**
+
 - **High Risk:** Selling non-existent modules
 - **Legal Risk:** False advertising
 
 **Recommendation:**
+
 1. **Immediate removal** from pricing page
 2. **Mark as "Coming Soon"** if planned
 3. **Do not sell** until implemented
@@ -229,6 +256,7 @@ File: [shipping.ts](packages/backend/src/routes/shipping.ts)
 ### 6. Real-Time Sync Claims (MEDIUM RISK)
 
 #### Marketing Claims
+
 - **"Orders pulled every 2 minutes"**
 - **"Inventory updates pushed immediately"**
 - **"Shipment tracking within 30 seconds"**
@@ -241,14 +269,17 @@ File: [shipping.ts](packages/backend/src/routes/shipping.ts)
 **Evidence:**
 
 **Sync Frequency Options Defined:**
+
 - [integrations.ts:35-45](packages/shared/src/types/integrations.ts#L35-L45) - Includes `REAL_TIME`, `EVERY_5_MINUTES`, etc.
 
 **But No Scheduler Found:**
+
 - No cron job implementation
 - No polling service
 - No webhook handlers implemented ([IntegrationsService.ts:340-393](packages/backend/src/services/IntegrationsService.ts#L340-L393) - only console.log stubs)
 
 **Example Stub:**
+
 ```typescript
 private async handleOrderCreated(payload: any, integration: Integration): Promise<void> {
   // Handle order creation from e-commerce platform
@@ -257,10 +288,12 @@ private async handleOrderCreated(payload: any, integration: Integration): Promis
 ```
 
 **Risk Assessment:**
+
 - **Medium Risk:** Framework supports it, but no actual sync
 - **Performance Gap:** Cannot meet 2-minute promise without scheduler
 
 **Recommendation:**
+
 1. **Implement** job scheduler (cron/bull)
 2. **Remove specific timing claims** until verified
 3. **Clarify** "near real-time" vs actual real-time
@@ -270,6 +303,7 @@ private async handleOrderCreated(payload: any, integration: Integration): Promis
 ### 7. White-Label Options (HIGH RISK)
 
 #### Marketing Claims
+
 - **"White-Label Options"** (Ops Elite only)
 - Implies: Custom branding, logos, colors
 
@@ -278,15 +312,18 @@ private async handleOrderCreated(payload: any, integration: Integration): Promis
 **Status: NOT IMPLEMENTED**
 
 **Evidence:**
+
 - No theming system found
 - No logo upload functionality
 - No color customization
 - No multi-tenant branding
 
 **Risk Assessment:**
+
 - **High Risk:** Elite feature completely missing
 
 **Recommendation:**
+
 1. **Remove claim** OR
 2. **Implement** basic theming system
 
@@ -295,6 +332,7 @@ private async handleOrderCreated(payload: any, integration: Integration): Promis
 ### 8. Custom Workflow Automation (HIGH RISK)
 
 #### Marketing Claims
+
 - **"Custom Workflow Automation"** (Ops Elite only)
 - **"Create custom rules and workflows"**
 
@@ -305,20 +343,24 @@ private async handleOrderCreated(payload: any, integration: Integration): Promis
 **Evidence:**
 
 **Business Rules Framework:**
+
 - [business-rules.ts](packages/shared/src/types/business-rules.ts) - comprehensive
 - Rule types: ALLOCATION, PICKING, SHIPPING, etc.
 - Conditions, actions, templates defined
 
 **But No User Interface:**
+
 - No rule builder UI found
 - No configuration endpoints
 - Database tables may not exist
 
 **Risk Assessment:**
+
 - **High Risk:** Requires significant development
 - **Elite Feature:** Key differentiator missing
 
 **Recommendation:**
+
 1. **Clarify** as "Developer-configured rules"
 2. **OR** Build no-code rule builder
 
@@ -329,34 +371,40 @@ private async handleOrderCreated(payload: any, integration: Integration): Promis
 ### Core WMS Functionality (GOOD)
 
 ✅ **Order Management**
+
 - Order lifecycle: PENDING → PICKING → PICKED → PACKING → PACKED → SHIPPED
 - Order creation and validation
 - Picker assignment
 - Progress tracking
 
 ✅ **Picking Workflow**
+
 - Pick task generation
 - Barcode scanning support
 - Bin location validation
 - Quantity tracking
 
 ✅ **Packing Workflow**
+
 - Packing queue
 - Item verification
 - Shipping label generation (generic)
 
 ✅ **Inventory Management**
+
 - Real-time stock tracking
 - Bin-level inventory
 - Reservation system
 - Transaction history
 
 ✅ **Authentication & Authorization**
+
 - JWT-based auth
 - Role-based access control (5 roles)
 - Proper middleware
 
 ✅ **Database Schema**
+
 - Comprehensive schema
 - Audit trails
 - Transaction support
@@ -366,6 +414,7 @@ private async handleOrderCreated(payload: any, integration: Integration): Promis
 ## What Exists vs. What's Claimed
 
 ### Fully Implemented (Can Market)
+
 1. ✅ Picking workflow
 2. ✅ Packing workflow
 3. ✅ Barcode scanning validation
@@ -379,6 +428,7 @@ private async handleOrderCreated(payload: any, integration: Integration): Promis
 11. ✅ Basic reporting framework
 
 ### Partially Implemented (Soft Claims)
+
 1. ⚠️ Shipping labels (generic only, no NZ carriers)
 2. ⚠️ Integrations (framework only, no connectors)
 3. ⚠️ Reporting (CRUD exists, no actual reports)
@@ -386,6 +436,7 @@ private async handleOrderCreated(payload: any, integration: Integration): Promis
 5. ⚠️ Webhooks (receiver exists, no handlers)
 
 ### Not Implemented (Remove Claims)
+
 1. ❌ NetSuite integration
 2. ❌ SAP Business One integration
 3. ❌ Xero integration
@@ -460,25 +511,31 @@ private async handleOrderCreated(payload: any, integration: Integration): Promis
 ## Suggested Marketing Copy Changes
 
 ### Before (Current Claims)
+
 > "Full order & inventory sync with NetSuite, SAP Business One, and Xero"
 
 ### After (Honest Claims)
+
 > "Integration framework supporting ERPs and e-commerce platforms. Xero integration coming soon. Contact us for custom integrations."
 
 ---
 
 ### Before
+
 > "Generate labels for NZ Post, NZ Couriers, Mainfreight. One screen, one action."
 
 ### After
+
 > "Universal shipping label generation. Extensible carrier integration framework. NZ carrier support in development."
 
 ---
 
 ### Before
+
 > "Batch Picking. Wave Management."
 
 ### After
+
 > "Smart picking workflow with barcode validation. Batch picking coming in Q2 2026."
 
 ---
@@ -532,6 +589,7 @@ The system has a strong foundation but needs significant development work before
 ## Appendix: Audit Methodology
 
 ### Files Analyzed
+
 - `/packages/backend/src/services/IntegrationsService.ts` - ERP integration logic
 - `/packages/backend/src/routes/shipping.ts` - Carrier integration
 - `/packages/backend/src/routes/reports.ts` - Reporting system
@@ -541,6 +599,7 @@ The system has a strong foundation but needs significant development work before
 - All service files (OrderService, InventoryService, etc.)
 
 ### Search Terms Used
+
 - "NetSuite", "SAP", "Xero"
 - "NZ Post", "NZ Couriers", "Mainfreight", "Post Haste"
 - "batch", "wave"
@@ -548,6 +607,7 @@ The system has a strong foundation but needs significant development work before
 - "production", "CRM", "maintenance"
 
 ### Analysis Criteria
+
 - Code implementation vs. type definitions only
 - Stub implementations (console.log, "not implemented")
 - Database migrations for feature support

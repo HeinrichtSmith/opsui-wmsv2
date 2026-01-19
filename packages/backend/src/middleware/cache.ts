@@ -57,10 +57,7 @@ function generateCacheKey(req: Request, varyBy: string[] = []): string {
  * Generate ETag for cache entry
  */
 function generateETag(data: any): string {
-  return require('crypto')
-    .createHash('md5')
-    .update(JSON.stringify(data))
-    .digest('hex');
+  return require('crypto').createHash('md5').update(JSON.stringify(data)).digest('hex');
 }
 
 /**
@@ -71,7 +68,8 @@ function cleanupExpiredEntries(): void {
   let cleaned = 0;
 
   for (const [key, entry] of cacheStore.entries()) {
-    if (now - entry.timestamp > 5 * 60 * 1000) { // 5 minutes
+    if (now - entry.timestamp > 5 * 60 * 1000) {
+      // 5 minutes
       cacheStore.delete(key);
       cleaned++;
     }
@@ -100,11 +98,9 @@ setInterval(cleanupExpiredEntries, 60 * 1000);
  * app.get('/api/orders', cache({ ttl: 60000 }), getOrders);
  * ```
  */
-export function cache(options: CacheOptions = {}): (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => void {
+export function cache(
+  options: CacheOptions = {}
+): (req: Request, res: Response, next: NextFunction) => void {
   const ttl = options.ttl || 5 * 60 * 1000; // Default 5 minutes
   const varyBy = options.varyBy || ['query'];
 

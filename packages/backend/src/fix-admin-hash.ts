@@ -34,7 +34,7 @@ async function fixAdminPassword() {
     if (result.rows.length === 0) {
       logger.error('Admin user not found!');
       logger.info('Creating admin user...');
-      
+
       // Create admin user if not exists
       await query(
         `INSERT INTO users (user_id, name, email, password_hash, role, active)
@@ -42,7 +42,7 @@ async function fixAdminPassword() {
          ON CONFLICT (email) DO UPDATE SET password_hash = $1`,
         [passwordHash]
       );
-      
+
       logger.info('Admin user created successfully');
     } else {
       logger.info('Admin user updated successfully', {
@@ -63,7 +63,6 @@ async function fixAdminPassword() {
     logger.info('Login credentials:');
     logger.info('  Email: admin@wms.local');
     logger.info('  Password: admin123');
-    
   } catch (error) {
     logger.error('Failed to fix admin password', { error });
     throw error;
@@ -76,7 +75,7 @@ fixAdminPassword()
     logger.info('Fix completed. Exiting...');
     process.exit(0);
   })
-  .catch((error) => {
+  .catch(error => {
     logger.error('Fix failed. Exiting...', { error });
     process.exit(1);
   });

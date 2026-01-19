@@ -9,7 +9,9 @@
 ### Backend Implementation (Complete)
 
 #### 1. API Endpoint
+
 **File:** `packages/backend/src/routes/auth.ts` (lines 112-134)
+
 ```typescript
 router.post(
   '/current-view',
@@ -25,7 +27,9 @@ router.post(
 **Endpoint:** `POST /api/auth/current-view` ✅
 
 #### 2. Service Method
+
 **File:** `packages/backend/src/services/AuthService.ts` (lines 177-187)
+
 ```typescript
 async updateCurrentView(userId: string, view: string): Promise<void> {
   await query(
@@ -42,7 +46,9 @@ async updateCurrentView(userId: string, view: string): Promise<void> {
 **Updates:** `current_view` AND `current_view_updated_at` ✅
 
 #### 3. Metrics Service
+
 **File:** `packages/backend/src/services/MetricsService.ts` (lines 214-428)
+
 - Checks `current_view_updated_at` timestamp
 - 5-minute timeout window
 - Smart status determination logic
@@ -53,9 +59,11 @@ async updateCurrentView(userId: string, view: string): Promise<void> {
 ### Frontend Implementation (Complete)
 
 #### 1. Page Tracking Hook
+
 **File:** `packages/frontend/src/hooks/usePageTracking.ts` (complete implementation)
 
 **Features:**
+
 - ✅ Immediate update on page load
 - ✅ Visibility API detection (tab focus/blur)
 - ✅ User activity detection (mouse, keyboard, scroll, touch)
@@ -64,8 +72,12 @@ async updateCurrentView(userId: string, view: string): Promise<void> {
 - ✅ Automatic cleanup on unmount
 
 **Code:**
+
 ```typescript
-export function usePageTracking({ view, enabled = true }: UsePageTrackingOptions) {
+export function usePageTracking({
+  view,
+  enabled = true,
+}: UsePageTrackingOptions) {
   useEffect(() => {
     if (!enabled || !view) return;
 
@@ -90,18 +102,22 @@ export function usePageTracking({ view, enabled = true }: UsePageTrackingOptions
     };
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
-    
+
     // Throttled activity tracking (every 30 seconds)
     let activityThrottle: NodeJS.Timeout | null = null;
     const activityEvents = ['mousedown', 'keydown', 'scroll', 'touchstart'];
-    
+
     activityEvents.forEach(event => {
-      document.addEventListener(event, () => {
-        if (activityThrottle) clearTimeout(activityThrottle);
-        activityThrottle = setTimeout(() => {
-          updateView();
-        }, 30000);
-      }, { passive: true });
+      document.addEventListener(
+        event,
+        () => {
+          if (activityThrottle) clearTimeout(activityThrottle);
+          activityThrottle = setTimeout(() => {
+            updateView();
+          }, 30000);
+        },
+        { passive: true }
+      );
     });
 
     // Periodic polling (every 30 seconds)
@@ -124,6 +140,7 @@ export function usePageTracking({ view, enabled = true }: UsePageTrackingOptions
 
 **OrderQueuePage** ✅
 **File:** `packages/frontend/src/pages/OrderQueuePage.tsx` (line 32)
+
 ```typescript
 import { usePageTracking, PageViews } from '@/hooks/usePageTracking';
 
@@ -136,6 +153,7 @@ export function OrderQueuePage() {
 
 **PickingPage** ✅
 **File:** `packages/frontend/src/pages/PickingPage.tsx` (line 20)
+
 ```typescript
 import { usePageTracking, PageViews } from '@/hooks/usePageTracking';
 
@@ -147,7 +165,9 @@ export function PickingPage() {
 ```
 
 #### 3. Dashboard Display
+
 **File:** `packages/frontend/src/pages/DashboardPage.tsx` (lines 104-248)
+
 - ✅ Real-time picker activity display
 - ✅ Polls every 1 second
 - ✅ Shows current view, status, progress
@@ -192,11 +212,12 @@ This ensures pickers stay ACTIVE as long as they're interacting with the app!
 ### Manual Test Procedure
 
 1. **Start the application**
+
    ```bash
    # Terminal 1: Backend
    cd packages/backend && npm run dev
-   
-   # Terminal 2: Frontend  
+
+   # Terminal 2: Frontend
    cd packages/frontend && npm run dev
    ```
 
@@ -222,6 +243,7 @@ This ensures pickers stay ACTIVE as long as they're interacting with the app!
 ### Backend Test
 
 Use the test script:
+
 ```bash
 cd packages/backend
 node test-activity-endpoint.js
@@ -232,29 +254,35 @@ node test-activity-endpoint.js
 If pickers still show as IDLE when they're actively working:
 
 ### 1. Check Browser Console
+
 - Look for `[PageTracking]` logs
 - If no logs appear, tracking isn't running
 - If error logs appear, check network connectivity
 
 ### 2. Check Network Tab
+
 - Look for POST requests to `/api/auth/current-view`
 - Verify status code is 200 (not 403, 401, or 500)
 - Check payload contains `{ "view": "Page Name" }`
 
 ### 3. Check Backend Logs
+
 ```bash
 cd packages/backend
 tail -f logs/backend.log
 ```
+
 Look for: `Current view updated` log messages
 
 ### 4. Check Database
+
 ```bash
 cd packages/backend
 node -e "const {query} = require('./src/db/client.js'); (async () => { const result = await query('SELECT user_id, name, current_view, current_view_updated_at FROM users WHERE role = $1', ['PICKER']); console.log(JSON.stringify(result.rows, null, 2)); })().catch(console.error).then(() => process.exit())"
 ```
 
 ### 5. Verify Dashboard Polling
+
 - Dashboard should show "Picker activity count: X"
 - Should update every 1 second
 - Check console for `[API] Raw picker activity data` logs
@@ -262,12 +290,14 @@ node -e "const {query} = require('./src/db/client.js'); (async () => { const res
 ## Performance Metrics
 
 ### API Calls
+
 - **Frontend → Backend:** Every 30 seconds OR on user interaction
 - **Backend → Database:** Single UPDATE query per activity
 - **Dashboard → Backend:** Every 1 second (metrics polling)
 - **Impact:** Negligible (< 100ms per call)
 
 ### Database Load
+
 - **Updates:** ~2 per minute per active picker
 - **Queries:** ~60 per minute for dashboard (1 picker) to ~600 (10 pickers)
 - **Scale:** Easily handles hundreds of concurrent users

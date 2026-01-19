@@ -40,7 +40,6 @@ async function addVerifiedQuantityColumn() {
     `);
 
     console.log('Column details:', verifyResult.rows[0]);
-
   } catch (error) {
     console.error('Error adding verified_quantity column:', error);
     throw error;
@@ -53,7 +52,7 @@ addVerifiedQuantityColumn()
     console.log('Migration completed successfully');
     closePool();
   })
-  .catch((error) => {
+  .catch(error => {
     console.error('Migration failed:', error);
     closePool();
     process.exit(1);

@@ -1,6 +1,6 @@
 /**
  * Test script to verify picker logout cleanup fix
- * 
+ *
  * This script tests that when a picker logs out:
  * 1. All active PICKING orders are released
  * 2. Order status changes back to PENDING
@@ -12,7 +12,8 @@ const { Pool } = require('pg');
 
 // Database connection
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgresql://wms_user:wms_password@localhost:5432/wms_db',
+  connectionString:
+    process.env.DATABASE_URL || 'postgresql://wms_user:wms_password@localhost:5432/wms_db',
 });
 
 async function query(text, params) {
@@ -37,7 +38,7 @@ async function testLogoutCleanup() {
     const pickerResult = await query(
       `SELECT user_id, name, email, current_task_id FROM users WHERE user_id = 'USR-PICKER001' OR name ILIKE '%john%'`
     );
-    
+
     let pickerId = null;
     if (pickerResult.rows.length > 0) {
       const picker = pickerResult.rows[0];
@@ -46,7 +47,7 @@ async function testLogoutCleanup() {
         user_id: picker.user_id,
         name: picker.name,
         email: picker.email,
-        current_task_id: picker.current_task_id
+        current_task_id: picker.current_task_id,
       });
     } else {
       console.log('Picker "john" not found. Looking for any pickers with active orders...');
@@ -62,7 +63,7 @@ async function testLogoutCleanup() {
        WHERE o.status = 'PICKING'
        ORDER BY u.user_id`
     );
-    
+
     console.log(`Found ${activePickersResult.rows.length} picker(s) with active PICKING orders:`);
     if (activePickersResult.rows.length > 0) {
       activePickersResult.rows.forEach(row => {
@@ -85,11 +86,15 @@ async function testLogoutCleanup() {
            AND o.updated_at < NOW() - INTERVAL '1 hour'
          ORDER BY o.updated_at DESC`
       );
-      
-      console.log(`Found ${staleResult.rows.length} order(s) with potential stale picker assignments:`);
+
+      console.log(
+        `Found ${staleResult.rows.length} order(s) with potential stale picker assignments:`
+      );
       if (staleResult.rows.length > 0) {
         staleResult.rows.forEach(row => {
-          console.log(`  - Order ${row.order_id}: Status ${row.status}, Picker ${row.picker_name || 'Unknown'} (${row.picker_id}), Updated ${row.updated_at}`);
+          console.log(
+            `  - Order ${row.order_id}: Status ${row.status}, Picker ${row.picker_name || 'Unknown'} (${row.picker_id}), Updated ${row.updated_at}`
+          );
         });
       } else {
         console.log('  No stale assignments found');
@@ -112,15 +117,17 @@ async function testLogoutCleanup() {
        WHERE u.active = true AND u.role = 'PICKER'
        ORDER BY u.user_id`
     );
-    
-    const johnActivity = activityResult.rows.find(r => r.name && r.name.toLowerCase().includes('john'));
+
+    const johnActivity = activityResult.rows.find(
+      r => r.name && r.name.toLowerCase().includes('john')
+    );
     if (johnActivity) {
       console.log('Found john in picker activity:');
       console.log('  - Picker:', johnActivity.name, `(${johnActivity.user_id})`);
       console.log('  - Current Order:', johnActivity.current_order_id || 'None');
       console.log('  - Order Status:', johnActivity.order_status || 'None');
       console.log('  - Last Updated:', johnActivity.updated_at);
-      
+
       if (johnActivity.current_order_id && johnActivity.order_status === 'PICKING') {
         console.log('  ⚠️  ISSUE CONFIRMED: John has active PICKING order');
       } else {
@@ -144,18 +151,23 @@ async function testLogoutCleanup() {
       console.log();
       console.log('Option 2: Manually clear in the database');
       console.log('  -- Clear picker from orders:');
-      console.log(`  UPDATE orders SET status = 'PENDING', picker_id = NULL, claimed_at = NULL WHERE picker_id = '${pickerId || 'USER-ID'}' AND status = 'PICKING';`);
+      console.log(
+        `  UPDATE orders SET status = 'PENDING', picker_id = NULL, claimed_at = NULL WHERE picker_id = '${pickerId || 'USER-ID'}' AND status = 'PICKING';`
+      );
       console.log('  -- Clear pick tasks:');
-      console.log(`  UPDATE pick_tasks SET picker_id = NULL, status = 'PENDING', started_at = NULL WHERE picker_id = '${pickerId || 'USER-ID'}';`);
+      console.log(
+        `  UPDATE pick_tasks SET picker_id = NULL, status = 'PENDING', started_at = NULL WHERE picker_id = '${pickerId || 'USER-ID'}';`
+      );
       console.log('  -- Clear user current task:');
-      console.log(`  UPDATE users SET current_task_id = NULL WHERE user_id = '${pickerId || 'USER-ID'}';`);
+      console.log(
+        `  UPDATE users SET current_task_id = NULL WHERE user_id = '${pickerId || 'USER-ID'}';`
+      );
       console.log();
     }
 
     console.log('='.repeat(60));
     console.log('Test completed successfully');
     console.log('='.repeat(60));
-
   } catch (error) {
     console.error('Error during test:', error);
     process.exit(1);
@@ -163,9 +175,11 @@ async function testLogoutCleanup() {
 }
 
 // Run the test
-testLogoutCleanup().then(() => {
-  process.exit(0);
-}).catch(error => {
-  console.error('Test failed:', error);
-  process.exit(1);
-});
+testLogoutCleanup()
+  .then(() => {
+    process.exit(0);
+  })
+  .catch(error => {
+    console.error('Test failed:', error);
+    process.exit(1);
+  });

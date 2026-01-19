@@ -79,7 +79,9 @@ function ReturnStatusBadge({ status }: { status: ReturnStatus }) {
   };
 
   return (
-    <span className={`px-2 py-1 rounded-full text-xs font-medium ${styles[status] || 'bg-gray-100 text-gray-800'}`}>
+    <span
+      className={`px-2 py-1 rounded-full text-xs font-medium ${styles[status] || 'bg-gray-100 text-gray-800'}`}
+    >
       {status}
     </span>
   );
@@ -87,7 +89,11 @@ function ReturnStatusBadge({ status }: { status: ReturnStatus }) {
 
 function DispositionBadge({ disposition }: { disposition?: DispositionAction }) {
   if (!disposition) {
-    return <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">Pending</span>;
+    return (
+      <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+        Pending
+      </span>
+    );
   }
 
   const styles: Record<string, string> = {
@@ -101,7 +107,9 @@ function DispositionBadge({ disposition }: { disposition?: DispositionAction }) 
   };
 
   return (
-    <span className={`px-2 py-1 rounded-full text-xs font-medium ${styles[disposition] || 'bg-gray-100 text-gray-800'}`}>
+    <span
+      className={`px-2 py-1 rounded-full text-xs font-medium ${styles[disposition] || 'bg-gray-100 text-gray-800'}`}
+    >
       {disposition.replace(/_/g, ' ')}
     </span>
   );
@@ -168,7 +176,9 @@ function InspectionModal({ inspection, onClose, onSuccess }: InspectionModalProp
               <select
                 required
                 value={formData.inspectionType}
-                onChange={(e) => setFormData({ ...formData, inspectionType: e.target.value as InspectionType })}
+                onChange={e =>
+                  setFormData({ ...formData, inspectionType: e.target.value as InspectionType })
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value={InspectionType.INCOMING}>Incoming</option>
@@ -187,7 +197,7 @@ function InspectionModal({ inspection, onClose, onSuccess }: InspectionModalProp
               <select
                 required
                 value={formData.referenceType}
-                onChange={(e) => setFormData({ ...formData, referenceType: e.target.value as any })}
+                onChange={e => setFormData({ ...formData, referenceType: e.target.value as any })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="INVENTORY">Inventory</option>
@@ -199,28 +209,24 @@ function InspectionModal({ inspection, onClose, onSuccess }: InspectionModalProp
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Reference ID *
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Reference ID *</label>
               <input
                 type="text"
                 required
                 value={formData.referenceId}
-                onChange={(e) => setFormData({ ...formData, referenceId: e.target.value })}
+                onChange={e => setFormData({ ...formData, referenceId: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Enter reference ID"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                SKU *
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">SKU *</label>
               <input
                 type="text"
                 required
                 value={formData.sku}
-                onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
+                onChange={e => setFormData({ ...formData, sku: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Enter SKU"
               />
@@ -235,32 +241,30 @@ function InspectionModal({ inspection, onClose, onSuccess }: InspectionModalProp
                 required
                 min="1"
                 value={formData.quantityInspected}
-                onChange={(e) => setFormData({ ...formData, quantityInspected: parseInt(e.target.value) })}
+                onChange={e =>
+                  setFormData({ ...formData, quantityInspected: parseInt(e.target.value) })
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Location
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
               <input
                 type="text"
                 value={formData.location}
-                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                onChange={e => setFormData({ ...formData, location: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Enter location"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Lot Number
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Lot Number</label>
               <input
                 type="text"
                 value={formData.lotNumber}
-                onChange={(e) => setFormData({ ...formData, lotNumber: e.target.value })}
+                onChange={e => setFormData({ ...formData, lotNumber: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Enter lot number"
               />
@@ -268,13 +272,11 @@ function InspectionModal({ inspection, onClose, onSuccess }: InspectionModalProp
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Notes
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
             <textarea
               rows={3}
               value={formData.notes}
-              onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+              onChange={e => setFormData({ ...formData, notes: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Enter inspection notes"
             />
@@ -413,7 +415,7 @@ function ChecklistModal({ checklist, onClose, onSuccess }: ChecklistModalProps) 
                 type="text"
                 required
                 value={formData.checklistName}
-                onChange={(e) => setFormData({ ...formData, checklistName: e.target.value })}
+                onChange={e => setFormData({ ...formData, checklistName: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Enter checklist name"
               />
@@ -426,7 +428,9 @@ function ChecklistModal({ checklist, onClose, onSuccess }: ChecklistModalProps) 
               <select
                 required
                 value={formData.inspectionType}
-                onChange={(e) => setFormData({ ...formData, inspectionType: e.target.value as InspectionType })}
+                onChange={e =>
+                  setFormData({ ...formData, inspectionType: e.target.value as InspectionType })
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value={InspectionType.INCOMING}>Incoming</option>
@@ -440,13 +444,11 @@ function ChecklistModal({ checklist, onClose, onSuccess }: ChecklistModalProps) 
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Description
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
             <textarea
               rows={2}
               value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              onChange={e => setFormData({ ...formData, description: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Enter checklist description"
             />
@@ -454,9 +456,7 @@ function ChecklistModal({ checklist, onClose, onSuccess }: ChecklistModalProps) 
 
           <div>
             <div className="flex justify-between items-center mb-2">
-              <label className="block text-sm font-medium text-gray-700">
-                Checklist Items
-              </label>
+              <label className="block text-sm font-medium text-gray-700">Checklist Items</label>
               <button
                 type="button"
                 onClick={handleAddItem}
@@ -467,18 +467,21 @@ function ChecklistModal({ checklist, onClose, onSuccess }: ChecklistModalProps) 
             </div>
             <div className="space-y-2">
               {formData.items.map((item, index) => (
-                <div key={item.itemId} className="flex items-center space-x-2 p-2 border border-gray-200 rounded-md">
+                <div
+                  key={item.itemId}
+                  className="flex items-center space-x-2 p-2 border border-gray-200 rounded-md"
+                >
                   <input
                     type="text"
                     required
                     value={item.itemDescription}
-                    onChange={(e) => handleUpdateItem(index, 'itemDescription', e.target.value)}
+                    onChange={e => handleUpdateItem(index, 'itemDescription', e.target.value)}
                     className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm"
                     placeholder="Item description"
                   />
                   <select
                     value={item.itemType}
-                    onChange={(e) => handleUpdateItem(index, 'itemType', e.target.value)}
+                    onChange={e => handleUpdateItem(index, 'itemType', e.target.value)}
                     className="px-3 py-2 border border-gray-300 rounded-md text-sm"
                   >
                     <option value="CHECKBOX">Checkbox</option>
@@ -490,7 +493,7 @@ function ChecklistModal({ checklist, onClose, onSuccess }: ChecklistModalProps) 
                     <input
                       type="checkbox"
                       checked={item.isRequired}
-                      onChange={(e) => handleUpdateItem(index, 'isRequired', e.target.checked)}
+                      onChange={e => handleUpdateItem(index, 'isRequired', e.target.checked)}
                       className="mr-1"
                     />
                     Required
@@ -534,7 +537,9 @@ function ChecklistModal({ checklist, onClose, onSuccess }: ChecklistModalProps) 
 // ============================================================================
 
 export function QualityControlPage() {
-  const [activeTab, setActiveTab] = useState<'inspections' | 'checklists' | 'returns'>('inspections');
+  const [activeTab, setActiveTab] = useState<'inspections' | 'checklists' | 'returns'>(
+    'inspections'
+  );
   const [selectedInspection, setSelectedInspection] = useState<QualityInspection | undefined>();
   const [selectedChecklist, setSelectedChecklist] = useState<InspectionChecklist | undefined>();
   const [inspectionModalOpen, setInspectionModalOpen] = useState(false);
@@ -558,13 +563,15 @@ export function QualityControlPage() {
   const returns = returnsData?.returns || [];
 
   // Filter data
-  const filteredInspections = inspectionFilter === 'all'
-    ? inspections
-    : inspections.filter((i: QualityInspection) => i.status === inspectionFilter);
+  const filteredInspections =
+    inspectionFilter === 'all'
+      ? inspections
+      : inspections.filter((i: QualityInspection) => i.status === inspectionFilter);
 
-  const filteredReturns = returnFilter === 'all'
-    ? returns
-    : returns.filter((r: ReturnAuthorization) => r.status === returnFilter);
+  const filteredReturns =
+    returnFilter === 'all'
+      ? returns
+      : returns.filter((r: ReturnAuthorization) => r.status === returnFilter);
 
   return (
     <div className="min-h-screen">
@@ -579,353 +586,353 @@ export function QualityControlPage() {
                 Manage inspections, checklists, and returns
               </p>
             </div>
-        <div className="flex space-x-3">
+            <div className="flex space-x-3">
+              {activeTab === 'inspections' && (
+                <button
+                  onClick={() => setInspectionModalOpen(true)}
+                  className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                >
+                  <DocumentPlusIcon className="h-5 w-5 mr-2" />
+                  New Inspection
+                </button>
+              )}
+              {activeTab === 'checklists' && (
+                <button
+                  onClick={() => setChecklistModalOpen(true)}
+                  className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                >
+                  <ClipboardDocumentCheckIcon className="h-5 w-5 mr-2" />
+                  New Checklist
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Tabs */}
+          <div className="border-b border-gray-800">
+            <nav className="flex space-x-8">
+              <button
+                onClick={() => setActiveTab('inspections')}
+                className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                  activeTab === 'inspections'
+                    ? 'border-blue-500 text-blue-400'
+                    : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-700'
+                }`}
+              >
+                Inspections
+              </button>
+              <button
+                onClick={() => setActiveTab('checklists')}
+                className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                  activeTab === 'checklists'
+                    ? 'border-blue-500 text-blue-400'
+                    : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-700'
+                }`}
+              >
+                Checklists
+              </button>
+              <button
+                onClick={() => setActiveTab('returns')}
+                className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                  activeTab === 'returns'
+                    ? 'border-blue-500 text-blue-400'
+                    : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-700'
+                }`}
+              >
+                Returns
+              </button>
+            </nav>
+          </div>
+
+          {/* Inspections Tab */}
           {activeTab === 'inspections' && (
-            <button
-              onClick={() => setInspectionModalOpen(true)}
-              className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-            >
-              <DocumentPlusIcon className="h-5 w-5 mr-2" />
-              New Inspection
-            </button>
+            <div className="space-y-4">
+              {/* Filter */}
+              <div className="flex items-center space-x-4">
+                <label className="text-sm font-medium text-gray-300">Filter by Status:</label>
+                <select
+                  value={inspectionFilter}
+                  onChange={e => setInspectionFilter(e.target.value)}
+                  className="px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-sm text-white"
+                >
+                  <option value="all">All</option>
+                  <option value={InspectionStatus.PENDING}>Pending</option>
+                  <option value={InspectionStatus.IN_PROGRESS}>In Progress</option>
+                  <option value={InspectionStatus.PASSED}>Passed</option>
+                  <option value={InspectionStatus.FAILED}>Failed</option>
+                  <option value={InspectionStatus.CONDITIONAL_PASSED}>Conditional</option>
+                </select>
+              </div>
+
+              {/* Inspections Table */}
+              <div className="glass-card rounded-lg overflow-hidden">
+                <table className="min-w-full divide-y divide-gray-800">
+                  <thead className="bg-gray-900/50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                        ID
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                        Type
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                        SKU
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                        Status
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                        Date
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-gray-900/30 divide-y divide-gray-800">
+                    {filteredInspections.length === 0 ? (
+                      <tr>
+                        <td colSpan={6} className="px-6 py-4 text-center text-sm text-gray-400">
+                          No inspections found
+                        </td>
+                      </tr>
+                    ) : (
+                      filteredInspections.map((inspection: QualityInspection) => (
+                        <tr key={inspection.inspectionId}>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
+                            {inspection.inspectionId}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                            {inspection.inspectionType}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                            {inspection.sku}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <InspectionStatusBadge status={inspection.status} />
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                            {new Date(inspection.createdAt).toLocaleDateString()}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                            <button
+                              onClick={() => {
+                                setSelectedInspection(inspection);
+                                setInspectionModalOpen(true);
+                              }}
+                              className="text-blue-400 hover:text-blue-300 mr-3"
+                            >
+                              <EyeIcon className="h-5 w-5 inline" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           )}
+
+          {/* Checklists Tab */}
           {activeTab === 'checklists' && (
-            <button
-              onClick={() => setChecklistModalOpen(true)}
-              className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-            >
-              <ClipboardDocumentCheckIcon className="h-5 w-5 mr-2" />
-              New Checklist
-            </button>
+            <div className="space-y-4">
+              {/* Checklists Table */}
+              <div className="glass-card rounded-lg overflow-hidden">
+                <table className="min-w-full divide-y divide-gray-800">
+                  <thead className="bg-gray-900/50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                        ID
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                        Name
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                        Type
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                        Items
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-gray-900/30 divide-y divide-gray-800">
+                    {checklists.length === 0 ? (
+                      <tr>
+                        <td colSpan={5} className="px-6 py-4 text-center text-sm text-gray-400">
+                          No checklists found
+                        </td>
+                      </tr>
+                    ) : (
+                      checklists.map((checklist: InspectionChecklist) => (
+                        <tr key={checklist.checklistId}>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
+                            {checklist.checklistId}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
+                            {checklist.checklistName}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                            {checklist.inspectionType}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                            {checklist.items?.length || 0}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                            <button
+                              onClick={() => {
+                                setSelectedChecklist(checklist);
+                                setChecklistModalOpen(true);
+                              }}
+                              className="text-blue-400 hover:text-blue-300 mr-3"
+                            >
+                              <EyeIcon className="h-5 w-5 inline" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           )}
-        </div>
-      </div>
 
-      {/* Tabs */}
-      <div className="border-b border-gray-800">
-        <nav className="flex space-x-8">
-          <button
-            onClick={() => setActiveTab('inspections')}
-            className={`py-4 px-1 border-b-2 font-medium text-sm ${
-              activeTab === 'inspections'
-                ? 'border-blue-500 text-blue-400'
-                : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-700'
-            }`}
-          >
-            Inspections
-          </button>
-          <button
-            onClick={() => setActiveTab('checklists')}
-            className={`py-4 px-1 border-b-2 font-medium text-sm ${
-              activeTab === 'checklists'
-                ? 'border-blue-500 text-blue-400'
-                : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-700'
-            }`}
-          >
-            Checklists
-          </button>
-          <button
-            onClick={() => setActiveTab('returns')}
-            className={`py-4 px-1 border-b-2 font-medium text-sm ${
-              activeTab === 'returns'
-                ? 'border-blue-500 text-blue-400'
-                : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-700'
-            }`}
-          >
-            Returns
-          </button>
-        </nav>
-      </div>
+          {/* Returns Tab */}
+          {activeTab === 'returns' && (
+            <div className="space-y-4">
+              {/* Filter */}
+              <div className="flex items-center space-x-4">
+                <label className="text-sm font-medium text-gray-300">Filter by Status:</label>
+                <select
+                  value={returnFilter}
+                  onChange={e => setReturnFilter(e.target.value)}
+                  className="px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-sm text-white"
+                >
+                  <option value="all">All</option>
+                  <option value="PENDING">Pending</option>
+                  <option value="APPROVED">Approved</option>
+                  <option value="RECEIVED">Received</option>
+                  <option value="INSPECTED">Inspected</option>
+                  <option value="PROCESSED">Processed</option>
+                  <option value="COMPLETED">Completed</option>
+                  <option value="REJECTED">Rejected</option>
+                </select>
+              </div>
 
-      {/* Inspections Tab */}
-      {activeTab === 'inspections' && (
-        <div className="space-y-4">
-          {/* Filter */}
-          <div className="flex items-center space-x-4">
-            <label className="text-sm font-medium text-gray-300">Filter by Status:</label>
-            <select
-              value={inspectionFilter}
-              onChange={(e) => setInspectionFilter(e.target.value)}
-              className="px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-sm text-white"
-            >
-              <option value="all">All</option>
-              <option value={InspectionStatus.PENDING}>Pending</option>
-              <option value={InspectionStatus.IN_PROGRESS}>In Progress</option>
-              <option value={InspectionStatus.PASSED}>Passed</option>
-              <option value={InspectionStatus.FAILED}>Failed</option>
-              <option value={InspectionStatus.CONDITIONAL_PASSED}>Conditional</option>
-            </select>
-          </div>
-
-          {/* Inspections Table */}
-          <div className="glass-card rounded-lg overflow-hidden">
-            <table className="min-w-full divide-y divide-gray-800">
-              <thead className="bg-gray-900/50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                    ID
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                    Type
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                    SKU
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                    Date
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-gray-900/30 divide-y divide-gray-800">
-                {filteredInspections.length === 0 ? (
-                  <tr>
-                    <td colSpan={6} className="px-6 py-4 text-center text-sm text-gray-400">
-                      No inspections found
-                    </td>
-                  </tr>
-                ) : (
-                  filteredInspections.map((inspection: QualityInspection) => (
-                    <tr key={inspection.inspectionId}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
-                        {inspection.inspectionId}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                        {inspection.inspectionType}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                        {inspection.sku}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <InspectionStatusBadge status={inspection.status} />
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                        {new Date(inspection.createdAt).toLocaleDateString()}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                        <button
-                          onClick={() => {
-                            setSelectedInspection(inspection);
-                            setInspectionModalOpen(true);
-                          }}
-                          className="text-blue-400 hover:text-blue-300 mr-3"
-                        >
-                          <EyeIcon className="h-5 w-5 inline" />
-                        </button>
-                      </td>
+              {/* Returns Table */}
+              <div className="glass-card rounded-lg overflow-hidden">
+                <table className="min-w-full divide-y divide-gray-800">
+                  <thead className="bg-gray-900/50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                        ID
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                        Order
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                        Customer
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                        Status
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                        Disposition
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                        Return Date
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                        Actions
+                      </th>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
+                  </thead>
+                  <tbody className="bg-gray-900/30 divide-y divide-gray-800">
+                    {filteredReturns.length === 0 ? (
+                      <tr>
+                        <td colSpan={7} className="px-6 py-4 text-center text-sm text-gray-400">
+                          No returns found
+                        </td>
+                      </tr>
+                    ) : (
+                      filteredReturns.map((returnAuth: ReturnAuthorization) => (
+                        <tr key={returnAuth.returnId}>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
+                            {returnAuth.returnId}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                            {returnAuth.orderId}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                            {returnAuth.customerName}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <ReturnStatusBadge status={returnAuth.status} />
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {returnAuth.items && returnAuth.items.length > 0 ? (
+                              <DispositionBadge disposition={returnAuth.items[0].disposition} />
+                            ) : (
+                              <span className="text-gray-500">-</span>
+                            )}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                            {new Date(returnAuth.returnDate).toLocaleDateString()}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                            <button
+                              onClick={() => {
+                                setSelectedInspection(undefined);
+                                // View details - could implement a detail modal
+                              }}
+                              className="text-blue-400 hover:text-blue-300"
+                            >
+                              <EyeIcon className="h-5 w-5 inline" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
 
-      {/* Checklists Tab */}
-      {activeTab === 'checklists' && (
-        <div className="space-y-4">
-          {/* Checklists Table */}
-          <div className="glass-card rounded-lg overflow-hidden">
-            <table className="min-w-full divide-y divide-gray-800">
-              <thead className="bg-gray-900/50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                    ID
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                    Name
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                    Type
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                    Items
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-gray-900/30 divide-y divide-gray-800">
-                {checklists.length === 0 ? (
-                  <tr>
-                    <td colSpan={5} className="px-6 py-4 text-center text-sm text-gray-400">
-                      No checklists found
-                    </td>
-                  </tr>
-                ) : (
-                  checklists.map((checklist: InspectionChecklist) => (
-                    <tr key={checklist.checklistId}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
-                        {checklist.checklistId}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
-                        {checklist.checklistName}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                        {checklist.inspectionType}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                        {checklist.items?.length || 0}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                        <button
-                          onClick={() => {
-                            setSelectedChecklist(checklist);
-                            setChecklistModalOpen(true);
-                          }}
-                          className="text-blue-400 hover:text-blue-300 mr-3"
-                        >
-                          <EyeIcon className="h-5 w-5 inline" />
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
+          {/* Modals */}
+          {inspectionModalOpen && (
+            <InspectionModal
+              inspection={selectedInspection}
+              onClose={() => {
+                setInspectionModalOpen(false);
+                setSelectedInspection(undefined);
+              }}
+              onSuccess={() => {
+                setInspectionModalOpen(false);
+                setSelectedInspection(undefined);
+                refetchInspections();
+              }}
+            />
+          )}
 
-      {/* Returns Tab */}
-      {activeTab === 'returns' && (
-        <div className="space-y-4">
-          {/* Filter */}
-          <div className="flex items-center space-x-4">
-            <label className="text-sm font-medium text-gray-300">Filter by Status:</label>
-            <select
-              value={returnFilter}
-              onChange={(e) => setReturnFilter(e.target.value)}
-              className="px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-sm text-white"
-            >
-              <option value="all">All</option>
-              <option value="PENDING">Pending</option>
-              <option value="APPROVED">Approved</option>
-              <option value="RECEIVED">Received</option>
-              <option value="INSPECTED">Inspected</option>
-              <option value="PROCESSED">Processed</option>
-              <option value="COMPLETED">Completed</option>
-              <option value="REJECTED">Rejected</option>
-            </select>
-          </div>
-
-          {/* Returns Table */}
-          <div className="glass-card rounded-lg overflow-hidden">
-            <table className="min-w-full divide-y divide-gray-800">
-              <thead className="bg-gray-900/50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                    ID
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                    Order
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                    Customer
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                    Disposition
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                    Return Date
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-gray-900/30 divide-y divide-gray-800">
-                {filteredReturns.length === 0 ? (
-                  <tr>
-                    <td colSpan={7} className="px-6 py-4 text-center text-sm text-gray-400">
-                      No returns found
-                    </td>
-                  </tr>
-                ) : (
-                  filteredReturns.map((returnAuth: ReturnAuthorization) => (
-                    <tr key={returnAuth.returnId}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
-                        {returnAuth.returnId}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                        {returnAuth.orderId}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                        {returnAuth.customerName}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <ReturnStatusBadge status={returnAuth.status} />
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        {returnAuth.items && returnAuth.items.length > 0 ? (
-                          <DispositionBadge disposition={returnAuth.items[0].disposition} />
-                        ) : (
-                          <span className="text-gray-500">-</span>
-                        )}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                        {new Date(returnAuth.returnDate).toLocaleDateString()}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                        <button
-                          onClick={() => {
-                            setSelectedInspection(undefined);
-                            // View details - could implement a detail modal
-                          }}
-                          className="text-blue-400 hover:text-blue-300"
-                        >
-                          <EyeIcon className="h-5 w-5 inline" />
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {/* Modals */}
-      {inspectionModalOpen && (
-        <InspectionModal
-          inspection={selectedInspection}
-          onClose={() => {
-            setInspectionModalOpen(false);
-            setSelectedInspection(undefined);
-          }}
-          onSuccess={() => {
-            setInspectionModalOpen(false);
-            setSelectedInspection(undefined);
-            refetchInspections();
-          }}
-        />
-      )}
-
-        {checklistModalOpen && (
-          <ChecklistModal
-            checklist={selectedChecklist}
-            onClose={() => {
-              setChecklistModalOpen(false);
-              setSelectedChecklist(undefined);
-            }}
-            onSuccess={() => {
-              setChecklistModalOpen(false);
-              setSelectedChecklist(undefined);
-              refetchChecklists();
-            }}
-          />
-        )}
+          {checklistModalOpen && (
+            <ChecklistModal
+              checklist={selectedChecklist}
+              onClose={() => {
+                setChecklistModalOpen(false);
+                setSelectedChecklist(undefined);
+              }}
+              onSuccess={() => {
+                setChecklistModalOpen(false);
+                setSelectedChecklist(undefined);
+                refetchChecklists();
+              }}
+            />
+          )}
         </div>
       </main>
     </div>

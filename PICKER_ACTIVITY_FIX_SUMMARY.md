@@ -1,7 +1,9 @@
 # Picker Activity Tracking Fix Summary
 
 ## Problem
+
 Picker activity on the admin dashboard was inaccurate, showing pickers as "IDLE" even when they were:
+
 - Actively viewing the Order Queue page
 - Had `currentView: "Order Queue"` in the database
 - Had stale timestamp (13+ hours old)
@@ -9,7 +11,9 @@ Picker activity on the admin dashboard was inaccurate, showing pickers as "IDLE"
 ## Root Causes Found
 
 ### CRITICAL: Timezone Column Type Issue (NEW FIX) 🔴
+
 **File:** Database column `users.current_view_updated_at`
+
 - Column was created as `TIMESTAMP WITHOUT TIME ZONE` instead of `TIMESTAMP WITH TIME ZONE`
 - This caused a **13-hour timezone offset** between server time and stored timestamp
 - Server: `2026-01-15T07:05:58.350Z` (UTC)
@@ -17,6 +21,7 @@ Picker activity on the admin dashboard was inaccurate, showing pickers as "IDLE"
 - **Impact**: The activity check (`lastViewedAt < 5 minutes ago`) always failed, making pickers appear IDLE
 
 **FIX APPLIED:**
+
 ```sql
 -- Converted column to TIMESTAMP WITH TIME ZONE
 ALTER TABLE users
@@ -28,24 +33,32 @@ USING current_view_updated_at AT TIME ZONE 'America/Los_Angeles' AT TIME ZONE 'U
 ### Previous Issues (Already Fixed)
 
 ### 1. SQL Alias Issues
+
 **File:** `packages/backend/src/services/MetricsService.ts`
+
 - `u.email` was selected but accessed as `pickerEmail`
 - `u.name` was selected but accessed as `pickerName`
 - `u.current_view` was selected but accessed as `currentView`
 
 ### 2. Order Queue Detection Issue
+
 **File:** `packages/frontend/src/pages/DashboardPage.tsx`
+
 - Frontend displayed "Order Queue" text, but backend expected "/orders" path
 - Status logic checked for "Order Queue" text instead of URL path
 
 ### 3. Missing Timestamp Updates
+
 **File:** `packages/backend/src/routes/orders.ts`
+
 - `picker-status` endpoint only updated `orders.updated_at`
-- Did NOT update `users.current_view_updated_at` 
+- Did NOT update `users.current_view_updated_at`
 - This meant the picker's activity timestamp never refreshed
 
 ### 4. Stale Timestamps Without Navigation
+
 **File:** `packages/frontend/src/hooks/usePageTracking.ts`
+
 - `usePageTracking` hook only called API on view change
 - If picker stayed on same page (e.g., Order Queue), timestamp never updated
 - Resulted in 13+ hour stale timestamps
@@ -53,6 +66,7 @@ USING current_view_updated_at AT TIME ZONE 'America/Los_Angeles' AT TIME ZONE 'U
 ## Fixes Applied
 
 ### 1. Fixed SQL Aliases ✅
+
 ```typescript
 // Changed FROM (incorrect):
 email: picker.email as pickerEmail,
@@ -66,6 +80,7 @@ current_view: picker.current_view as currentView
 ```
 
 ### 2. Fixed Order Queue Detection ✅
+
 ```typescript
 // DashboardPage now properly handles "Order Queue" display text
 if (displayView === 'Order Queue') {
@@ -74,14 +89,17 @@ if (displayView === 'Order Queue') {
 ```
 
 ### 3. Fixed Status Logic ✅
+
 ```typescript
 // Check for "Order Queue" text display, not just URL path
-const isOrderQueue = displayView === 'Order Queue' || 
-                   picker.currentView === '/orders' ||
-                   picker.currentView === '/orders/';
+const isOrderQueue =
+  displayView === 'Order Queue' ||
+  picker.currentView === '/orders' ||
+  picker.currentView === '/orders/';
 ```
 
 ### 4. Fixed Picker Status Endpoint ✅
+
 ```typescript
 // Now updates BOTH order timestamp AND user timestamp
 await query(
@@ -100,6 +118,7 @@ await query(
 ```
 
 ### 5. Added Periodic Polling ✅
+
 ```typescript
 // usePageTracking hook now updates timestamp every 60 seconds
 const intervalId = setInterval(() => {
@@ -114,6 +133,7 @@ return () => {
 ## How It Works Now
 
 ### When Picker is Active:
+
 1. **On Order Queue Page:**
    - `usePageTracking` calls `/api/auth/current-view` with `view: 'Order Queue'`
    - Backend updates `users.current_view = 'Order Queue'`
@@ -131,11 +151,11 @@ return () => {
    - Status: **❌ OUT OF WINDOW** (correct - not in order queue)
 
 ### When Picker Goes Idle:
+
 1. **Window Hidden/Tab Switched:**
    - PickingPage detects `visibilitychange` event
    - Calls `/api/orders/:orderId/picker-status` with `{ status: 'IDLE' }`
    - Backend updates `users.current_view_updated_at = NOW()`
-   
 2. **After 5+ Minutes of Inactivity:**
    - Admin Dashboard checks timestamp
    - `minutesSinceUpdate > 5`
@@ -149,6 +169,7 @@ return () => {
 ## Testing the Fixes
 
 ### NEW: Database Verification Commands (After Timezone Fix)
+
 ```bash
 # Check if columns exist and have correct types
 npm run db:check:current-view
@@ -164,11 +185,13 @@ npx tsx src/db/check-timestamps.ts
 ```
 
 Expected output after timezone fix:
+
 - `current_view_updated_at` should be `TIMESTAMP WITH TIME ZONE` type
 - Timestamps should match server time (within 1-2 seconds)
 - Pickers should show recent activity if actively using the app
 
 ### Previous Testing Methods:
+
 1. Login as picker (john.picker@wms.local / Picker123)
 2. Navigate to Order Queue page
 3. Check Admin Dashboard:
@@ -190,9 +213,11 @@ Expected output after timezone fix:
 ## Files Modified
 
 ### Database Schema
+
 - **`users.current_view_updated_at`** - Column type changed from `TIMESTAMP WITHOUT TIME ZONE` to `TIMESTAMP WITH TIME ZONE`
 
 ### Backend Testing Scripts (New)
+
 - `packages/backend/src/db/check-current-view-columns.ts` - Check if columns exist
 - `packages/backend/src/db/fix-timezone-column.ts` - Fix timezone column type
 - `packages/backend/src/db/test-end-to-end-tracking.ts` - End-to-end test
@@ -200,10 +225,12 @@ Expected output after timezone fix:
 - `packages/backend/src/db/check-users-schema.ts` - Schema verification
 
 ### Backend (Previous)
+
 - `packages/backend/src/services/MetricsService.ts` - Fixed SQL aliases
 - `packages/backend/src/routes/orders.ts` - Fixed picker-status endpoint
 
 ### Frontend (Previous)
+
 - `packages/frontend/src/pages/DashboardPage.tsx` - Fixed order queue detection
 - `packages/frontend/src/hooks/usePageTracking.ts` - Added periodic polling with visibility API
 

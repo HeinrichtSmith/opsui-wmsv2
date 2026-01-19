@@ -34,7 +34,7 @@ async function main() {
     logger.info('Starting WMS MCP Dev Accelerator...', {
       version: '1.0.0',
       nodeVersion: process.version,
-      platform: process.platform
+      platform: process.platform,
     });
 
     const server = new MCPServer({
@@ -45,7 +45,7 @@ async function main() {
       requestTimeout: 60000,
       enableCache: true,
       cacheTTL: 5000,
-      enableMetrics: true
+      enableMetrics: true,
     });
 
     // Register all tool categories
@@ -61,7 +61,7 @@ async function main() {
 
     logger.info('WMS MCP Dev Accelerator started successfully', {
       toolsRegistered: server.toolCount,
-      uptime: process.uptime()
+      uptime: process.uptime(),
     });
 
     // Graceful shutdown
@@ -76,7 +76,6 @@ async function main() {
       await server.stop();
       process.exit(0);
     });
-
   } catch (error) {
     logger.error('Failed to start WMS MCP Server', { error });
     process.exit(1);

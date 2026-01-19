@@ -30,7 +30,8 @@ async function checkPickerOrders(): Promise<void> {
     const pickerId = 'USR-PICK01';
     console.log(`\n🔍 Checking orders for picker: ${pickerId}`);
 
-    const pickerOrders = await query(`
+    const pickerOrders = await query(
+      `
       SELECT
         order_id,
         customer_name,
@@ -41,7 +42,9 @@ async function checkPickerOrders(): Promise<void> {
       FROM orders
       WHERE picker_id = $1
       ORDER BY updated_at DESC
-    `, [pickerId]);
+    `,
+      [pickerId]
+    );
 
     console.log(`\n📦 Orders for ${pickerId}:`);
     if (pickerOrders.rows.length === 0) {
@@ -67,7 +70,6 @@ async function checkPickerOrders(): Promise<void> {
     } else {
       console.table(pickingOrders.rows);
     }
-
   } catch (error) {
     console.error('❌ Error:', error);
   } finally {

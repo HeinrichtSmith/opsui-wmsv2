@@ -11,6 +11,7 @@ Your development environment is now **fully optimized** for maximum productivity
 ### High-Impact Features (Essential)
 
 ### 1. Hot Module Replacement (HMR) ⚡
+
 **Frontend updates without full page reload**
 
 - Enhanced [vite.config.ts](packages/frontend/vite.config.ts) with Fast Refresh
@@ -20,6 +21,7 @@ Your development environment is now **fully optimized** for maximum productivity
 - WebSocket on port 5174 for instant updates
 
 **Try it:**
+
 ```bash
 npm run dev:frontend
 # Edit any React component - see instant updates!
@@ -28,6 +30,7 @@ npm run dev:frontend
 ---
 
 ### 2. Smart Test Watcher 🧪
+
 **Instant test feedback as you code**
 
 - [scripts/test-watch.js](scripts/test-watch.js) - Intelligent test runner
@@ -37,6 +40,7 @@ npm run dev:frontend
 - One-key exit
 
 **Commands:**
+
 ```bash
 npm run test:watch              # Watch all tests
 npm run test:watch:backend      # Watch backend only
@@ -44,6 +48,7 @@ npm run test:watch:frontend     # Watch frontend only
 ```
 
 **Features:**
+
 - Auto-runs tests on file changes
 - Shows coverage summary
 - Filters by filename or test name
@@ -52,6 +57,7 @@ npm run test:watch:frontend     # Watch frontend only
 ---
 
 ### 3. Swagger API Documentation 📚
+
 **Interactive API explorer - test endpoints directly**
 
 - Available at: **http://localhost:3001/api/docs**
@@ -63,12 +69,14 @@ npm run test:watch:frontend     # Watch frontend only
 - Example values for all fields
 
 **Access:**
+
 ```bash
 npm run dev:backend
 # Visit: http://localhost:3001/api/docs
 ```
 
 **What's Documented:**
+
 - All endpoints with methods
 - Request/response schemas
 - Authentication (JWT Bearer tokens)
@@ -81,6 +89,7 @@ npm run dev:backend
 ### Medium-Impact Features (Quality of Life)
 
 ### 4. Performance Monitoring Dashboard 📊
+
 **Real-time metrics for API health and performance**
 
 - [scripts/perf-monitor.js](scripts/perf-monitor.js) - Live performance dashboard
@@ -91,11 +100,13 @@ npm run dev:backend
 - 2-second refresh rate
 
 **Commands:**
+
 ```bash
 npm run perf
 ```
 
 **What You'll See:**
+
 - Backend API status (UP/SLOW/DOWN)
 - Average, median, and P95 response times
 - Error rate percentage (color-coded)
@@ -112,6 +123,7 @@ npm run perf
 | P95 Response | < 200ms | > 1000ms |
 
 **Dashboard Features:**
+
 - Color-coded health indicators (green/yellow/red)
 - Automatic performance tips
 - Historical metrics (last 100 data points)
@@ -121,6 +133,7 @@ npm run perf
 ---
 
 ### 5. Bundle Analyzer 📦
+
 **Visualize frontend bundle composition**
 
 - Integrated rollup-plugin-visualizer
@@ -130,11 +143,13 @@ npm run perf
 - Identify bloated dependencies
 
 **Commands:**
+
 ```bash
 npm run analyze
 ```
 
 **What You'll See:**
+
 - Visual treemap of all modules
 - Size of each dependency
 - Chunk composition (react-vendor, query-vendor)
@@ -142,6 +157,7 @@ npm run analyze
 - Duplicate module detection
 
 **When to Use:**
+
 - Before production deployments
 - After adding new dependencies
 - When optimizing load times
@@ -152,6 +168,7 @@ npm run analyze
 ---
 
 ### 6. Dependency Health Check 🔍
+
 **Keep dependencies up-to-date and secure**
 
 - npm-check-updates integration
@@ -160,18 +177,21 @@ npm run analyze
 - Safe upgrade recommendations
 
 **Commands:**
+
 ```bash
 npm run deps               # Check for updates
 npm run deps:update        # Interactive update tool
 ```
 
 **What You'll See:**
+
 - Current version vs latest version
 - Package comparison table
 - Major/minor/patch version differences
 - Upgrade path recommendations
 
 **Best Practices:**
+
 - Run `npm run deps` weekly
 - Review major version updates carefully
 - Test updates in development first
@@ -182,6 +202,7 @@ npm run deps:update        # Interactive update tool
 ## Complete Feature List
 
 ### Development Server (Smart)
+
 - ✅ Connection draining (no dropped requests)
 - ✅ Health-check aware restarts
 - ✅ File change classification
@@ -190,6 +211,7 @@ npm run deps:update        # Interactive update tool
 - ✅ Real-time status dashboard
 
 ### Frontend Experience
+
 - ✅ Hot Module Replacement (HMR)
 - ✅ Fast Refresh for components
 - ✅ State preservation during updates
@@ -197,6 +219,7 @@ npm run deps:update        # Interactive update tool
 - ✅ Bundle visualization
 
 ### Data Management
+
 - ✅ 12 streamlined commands
 - ✅ Automatic backups before destructive ops
 - ✅ Export/Import functionality
@@ -205,6 +228,7 @@ npm run deps:update        # Interactive update tool
 - ✅ Selective seeding (users/SKUs/orders only)
 
 ### MCP Tools (47 total)
+
 - ✅ Pattern extraction & search
 - ✅ Test generation
 - ✅ Context compression (20-40% token savings)
@@ -212,6 +236,7 @@ npm run deps:update        # Interactive update tool
 - ✅ Multi-agent orchestration
 
 ### Testing
+
 - ✅ Watch mode with instant feedback
 - ✅ Coverage tracking
 - ✅ Typeahead navigation
@@ -219,6 +244,7 @@ npm run deps:update        # Interactive update tool
 - ✅ Backend: Jest + ts-jest
 
 ### Monitoring & Analysis
+
 - ✅ Real-time performance dashboard
 - ✅ API response time metrics (avg/median/P95)
 - ✅ Error rate tracking
@@ -227,6 +253,7 @@ npm run deps:update        # Interactive update tool
 - ✅ Memory usage monitoring
 
 ### Code Quality
+
 - ✅ 15+ documented patterns
 - ✅ Auto-format on save
 - ✅ Type checking
@@ -270,53 +297,65 @@ npm run deps                  # Check dependencies
 ## Development Workflow
 
 ### 1. Start Fresh
+
 ```bash
 npm run dev:restart
 ```
+
 - Kills any existing processes
 - Starts smart dev server with HMR
 - Enables Swagger UI at `/api/docs`
 - Tests watch in separate terminal (optional)
 
 ### 2. Monitor Performance
+
 ```bash
 npm run perf
 ```
+
 - Watch API response times in real-time
 - Track error rates
 - Identify performance issues early
 
 ### 3. Check Status
+
 ```bash
 npm run db status
 ```
+
 - See table sizes
 - See record counts
 - Check for issues
 
 ### 4. Code & Iterate
+
 - Frontend changes: Instant HMR updates
 - Backend changes: Nodemon restarts intelligently
 - Tests: Auto-run in watch mode
 - Performance: Monitor in perf dashboard
 
 ### 5. Analyze Bundle
+
 ```bash
 npm run analyze
 ```
+
 - Check bundle size before committing
 - Identify bloated dependencies
 - Optimize code splitting
 
 ### 6. Update Dependencies
+
 ```bash
 npm run deps
 ```
+
 - Check for outdated packages
 - Plan updates strategically
 - Test updates in development
 
 ### 7. Fix Issues
+
 ```bash
 npm run db validate           # Check for problems
 npm run db fix stuck-orders   # Fix stuck orders
@@ -324,6 +363,7 @@ npm run db fix activate-users # Activate users
 ```
 
 ### 8. Reset if Needed
+
 ```bash
 npm run db reset              # Automatic backup + fresh start
 ```
@@ -333,12 +373,14 @@ npm run db reset              # Automatic backup + fresh start
 ## Vibe Coding Checklist
 
 ✅ **Fast Feedback Loop**
+
 - HMR for frontend (instant updates)
 - Smart restart for backend (2s batching)
 - Test watch mode (auto-run on changes)
 - Performance monitoring (2s refresh)
 
 ✅ **Safety Nets**
+
 - Automatic backups before reset/clean
 - Connection draining (no lost requests)
 - Graceful shutdowns
@@ -346,6 +388,7 @@ npm run db reset              # Automatic backup + fresh start
 - Performance alerts
 
 ✅ **Visibility**
+
 - Swagger API documentation
 - Performance monitoring dashboard
 - Database status dashboard
@@ -354,6 +397,7 @@ npm run db reset              # Automatic backup + fresh start
 - Bundle size visualization
 
 ✅ **Ease of Use**
+
 - Single-entry-point commands
 - Natural language support
 - Auto-completion
@@ -361,6 +405,7 @@ npm run db reset              # Automatic backup + fresh start
 - Interactive dashboards
 
 ✅ **Quality Assurance**
+
 - Dependency health checks
 - Performance metrics tracking
 - Bundle size analysis
@@ -371,23 +416,25 @@ npm run db reset              # Automatic backup + fresh start
 
 ## URLs
 
-| Service | URL |
-|---------|-----|
-| Frontend | http://localhost:5173 |
-| Backend API | http://localhost:3001 |
-| API Docs | http://localhost:3001/api/docs |
-| Health Check | http://localhost:3001/health |
-| Readiness Check | http://localhost:3001/ready |
+| Service         | URL                            |
+| --------------- | ------------------------------ |
+| Frontend        | http://localhost:5173          |
+| Backend API     | http://localhost:3001          |
+| API Docs        | http://localhost:3001/api/docs |
+| Health Check    | http://localhost:3001/health   |
+| Readiness Check | http://localhost:3001/ready    |
 
 ---
 
 ## Login Credentials
 
 **Admin:**
+
 - Email: `admin@wms.local`
 - Password: `admin123`
 
 **Users:**
+
 - Email: `john.picker@wms.local` (and others)
 - Password: `password123`
 

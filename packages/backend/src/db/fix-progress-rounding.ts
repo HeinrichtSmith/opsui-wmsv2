@@ -31,11 +31,12 @@ async function fixProgressRounding(): Promise<void> {
 
     console.log(`✅ Updated ${result.rows.length} orders`);
     console.log('\n📊 Sample of updated orders:');
-    console.table(result.rows.slice(0, 10).map((row: any) => ({
-      orderId: row.order_id,
-      newProgress: row.progress,
-    })));
-
+    console.table(
+      result.rows.slice(0, 10).map((row: any) => ({
+        orderId: row.order_id,
+        newProgress: row.progress,
+      }))
+    );
   } catch (error) {
     console.error('❌ Error:', error);
   } finally {

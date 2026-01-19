@@ -120,11 +120,7 @@ router.post(
       });
     }
 
-    const result = await stockControlService.submitStockCount(
-      countId,
-      items,
-      req.user.userId
-    );
+    const result = await stockControlService.submitStockCount(countId, items, req.user.userId);
 
     res.json(result);
   })
@@ -264,9 +260,7 @@ router.get(
 router.get(
   '/reports/low-stock',
   asyncHandler(async (req: AuthenticatedRequest, res) => {
-    const threshold = req.query.threshold
-      ? parseInt(req.query.threshold as string)
-      : 10;
+    const threshold = req.query.threshold ? parseInt(req.query.threshold as string) : 10;
 
     const report = await stockControlService.getLowStockReport(threshold);
     res.json(report);
@@ -311,10 +305,7 @@ router.post(
       });
     }
 
-    const result = await stockControlService.reconcileDiscrepancies(
-      discrepancies,
-      req.user.userId
-    );
+    const result = await stockControlService.reconcileDiscrepancies(discrepancies, req.user.userId);
 
     res.json(result);
   })

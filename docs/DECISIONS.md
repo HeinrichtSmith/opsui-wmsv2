@@ -7,6 +7,7 @@
 ## Decision Format
 
 Each decision follows this structure:
+
 - **Date**: When the decision was made
 - **Status**: Proposed | Accepted | Deprecated | Superseded
 - **Context**: What problem or situation led to this decision
@@ -20,6 +21,7 @@ Each decision follows this structure:
 ## Database & Data Layer
 
 ### ADR-001: Use PostgreSQL with Triggers for Audit Trail
+
 - **Date**: 2024-11-15
 - **Status**: Accepted
 - **Context**: Need to track all state changes for compliance and debugging
@@ -29,6 +31,7 @@ Each decision follows this structure:
 - **Alternatives**: Application-level logging (can be bypassed), Change Data Capture (more complex)
 
 ### ADR-002: Database Transactions for All State Changes
+
 - **Date**: 2024-11-20
 - **Status**: Accepted
 - **Context**: Race conditions causing inventory corruption during concurrent order claiming
@@ -38,6 +41,7 @@ Each decision follows this structure:
 - **Alternatives**: Application-level locking (prone to deadlocks), Optimistic locking (requires retry logic)
 
 ### ADR-003: SELECT FOR UPDATE for Inventory Reservations
+
 - **Date**: 2024-12-05
 - **Status**: Accepted
 - **Context**: Multiple pickers trying to reserve same inventory simultaneously
@@ -51,6 +55,7 @@ Each decision follows this structure:
 ## Architecture Patterns
 
 ### ADR-004: Service-Oriented Architecture (Controller → Service → Repository)
+
 - **Date**: 2024-11-01
 - **Status**: Accepted
 - **Context**: Need clear separation of concerns and testable business logic
@@ -60,6 +65,7 @@ Each decision follows this structure:
 - **Alternatives**: MVC (less separation), Anemic domain model (logic in controllers)
 
 ### ADR-005: Shared Types Package
+
 - **Date**: 2024-11-10
 - **Status**: Accepted
 - **Context**: Types drifting between frontend and backend; integration bugs
@@ -69,6 +75,7 @@ Each decision follows this structure:
 - **Alternatives**: Duplicate types (drifts over time), Code generation (complex tooling)
 
 ### ADR-006: Result Type for Error Handling
+
 - **Date**: 2024-12-01
 - **Status**: Accepted
 - **Context**: Need consistent error handling without throwing exceptions
@@ -82,6 +89,7 @@ Each decision follows this structure:
 ## Frontend & State Management
 
 ### ADR-007: React Query for Server State
+
 - **Date**: 2024-11-15
 - **Status**: Accepted
 - **Context**: Manual state management causing stale data and synchronization issues
@@ -91,6 +99,7 @@ Each decision follows this structure:
 - **Alternatives**: Redux (too much boilerplate), Manual useEffect (error-prone)
 
 ### ADR-008: Zustand for UI-Only State
+
 - **Date**: 2024-11-16
 - **Status**: Accepted
 - **Context**: Need simple state management for UI-only state (modals, forms)
@@ -104,6 +113,7 @@ Each decision follows this structure:
 ## State Machine & Workflow
 
 ### ADR-009: Strict State Machine with Validation
+
 - **Date**: 2024-11-25
 - **Status**: Accepted
 - **Context**: Invalid state transitions causing order flow corruption
@@ -113,6 +123,7 @@ Each decision follows this structure:
 - **Alternatives**: Permissive transitions (dangerous), Event sourcing (complex)
 
 ### ADR-010: Undo/Revert for All User Actions
+
 - **Date**: 2025-01-10
 - **Status**: Accepted
 - **Context**: Users make mistakes; permanent actions cause frustration
@@ -126,6 +137,7 @@ Each decision follows this structure:
 ## Security
 
 ### ADR-011: JWT with Refresh Token Rotation
+
 - **Date**: 2024-11-20
 - **Status**: Accepted
 - **Context**: Need secure authentication without forcing frequent logins
@@ -135,6 +147,7 @@ Each decision follows this structure:
 - **Alternatives**: Long-lived tokens (security risk), Sessions only (no scalability)
 
 ### ADR-012: Role-Based Access Control (RBAC)
+
 - **Date**: 2024-11-22
 - **Status**: Accepted
 - **Context**: Different user types need different permissions
@@ -148,6 +161,7 @@ Each decision follows this structure:
 ## Testing Strategy
 
 ### ADR-013: Three-Level Testing Pyramid
+
 - **Date**: 2024-12-10
 - **Status**: Accepted
 - **Context**: Need comprehensive testing without excessive test maintenance
@@ -157,6 +171,7 @@ Each decision follows this structure:
 - **Alternatives**: Mostly E2E (slow, brittle), Mostly unit (misses integration bugs)
 
 ### ADR-014: Auto-Generated Tests for New Code
+
 - **Date**: 2025-01-12
 - **Status**: Accepted
 - **Context**: Manual test writing is tedious and often forgotten
@@ -170,6 +185,7 @@ Each decision follows this structure:
 ## Development Workflow
 
 ### ADR-015: AI-First Development with Guardrails
+
 - **Date**: 2024-12-01
 - **Status**: Accepted
 - **Context**: Want to leverage AI for development speed while maintaining quality
@@ -179,6 +195,7 @@ Each decision follows this structure:
 - **Alternatives**: Manual only (slower), AI without rules (risky)
 
 ### ADR-016: Pattern Library for Code Consistency
+
 - **Date**: 2025-01-05
 - **Status**: Accepted
 - **Context**: Similar problems solved repeatedly; inconsistent patterns
@@ -192,6 +209,7 @@ Each decision follows this structure:
 ## Performance & Scalability
 
 ### ADR-017: Database Indexes for Common Queries
+
 - **Date**: 2024-12-15
 - **Status**: Accepted
 - **Context**: Queries slowing down as data grows
@@ -201,6 +219,7 @@ Each decision follows this structure:
 - **Alternatives**: No indexes (too slow), Full-text search (overkill for simple queries)
 
 ### ADR-018: Connection Pooling for Database
+
 - **Date**: 2024-12-20
 - **Status**: Accepted
 - **Context**: New connection per request causing performance issues
@@ -214,6 +233,7 @@ Each decision follows this structure:
 ## Deployment & Operations
 
 ### ADR-019: Graceful Shutdown with Connection Draining
+
 - **Date**: 2025-01-08
 - **Status**: Accepted
 - **Context**: Hot reload dropping connections; incomplete requests
@@ -223,6 +243,7 @@ Each decision follows this structure:
 - **Alternatives**: Immediate shutdown (drops connections), No hot reload (slow dev)
 
 ### ADR-020: Environment-Based Configuration
+
 - **Date**: 2024-11-25
 - **Status**: Accepted
 - **Context**: Different configs needed for dev/staging/production
@@ -236,6 +257,7 @@ Each decision follows this structure:
 ## Future Decisions (Pending)
 
 ### ADR-021: Real-Time Updates via WebSocket
+
 - **Date**: 2025-01-19
 - **Status**: Proposed
 - **Context**: Dashboard needs real-time picker activity updates
@@ -245,6 +267,7 @@ Each decision follows this structure:
 - **Alternatives**: Polling (wasteful), Server-Sent Events (one-way only)
 
 ### ADR-022: Redis Caching Layer
+
 - **Date**: 2025-01-19
 - **Status**: Proposed
 - **Context**: Frequently accessed data (SKUs, users) queried repeatedly
@@ -258,12 +281,14 @@ Each decision follows this structure:
 ## Decision Review Process
 
 **When to Review Decisions**:
+
 - Annually for stable decisions
 - When requirements significantly change
 - When technology stack evolves
 - When pain points emerge
 
 **How to Challenge a Decision**:
+
 1. Document the problem with current approach
 2. Propose alternative with rationale
 3. Assess impact of change

@@ -62,19 +62,23 @@ function ProductionLineStage({
         isActive
           ? 'bg-primary-500/20 border-2 border-primary-500 shadow-lg shadow-primary-500/20'
           : isCompleted
-          ? 'bg-success-500/10 border border-success-500/30 cursor-pointer hover:border-success-500/50'
-          : 'bg-gray-800/50 border border-gray-700 cursor-pointer hover:border-gray-600'
+            ? 'bg-success-500/10 border border-success-500/30 cursor-pointer hover:border-success-500/50'
+            : 'bg-gray-800/50 border border-gray-700 cursor-pointer hover:border-gray-600'
       }`}
     >
       <div className="flex items-center justify-between mb-2">
-        <span className={`text-sm font-semibold ${
-          isActive ? 'text-white' : isCompleted ? 'text-success-400' : 'text-gray-400'
-        }`}>
+        <span
+          className={`text-sm font-semibold ${
+            isActive ? 'text-white' : isCompleted ? 'text-success-400' : 'text-gray-400'
+          }`}
+        >
           {label}
         </span>
-        <span className={`text-2xl font-bold ${
-          isActive ? 'text-white' : isCompleted ? 'text-success-400' : 'text-gray-500'
-        }`}>
+        <span
+          className={`text-2xl font-bold ${
+            isActive ? 'text-white' : isCompleted ? 'text-success-400' : 'text-gray-500'
+          }`}
+        >
           {count}
         </span>
       </div>
@@ -90,9 +94,11 @@ function ProductionLineStage({
       </div>
 
       {/* Arrow connector on the right */}
-      <div className={`absolute -right-3 top-1/2 -translate-y-1/2 z-10 ${
-        isCompleted ? 'text-success-500' : 'text-gray-700'
-      }`}>
+      <div
+        className={`absolute -right-3 top-1/2 -translate-y-1/2 z-10 ${
+          isCompleted ? 'text-success-500' : 'text-gray-700'
+        }`}
+      >
         <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
         </svg>
@@ -117,7 +123,9 @@ function StatusBadge({ status }: { status: string }) {
   };
 
   return (
-    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${styles[status] || styles.PENDING}`}>
+    <span
+      className={`px-3 py-1 rounded-full text-xs font-semibold ${styles[status] || styles.PENDING}`}
+    >
       {labels[status] || status}
     </span>
   );
@@ -140,16 +148,29 @@ function PriorityIndicator({ priority }: { priority: string }) {
 }
 
 function ProductionOrderCard({ order }: { order: ProductionOrder }) {
-  const progress = order.status === 'COMPLETED' ? 100 : order.status === 'IN_PROGRESS' ? 60 : order.status === 'ON_HOLD' ? 30 : 0;
+  const progress =
+    order.status === 'COMPLETED'
+      ? 100
+      : order.status === 'IN_PROGRESS'
+        ? 60
+        : order.status === 'ON_HOLD'
+          ? 30
+          : 0;
 
   return (
     <Card variant="glass" className="card-hover overflow-hidden">
       {/* Status bar */}
-      <div className={`h-1 ${
-        order.status === 'COMPLETED' ? 'bg-success-500' :
-        order.status === 'IN_PROGRESS' ? 'bg-primary-500' :
-        order.status === 'ON_HOLD' ? 'bg-warning-500' : 'bg-gray-500'
-      }`} />
+      <div
+        className={`h-1 ${
+          order.status === 'COMPLETED'
+            ? 'bg-success-500'
+            : order.status === 'IN_PROGRESS'
+              ? 'bg-primary-500'
+              : order.status === 'ON_HOLD'
+                ? 'bg-warning-500'
+                : 'bg-gray-500'
+        }`}
+      />
 
       <CardContent className="p-5">
         <div className="flex items-start justify-between mb-4">
@@ -173,9 +194,13 @@ function ProductionOrderCard({ order }: { order: ProductionOrder }) {
           <div className="w-full bg-gray-700 rounded-full h-2">
             <div
               className={`h-2 rounded-full transition-all duration-300 ${
-                order.status === 'COMPLETED' ? 'bg-success-500' :
-                order.status === 'IN_PROGRESS' ? 'bg-primary-500' :
-                order.status === 'ON_HOLD' ? 'bg-warning-500' : 'bg-gray-500'
+                order.status === 'COMPLETED'
+                  ? 'bg-success-500'
+                  : order.status === 'IN_PROGRESS'
+                    ? 'bg-primary-500'
+                    : order.status === 'ON_HOLD'
+                      ? 'bg-warning-500'
+                      : 'bg-gray-500'
               }`}
               style={{ width: `${progress}%` }}
             />
@@ -194,7 +219,9 @@ function ProductionOrderCard({ order }: { order: ProductionOrder }) {
           {order.endDate && (
             <div className="bg-white/5 p-3 rounded-lg text-center">
               <p className="text-gray-400 text-xs mb-1">End Date</p>
-              <p className="text-sm text-success-400">{new Date(order.endDate).toLocaleDateString()}</p>
+              <p className="text-sm text-success-400">
+                {new Date(order.endDate).toLocaleDateString()}
+              </p>
             </div>
           )}
         </div>
@@ -202,7 +229,9 @@ function ProductionOrderCard({ order }: { order: ProductionOrder }) {
         {order.assignedTo && (
           <div className="flex items-center gap-2 p-2 bg-primary-500/10 rounded-lg mb-4">
             <UserIcon className="h-4 w-4 text-primary-400" />
-            <span className="text-sm text-gray-300">Assigned to: <span className="text-white font-medium">{order.assignedTo}</span></span>
+            <span className="text-sm text-gray-300">
+              Assigned to: <span className="text-white font-medium">{order.assignedTo}</span>
+            </span>
           </div>
         )}
 
@@ -211,14 +240,22 @@ function ProductionOrderCard({ order }: { order: ProductionOrder }) {
             View Details
           </Button>
           {order.status === 'PENDING' && (
-            <Button variant="primary" size="sm" className="flex-1 flex items-center justify-center gap-1">
+            <Button
+              variant="primary"
+              size="sm"
+              className="flex-1 flex items-center justify-center gap-1"
+            >
               <PlayIcon className="h-4 w-4" />
               Start
             </Button>
           )}
           {order.status === 'IN_PROGRESS' && (
             <>
-              <Button variant="warning" size="sm" className="flex-1 flex items-center justify-center gap-1">
+              <Button
+                variant="warning"
+                size="sm"
+                className="flex-1 flex items-center justify-center gap-1"
+              >
                 <PauseIcon className="h-4 w-4" />
                 Pause
               </Button>
@@ -228,7 +265,11 @@ function ProductionOrderCard({ order }: { order: ProductionOrder }) {
             </>
           )}
           {order.status === 'ON_HOLD' && (
-            <Button variant="primary" size="sm" className="flex-1 flex items-center justify-center gap-1">
+            <Button
+              variant="primary"
+              size="sm"
+              className="flex-1 flex items-center justify-center gap-1"
+            >
               <PlayIcon className="h-4 w-4" />
               Resume
             </Button>
@@ -304,8 +345,18 @@ function ProductionPage() {
   // Production line stages
   const stages = [
     { id: 'queued' as const, label: 'Queued', count: dashboard.queued, tab: 'orders' as TabType },
-    { id: 'in-progress' as const, label: 'In Production', count: dashboard.inProgress, tab: 'orders' as TabType },
-    { id: 'completed' as const, label: 'Completed', count: dashboard.completedToday, tab: 'orders' as TabType },
+    {
+      id: 'in-progress' as const,
+      label: 'In Production',
+      count: dashboard.inProgress,
+      tab: 'orders' as TabType,
+    },
+    {
+      id: 'completed' as const,
+      label: 'Completed',
+      count: dashboard.completedToday,
+      tab: 'orders' as TabType,
+    },
     { id: 'on-hold' as const, label: 'On Hold', count: dashboard.onHold, tab: 'orders' as TabType },
   ];
 
@@ -428,7 +479,9 @@ function ProductionPage() {
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-2xl font-bold text-white">Production Orders</h2>
-                <p className="text-gray-400 text-sm mt-1">Manage manufacturing orders and track progress</p>
+                <p className="text-gray-400 text-sm mt-1">
+                  Manage manufacturing orders and track progress
+                </p>
               </div>
               <Button variant="primary" className="flex items-center gap-2">
                 <PlusIcon className="h-5 w-5" />
@@ -437,7 +490,7 @@ function ProductionPage() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {orders.map((order) => (
+              {orders.map(order => (
                 <ProductionOrderCard key={order.orderId} order={order} />
               ))}
             </div>
@@ -472,7 +525,9 @@ function ProductionPage() {
               <CardContent className="p-12 text-center">
                 <CogIcon className="h-16 w-16 text-gray-600 mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-white mb-2">Equipment Management</h3>
-                <p className="text-gray-400">Equipment maintenance and service requests coming soon</p>
+                <p className="text-gray-400">
+                  Equipment maintenance and service requests coming soon
+                </p>
               </CardContent>
             </Card>
           </div>

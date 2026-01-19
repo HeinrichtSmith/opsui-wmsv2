@@ -44,19 +44,19 @@ export function setupGracefulShutdown(options: ShutdownOptions): void {
   // Handle termination signals
   const signals = ['SIGTERM', 'SIGINT', 'SIGUSR2'];
 
-  signals.forEach((signal) => {
+  signals.forEach(signal => {
     process.on(signal, () => gracefulShutdown(signal, options));
   });
 
   // Handle Windows-specific signals
-  process.on('message', (msg) => {
+  process.on('message', msg => {
     if (msg === 'shutdown') {
       gracefulShutdown('WINDOWS_SHUTDOWN', options);
     }
   });
 
   // Ensure cleanup on unexpected exit
-  process.on('exit', (code) => {
+  process.on('exit', code => {
     if (!state.isShuttingDown && code !== 0) {
       logger.error('Unexpected exit - attempting cleanup');
       releaseAllPortLocks().catch(() => {});
@@ -72,10 +72,7 @@ export function setupGracefulShutdown(options: ShutdownOptions): void {
 /**
  * Execute graceful shutdown
  */
-async function gracefulShutdown(
-  signal: string,
-  options: ShutdownOptions
-): Promise<void> {
+async function gracefulShutdown(signal: string, options: ShutdownOptions): Promise<void> {
   const { server, port, logger, cleanupTasks, forceTimeout = 30000 } = options;
 
   // Prevent multiple shutdowns
@@ -115,14 +112,14 @@ async function gracefulShutdown(
   try {
     // Step 1: Stop accepting new connections
     logger.info('🔒 Step 1/7: Stopping new connections...');
-    server.close((err) => {
+    server.close(err => {
       if (err) {
         logger.error('Error closing server', { error: err.message });
       }
     });
 
     // Wait a moment for existing connections to finish
-    await new Promise<void>((resolve) => setTimeout(resolve, 1000));
+    await new Promise<void>(resolve => setTimeout(resolve, 1000));
     logger.info('✅ Server closed - no new connections accepted');
 
     // Step 2: Release port lock
@@ -159,12 +156,12 @@ async function gracefulShutdown(
     // Step 4: Close WebSocket connections (if any)
     logger.info('🔌 Step 4/7: Closing WebSocket connections...');
     // WebSocket cleanup would be handled by cleanupTasks
-    await new Promise<void>((resolve) => setTimeout(resolve, 500));
+    await new Promise<void>(resolve => setTimeout(resolve, 500));
     logger.info('✅ WebSocket connections closed');
 
     // Step 5: Flush any buffered logs
     logger.info('📝 Step 5/7: Flushing logs...');
-    await new Promise<void>((resolve) => setTimeout(resolve, 500));
+    await new Promise<void>(resolve => setTimeout(resolve, 500));
     logger.info('✅ Logs flushed');
 
     // Step 6: Clear any timeouts/intervals

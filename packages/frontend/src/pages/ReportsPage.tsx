@@ -13,7 +13,7 @@ import {
   PlusIcon,
   PlayIcon,
   EyeIcon,
-  TrashIcon
+  TrashIcon,
 } from '@heroicons/react/24/outline';
 import {
   Report,
@@ -21,7 +21,7 @@ import {
   ReportStatus,
   ReportFormat,
   Dashboard,
-  AggregationType
+  AggregationType,
 } from '@opsui/shared';
 import { Header } from '@/components/shared';
 
@@ -74,7 +74,7 @@ export function ReportsPage() {
           dataType: 'string',
           displayName: 'SKU',
           aggregatable: true,
-          filterable: true
+          filterable: true,
         },
         {
           fieldId: 'f2',
@@ -84,8 +84,8 @@ export function ReportsPage() {
           dataType: 'number',
           displayName: 'Quantity',
           aggregatable: true,
-          filterable: true
-        }
+          filterable: true,
+        },
       ],
       filters: [],
       groups: [],
@@ -95,7 +95,7 @@ export function ReportsPage() {
       allowSchedule: true,
       isPublic: true,
       tags: ['inventory', 'summary'],
-      category: 'Operations'
+      category: 'Operations',
     },
     {
       reportId: 'REPORT-002',
@@ -114,8 +114,8 @@ export function ReportsPage() {
       allowSchedule: true,
       isPublic: false,
       tags: ['performance', 'picking'],
-      category: 'Analytics'
-    }
+      category: 'Analytics',
+    },
   ];
 
   const mockDashboards: Dashboard[] = [
@@ -129,14 +129,14 @@ export function ReportsPage() {
           widgetId: 'W-001',
           reportId: 'REPORT-001',
           position: { x: 0, y: 0, width: 2, height: 2 },
-          title: 'Inventory Levels'
-        }
+          title: 'Inventory Levels',
+        },
       ],
       owner: 'admin',
       isPublic: true,
       createdBy: 'admin',
-      createdAt: new Date('2024-01-10')
-    }
+      createdAt: new Date('2024-01-10'),
+    },
   ];
 
   React.useEffect(() => {
@@ -156,74 +156,70 @@ export function ReportsPage() {
           </p>
         </div>
 
-      {/* Tabs */}
-      <div className="mb-6 border-b border-gray-800">
-        <nav className="flex space-x-8">
-          <button
-            onClick={() => setActiveTab('reports')}
-            className={`py-4 px-1 border-b-2 font-medium text-sm ${
-              activeTab === 'reports'
-                ? 'border-blue-500 text-blue-400'
-                : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-700'
-            }`}
-          >
-            <DocumentTextIcon className="h-5 w-5 inline mr-2" />
-            Reports
-          </button>
-          <button
-            onClick={() => setActiveTab('dashboards')}
-            className={`py-4 px-1 border-b-2 font-medium text-sm ${
-              activeTab === 'dashboards'
-                ? 'border-blue-500 text-blue-400'
-                : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-700'
-            }`}
-          >
-            <ChartBarIcon className="h-5 w-5 inline mr-2" />
-            Dashboards
-          </button>
-          <button
-            onClick={() => setActiveTab('exports')}
-            className={`py-4 px-1 border-b-2 font-medium text-sm ${
-              activeTab === 'exports'
-                ? 'border-blue-500 text-blue-400'
-                : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-700'
-            }`}
-          >
-            <ArrowDownTrayIcon className="h-5 w-5 inline mr-2" />
-            Exports
-          </button>
-        </nav>
-      </div>
+        {/* Tabs */}
+        <div className="mb-6 border-b border-gray-800">
+          <nav className="flex space-x-8">
+            <button
+              onClick={() => setActiveTab('reports')}
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'reports'
+                  ? 'border-blue-500 text-blue-400'
+                  : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-700'
+              }`}
+            >
+              <DocumentTextIcon className="h-5 w-5 inline mr-2" />
+              Reports
+            </button>
+            <button
+              onClick={() => setActiveTab('dashboards')}
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'dashboards'
+                  ? 'border-blue-500 text-blue-400'
+                  : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-700'
+              }`}
+            >
+              <ChartBarIcon className="h-5 w-5 inline mr-2" />
+              Dashboards
+            </button>
+            <button
+              onClick={() => setActiveTab('exports')}
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'exports'
+                  ? 'border-blue-500 text-blue-400'
+                  : 'border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-700'
+              }`}
+            >
+              <ArrowDownTrayIcon className="h-5 w-5 inline mr-2" />
+              Exports
+            </button>
+          </nav>
+        </div>
 
-      {/* Tab Content */}
-      {activeTab === 'reports' && (
-        <ReportsTab
-          reports={reports}
-          onSelectReport={(report) => {
-            setSelectedReport(report);
-            setReportModalOpen(true);
-          }}
-          onCreateReport={() => {
-            setSelectedReport(undefined);
-            setReportModalOpen(true);
-          }}
-        />
-      )}
+        {/* Tab Content */}
+        {activeTab === 'reports' && (
+          <ReportsTab
+            reports={reports}
+            onSelectReport={report => {
+              setSelectedReport(report);
+              setReportModalOpen(true);
+            }}
+            onCreateReport={() => {
+              setSelectedReport(undefined);
+              setReportModalOpen(true);
+            }}
+          />
+        )}
 
-      {activeTab === 'dashboards' && (
-        <DashboardsTab dashboards={dashboards} />
-      )}
+        {activeTab === 'dashboards' && <DashboardsTab dashboards={dashboards} />}
 
-      {activeTab === 'exports' && (
-        <ExportsTab />
-      )}
+        {activeTab === 'exports' && <ExportsTab />}
 
         {/* Report Modal */}
         {reportModalOpen && (
           <ReportModal
             report={selectedReport}
             onClose={() => setReportModalOpen(false)}
-            onSave={(report) => handleSaveReport(report)}
+            onSave={report => handleSaveReport(report)}
           />
         )}
       </main>
@@ -244,9 +240,7 @@ interface ReportsTabProps {
 function ReportsTab({ reports, onSelectReport, onCreateReport }: ReportsTabProps) {
   const [filter, setFilter] = useState<ReportType | 'ALL'>('ALL');
 
-  const filteredReports = filter === 'ALL'
-    ? reports
-    : reports.filter(r => r.reportType === filter);
+  const filteredReports = filter === 'ALL' ? reports : reports.filter(r => r.reportType === filter);
 
   return (
     <div>
@@ -306,8 +300,11 @@ function ReportsTab({ reports, onSelectReport, onCreateReport }: ReportsTabProps
 
       {/* Reports Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredReports.map((report) => (
-          <div key={report.reportId} className="glass-card rounded-lg p-6 hover:shadow-lg transition-shadow">
+        {filteredReports.map(report => (
+          <div
+            key={report.reportId}
+            className="glass-card rounded-lg p-6 hover:shadow-lg transition-shadow"
+          >
             <div className="flex items-start justify-between mb-4">
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-white">{report.name}</h3>
@@ -367,10 +364,7 @@ function ReportsTab({ reports, onSelectReport, onCreateReport }: ReportsTabProps
       {filteredReports.length === 0 && (
         <div className="text-center py-12">
           <p className="text-gray-400">No reports found</p>
-          <button
-            onClick={onCreateReport}
-            className="mt-4 text-blue-400 hover:text-blue-300"
-          >
+          <button onClick={onCreateReport} className="mt-4 text-blue-400 hover:text-blue-300">
             Create your first report
           </button>
         </div>
@@ -400,7 +394,7 @@ function DashboardsTab({ dashboards }: DashboardsTabProps) {
 
       {/* Dashboards Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {dashboards.map((dashboard) => (
+        {dashboards.map(dashboard => (
           <div key={dashboard.dashboardId} className="glass-card rounded-lg p-6">
             <h3 className="text-lg font-semibold text-white mb-2">{dashboard.name}</h3>
             <p className="text-sm text-gray-400 mb-4">{dashboard.description}</p>
@@ -463,12 +457,10 @@ function ExportsTab() {
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">
-              Entity Type
-            </label>
+            <label className="block text-sm font-medium text-gray-300 mb-1">Entity Type</label>
             <select
               value={entityType}
-              onChange={(e) => setEntityType(e.target.value)}
+              onChange={e => setEntityType(e.target.value)}
               className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
             >
               <option value="orders">Orders</option>
@@ -480,12 +472,10 @@ function ExportsTab() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">
-              Export Format
-            </label>
+            <label className="block text-sm font-medium text-gray-300 mb-1">Export Format</label>
             <select
               value={format}
-              onChange={(e) => setFormat(e.target.value as ReportFormat)}
+              onChange={e => setFormat(e.target.value as ReportFormat)}
               className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
             >
               <option value={ReportFormat.CSV}>CSV</option>
@@ -531,7 +521,7 @@ function ReportModal({ report, onClose, onSave }: ReportModalProps) {
     description: report?.description || '',
     reportType: report?.reportType || ReportType.CUSTOM,
     isPublic: report?.isPublic ?? false,
-    category: report?.category || ''
+    category: report?.category || '',
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -547,7 +537,7 @@ function ReportModal({ report, onClose, onSave }: ReportModalProps) {
       defaultFormat: report?.defaultFormat || ReportFormat.PDF,
       allowExport: true,
       allowSchedule: true,
-      tags: report?.tags || []
+      tags: report?.tags || [],
     });
     onClose();
   };
@@ -556,9 +546,7 @@ function ReportModal({ report, onClose, onSave }: ReportModalProps) {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-screen overflow-y-auto">
         <div className="p-6">
-          <h2 className="text-xl font-bold mb-4">
-            {isEdit ? 'Edit Report' : 'Create New Report'}
-          </h2>
+          <h2 className="text-xl font-bold mb-4">{isEdit ? 'Edit Report' : 'Create New Report'}</h2>
 
           <form onSubmit={handleSubmit}>
             <div className="space-y-4">
@@ -569,20 +557,18 @@ function ReportModal({ report, onClose, onSave }: ReportModalProps) {
                 <input
                   type="text"
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={e => setFormData({ ...formData, name: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Description
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
                 <textarea
                   rows={3}
                   value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  onChange={e => setFormData({ ...formData, description: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
@@ -594,7 +580,9 @@ function ReportModal({ report, onClose, onSave }: ReportModalProps) {
                   </label>
                   <select
                     value={formData.reportType}
-                    onChange={(e) => setFormData({ ...formData, reportType: e.target.value as ReportType })}
+                    onChange={e =>
+                      setFormData({ ...formData, reportType: e.target.value as ReportType })
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value={ReportType.INVENTORY}>Inventory</option>
@@ -611,13 +599,11 @@ function ReportModal({ report, onClose, onSave }: ReportModalProps) {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Category
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
                   <input
                     type="text"
                     value={formData.category}
-                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                    onChange={e => setFormData({ ...formData, category: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="e.g., Operations, Analytics"
                   />
@@ -629,7 +615,7 @@ function ReportModal({ report, onClose, onSave }: ReportModalProps) {
                   type="checkbox"
                   id="isPublic"
                   checked={formData.isPublic}
-                  onChange={(e) => setFormData({ ...formData, isPublic: e.target.checked })}
+                  onChange={e => setFormData({ ...formData, isPublic: e.target.checked })}
                   className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                 />
                 <label htmlFor="isPublic" className="ml-2 block text-sm text-gray-900">

@@ -10,11 +10,14 @@ async function checkProgress(): Promise<void> {
     console.log(`🔍 Checking progress for order: ${orderId}\n`);
 
     // Get order progress from database
-    const orderResult = await query(`
+    const orderResult = await query(
+      `
       SELECT order_id, progress, status, picker_id
       FROM orders
       WHERE order_id = $1
-    `, [orderId]);
+    `,
+      [orderId]
+    );
 
     console.log('📦 Order from database:');
     console.log('  Order ID:', orderResult.rows[0].order_id);
@@ -23,7 +26,8 @@ async function checkProgress(): Promise<void> {
     console.log('  Picker ID:', orderResult.rows[0].picker_id);
 
     // Calculate progress manually from pick_tasks
-    const tasksResult = await query(`
+    const tasksResult = await query(
+      `
       SELECT
         pick_task_id,
         status,
@@ -32,7 +36,9 @@ async function checkProgress(): Promise<void> {
       FROM pick_tasks
       WHERE order_id = $1
       ORDER BY pick_task_id
-    `, [orderId]);
+    `,
+      [orderId]
+    );
 
     console.log('\n📋 Pick tasks:');
     console.table(tasksResult.rows);
@@ -40,9 +46,7 @@ async function checkProgress(): Promise<void> {
     // Manual calculation
     const totalTasks = tasksResult.rows.length;
     const completedTasks = tasksResult.rows.filter(t => t.status === 'COMPLETED').length;
-    const calculatedProgress = totalTasks > 0
-      ? Math.round((completedTasks / totalTasks) * 100)
-      : 0;
+    const calculatedProgress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
 
     console.log('\n🧮 Manual calculation:');
     console.log('  Total tasks:', totalTasks);
@@ -50,7 +54,8 @@ async function checkProgress(): Promise<void> {
     console.log('  Calculated progress:', calculatedProgress + '%');
 
     console.log('\n📊 Database calculation:');
-    const dbCalcResult = await query(`
+    const dbCalcResult = await query(
+      `
       SELECT
         COUNT(*) as total,
         COUNT(*) FILTER (WHERE status = 'COMPLETED') as completed,
@@ -60,14 +65,17 @@ async function checkProgress(): Promise<void> {
         ) as progress
       FROM pick_tasks
       WHERE order_id = $1
-    `, [orderId]);
+    `,
+      [orderId]
+    );
 
     console.log('  Total tasks:', dbCalcResult.rows[0].total);
     console.log('  Completed tasks:', dbCalcResult.rows[0].completed);
     console.log('  Calculated progress:', dbCalcResult.rows[0].progress);
 
     // Check order_items progress as well
-    const itemsResult = await query(`
+    const itemsResult = await query(
+      `
       SELECT
         order_item_id,
         status,
@@ -76,22 +84,21 @@ async function checkProgress(): Promise<void> {
       FROM order_items
       WHERE order_id = $1
       ORDER BY order_item_id
-    `, [orderId]);
+    `,
+      [orderId]
+    );
 
     console.log('\n📦 Order items:');
     console.table(itemsResult.rows);
 
     const totalItems = itemsResult.rows.length;
     const completedItems = itemsResult.rows.filter(t => t.status === 'FULLY_PICKED').length;
-    const itemsProgress = totalItems > 0
-      ? Math.round((completedItems / totalItems) * 100)
-      : 0;
+    const itemsProgress = totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
 
     console.log('\n🧮 Order items calculation:');
     console.log('  Total items:', totalItems);
     console.log('  Fully picked items:', completedItems);
     console.log('  Items progress:', itemsProgress + '%');
-
   } catch (error) {
     console.error('❌ Error:', error);
   } finally {

@@ -33,9 +33,11 @@ Automated workflows combining Anthropic Ralph + Cline + GLM 4.7 + MCP Dev Accele
 ## Available Ralph Skills
 
 ### 1. **wms-entity-generator**
+
 Generate complete CRUD stack (entity, service, controller, DTOs) for any WMS entity.
 
 **Usage:**
+
 ```
 ralph run wms-entity-generator \
   --entityName="Product" \
@@ -47,15 +49,18 @@ ralph run wms-entity-generator \
 ```
 
 **Automates:**
+
 - TypeORM entity generation
 - NestJS service with CRUD methods
 - REST controller with endpoints
 - TypeScript validation
 
 ### 2. **wms-prisma-workflow**
+
 Complete Prisma database workflow automation.
 
 **Usage:**
+
 ```
 ralph run wms-prisma-workflow \
   --migrationName="add_inventory_table" \
@@ -63,6 +68,7 @@ ralph run wms-prisma-workflow \
 ```
 
 **Automates:**
+
 - Schema validation
 - Migration creation
 - Client generation
@@ -70,9 +76,11 @@ ralph run wms-prisma-workflow \
 - Type checking
 
 ### 3. **wms-api-contract-validator**
+
 Validate and sync API contracts between frontend/backend.
 
 **Usage:**
+
 ```
 ralph run wms-api-contract-validator \
   --backendPath="./packages/backend/src" \
@@ -80,14 +88,17 @@ ralph run wms-api-contract-validator \
 ```
 
 **Automates:**
+
 - API contract validation
 - TypeScript type sync
 - OpenAPI spec generation
 
 ### 4. **wms-warehouse-optimizer**
+
 Optimize warehouse operations with domain-specific tools.
 
 **Usage:**
+
 ```
 ralph run wms-warehouse-optimizer \
   --locations='["A-01-01", "B-05-03", "C-12-01"]' \
@@ -96,14 +107,17 @@ ralph run wms-warehouse-optimizer \
 ```
 
 **Automates:**
+
 - Optimal pick path calculation
 - Bin location optimization
 - Performance analysis
 
 ### 5. **wms-code-quality-check**
+
 Comprehensive code quality analysis.
 
 **Usage:**
+
 ```
 ralph run wms-code-quality-check \
   --projectPath="./packages/backend" \
@@ -111,6 +125,7 @@ ralph run wms-code-quality-check \
 ```
 
 **Automates:**
+
 - TypeScript error detection
 - Unused export identification
 - Code complexity analysis
@@ -118,9 +133,11 @@ ralph run wms-code-quality-check \
 - Project structure validation
 
 ### 6. **wms-full-feature-workflow** ⭐
+
 End-to-end feature creation from concept to deployment.
 
 **Usage:**
+
 ```
 ralph run wms-full-feature-workflow \
   --featureName="inventory-tracking" \
@@ -139,6 +156,7 @@ ralph run wms-full-feature-workflow \
 ```
 
 **Automates:**
+
 - Project analysis
 - Entity/Service/Controller generation
 - Test suite creation
@@ -151,13 +169,17 @@ ralph run wms-full-feature-workflow \
 ## Integration with Cline
 
 ### Method 1: Quick Commands
+
 Type in Cline chat:
+
 ```
 /run ralph wms-entity-generator Product sku:string,quantity:number,price:number
 ```
 
 ### Method 2: Auto-trigger on File Changes
+
 Create `.ralph/triggers.json`:
+
 ```json
 {
   "triggers": [
@@ -176,6 +198,7 @@ Create `.ralph/triggers.json`:
 ```
 
 ### Method 3: Scheduled Automation
+
 ```json
 {
   "schedules": [
@@ -196,6 +219,7 @@ Create `.ralph/triggers.json`:
 ## Combining Forces: Super Automation
 
 ### Example 1: New Feature in One Command
+
 ```
 "Create a complete shipment tracking feature with entities, API, tests, and docs"
 
@@ -207,6 +231,7 @@ Create `.ralph/triggers.json`:
 ```
 
 ### Example 2: Continuous Quality Loop
+
 ```
 File saved → Trigger → wms-code-quality-check
            ↓
@@ -216,6 +241,7 @@ Generate report → Update dashboard
 ```
 
 ### Example 3: PR Automation
+
 ```
 PR created → Ralph runs full workflow
            ↓
@@ -231,7 +257,9 @@ Ready for review
 ## Configuration
 
 ### Cline Settings
+
 Update Cline MCP config to include Ralph:
+
 ```json
 {
   "mcpServers": {
@@ -247,6 +275,7 @@ Update Cline MCP config to include Ralph:
 ```
 
 ### Environment Variables
+
 ```bash
 # .env
 RALPH_ENABLED=true
@@ -274,6 +303,7 @@ RALPH_WORKSPACE="./"
 ## Troubleshooting
 
 **Ralph not responding:**
+
 ```bash
 # Check Ralph status
 ralph status
@@ -283,6 +313,7 @@ ralph restart
 ```
 
 **Skill failing:**
+
 ```bash
 # Run with verbose logging
 ralph run wms-entity-generator --verbose
@@ -292,6 +323,7 @@ ralph mcp:list
 ```
 
 **Auto-approve not working:**
+
 ```bash
 # Check approved skills
 ralph config:get autoApprove

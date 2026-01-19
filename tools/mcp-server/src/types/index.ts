@@ -46,22 +46,25 @@ export interface ToolContext {
  */
 export interface ValidationSchema {
   type: 'object';
-  properties: Record<string, {
-    type: string;
-    description?: string;
-    enum?: string[];
-    pattern?: string;
-    minimum?: number;
-    maximum?: number;
-    required?: boolean;
-    items?: {
+  properties: Record<
+    string,
+    {
       type: string;
       description?: string;
       enum?: string[];
       pattern?: string;
-      properties?: Record<string, unknown>;
-    };
-  }>;
+      minimum?: number;
+      maximum?: number;
+      required?: boolean;
+      items?: {
+        type: string;
+        description?: string;
+        enum?: string[];
+        pattern?: string;
+        properties?: Record<string, unknown>;
+      };
+    }
+  >;
   required?: string[];
 }
 
@@ -118,11 +121,10 @@ export class ValidationError extends ToolError {
 
 export class NotFoundError extends ToolError {
   constructor(resource: string, id?: string) {
-    super(
-      id ? `${resource} not found: ${id}` : `${resource} not found`,
-      'NOT_FOUND',
-      { resource, id }
-    );
+    super(id ? `${resource} not found: ${id}` : `${resource} not found`, 'NOT_FOUND', {
+      resource,
+      id,
+    });
     this.name = 'NotFoundError';
   }
 }

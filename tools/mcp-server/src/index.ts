@@ -14,10 +14,7 @@
 
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import {
-  CallToolRequestSchema,
-  ListToolsRequestSchema,
-} from '@modelcontextprotocol/sdk/types.js';
+import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
 import { allTools } from './tools/index.js';
 import { cache } from './utils/cache.js';
 import { perfMonitor } from './utils/performance.js';
@@ -65,7 +62,7 @@ function createContext(): ToolContext {
  */
 server.setRequestHandler(ListToolsRequestSchema, async () => {
   return {
-    tools: allTools.map((tool) => ({
+    tools: allTools.map(tool => ({
       name: tool.name,
       description: tool.description,
       inputSchema: tool.inputSchema,
@@ -76,9 +73,9 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 /**
  * Handle tool execution with performance monitoring and caching
  */
-server.setRequestHandler(CallToolRequestSchema, async (request) => {
+server.setRequestHandler(CallToolRequestSchema, async request => {
   const startTime = performance.now();
-  const tool = allTools.find((t) => t.name === request.params.name);
+  const tool = allTools.find(t => t.name === request.params.name);
 
   if (!tool) {
     return {
@@ -121,10 +118,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     // Ensure arguments are never undefined
     const args: ToolArgs = request.params.arguments || {};
 
-    const result = await withTimeout(
-      tool.handler(args, context),
-      timeout
-    );
+    const result = await withTimeout(tool.handler(args, context), timeout);
 
     const response = {
       content: [
@@ -193,8 +187,8 @@ async function shutdown(signal: string): Promise<void> {
       if (toolStats) {
         console.error(
           `  ${tool}: avg=${toolStats.avgExecutionTime.toFixed(2)}ms, ` +
-          `cache=${toolStats.cacheHitRate.toFixed(1)}%, ` +
-          `calls=${toolStats.totalExecutions}`
+            `cache=${toolStats.cacheHitRate.toFixed(1)}%, ` +
+            `calls=${toolStats.totalExecutions}`
         );
       }
     }
@@ -204,10 +198,10 @@ async function shutdown(signal: string): Promise<void> {
   const cacheMetrics = cache.getMetrics();
   console.error(
     `[WMS-MCP] Cache Metrics: ` +
-    `hits=${cacheMetrics.hits}, ` +
-    `misses=${cacheMetrics.misses}, ` +
-    `hitRate=${cacheMetrics.hitRate}%, ` +
-    `size=${cacheMetrics.size}`
+      `hits=${cacheMetrics.hits}, ` +
+      `misses=${cacheMetrics.misses}, ` +
+      `hitRate=${cacheMetrics.hitRate}%, ` +
+      `size=${cacheMetrics.size}`
   );
 
   process.exit(0);
@@ -244,23 +238,22 @@ async function main() {
       console.error(`[WMS-MCP] Heartbeat: ${new Date().toISOString()} - PID:${process.pid}`);
     }, 5000);
 
-    process.on('exit', (code) => {
+    process.on('exit', code => {
       console.error(`[WMS-MCP] Exiting with code ${code}`);
     });
 
     // Handle uncaught errors
-    process.on('uncaughtException', (error) => {
+    process.on('uncaughtException', error => {
       console.error('[WMS-MCP] Uncaught exception, restarting...');
       console.error(error);
       process.exit(1);
     });
 
-    process.on('unhandledRejection', (reason) => {
+    process.on('unhandledRejection', reason => {
       console.error('[WMS-MCP] Unhandled rejection, restarting...');
       console.error(reason);
       process.exit(1);
     });
-
   } catch (error) {
     console.error('[WMS-MCP] Fatal error:', error);
     process.exit(1); // Exit with error code to trigger auto-restart

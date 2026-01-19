@@ -77,7 +77,7 @@ export const useAuthStore = create<AuthState>()(
 
       // Update tokens (from refresh)
       updateTokens: (accessToken: string, refreshToken: string, user: User) => {
-        set((state) => ({
+        set(state => ({
           isAuthenticated: true,
           accessToken,
           refreshToken,
@@ -139,7 +139,7 @@ export const useAuthStore = create<AuthState>()(
     {
       name: 'wms-auth-storage',
       // Only persist these fields
-      partialize: (state) => ({
+      partialize: state => ({
         isAuthenticated: state.isAuthenticated,
         accessToken: state.accessToken,
         refreshToken: state.refreshToken,

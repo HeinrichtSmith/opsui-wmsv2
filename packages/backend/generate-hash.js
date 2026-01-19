@@ -9,20 +9,20 @@ const path = require('path');
 async function generate() {
   const password = 'admin123';
   const rounds = 10;
-  
+
   console.log('Generating bcrypt hash...');
   console.log(`Password: ${password}`);
   console.log(`Rounds: ${rounds}`);
-  
+
   const hash = await bcrypt.hash(password, rounds);
-  
+
   console.log(`\nGenerated hash: ${hash}`);
   console.log(`Hash length: ${hash.length}\n`);
-  
+
   // Verify hash works
   const isValid = await bcrypt.compare(password, hash);
   console.log(`Verification test: ${isValid ? '✅ PASSED' : '❌ FAILED'}\n`);
-  
+
   // Create SQL statements
   const sql = `
 -- Fix admin password hash
@@ -53,12 +53,12 @@ SELECT user_id, email, name, role FROM users WHERE email = 'admin@wms.local';
   console.log('='.repeat(60));
   console.log(sql);
   console.log('='.repeat(60));
-  
+
   // Save to file
   const outputPath = path.join(__dirname, 'fix-admin-hash.sql');
   fs.writeFileSync(outputPath, sql, 'utf8');
   console.log(`\n✅ SQL script saved to: ${outputPath}`);
-  
+
   console.log('\nTo apply this fix:');
   console.log('1. Connect to your PostgreSQL database');
   console.log(`2. Run: psql -d wms_db -f ${outputPath}`);

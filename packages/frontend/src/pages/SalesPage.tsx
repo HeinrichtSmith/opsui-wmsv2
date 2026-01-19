@@ -49,7 +49,13 @@ interface Opportunity {
   opportunityId: string;
   opportunityNumber: string;
   name: string;
-  stage: 'PROSPECTING' | 'QUALIFICATION' | 'PROPOSAL' | 'NEGOTIATION' | 'CLOSED_WON' | 'CLOSED_LOST';
+  stage:
+    | 'PROSPECTING'
+    | 'QUALIFICATION'
+    | 'PROPOSAL'
+    | 'NEGOTIATION'
+    | 'CLOSED_WON'
+    | 'CLOSED_LOST';
   amount: number;
   probability: number;
   expectedCloseDate: string;
@@ -77,7 +83,9 @@ function CustomerStatusBadge({ status }: { status: string }) {
   };
 
   return (
-    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${styles[status] || styles.PROSPECT}`}>
+    <span
+      className={`px-3 py-1 rounded-full text-xs font-semibold ${styles[status] || styles.PROSPECT}`}
+    >
       {status}
     </span>
   );
@@ -95,7 +103,9 @@ function LeadStatusBadge({ status }: { status: string }) {
   };
 
   return (
-    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${styles[status] || styles.NEW}`}>
+    <span
+      className={`px-3 py-1 rounded-full text-xs font-semibold ${styles[status] || styles.NEW}`}
+    >
       {status}
     </span>
   );
@@ -113,7 +123,9 @@ function OpportunityStageBadge({ stage, probability }: { stage: string; probabil
 
   return (
     <div className="flex items-center gap-2">
-      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${styles[stage] || styles.PROSPECTING}`}>
+      <span
+        className={`px-3 py-1 rounded-full text-xs font-semibold ${styles[stage] || styles.PROSPECTING}`}
+      >
         {stage.replace('_', ' ')}
       </span>
       <span className="text-xs text-gray-400">{probability}%</span>
@@ -131,7 +143,9 @@ function QuoteStatusBadge({ status }: { status: string }) {
   };
 
   return (
-    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${styles[status] || styles.DRAFT}`}>
+    <span
+      className={`px-3 py-1 rounded-full text-xs font-semibold ${styles[status] || styles.DRAFT}`}
+    >
       {status}
     </span>
   );
@@ -167,18 +181,14 @@ function CustomerCard({ customer }: { customer: Customer }) {
             {customer.contactName && (
               <p className="text-sm text-gray-300 mt-1">Contact: {customer.contactName}</p>
             )}
-            {customer.email && (
-              <p className="text-sm text-gray-400">{customer.email}</p>
-            )}
+            {customer.email && <p className="text-sm text-gray-400">{customer.email}</p>}
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
           <div className="bg-white/5 p-3 rounded-lg text-center">
             <p className="text-gray-400 text-xs mb-1">Account Balance</p>
-            <p className="text-lg font-bold text-white">
-              ${customer.accountBalance.toFixed(2)}
-            </p>
+            <p className="text-lg font-bold text-white">${customer.accountBalance.toFixed(2)}</p>
           </div>
           <div className="bg-white/5 p-3 rounded-lg text-center">
             <p className="text-gray-400 text-xs mb-1">Status</p>
@@ -209,9 +219,7 @@ function LeadCard({ lead }: { lead: Lead }) {
               <h3 className="text-lg font-semibold text-white">{lead.customerName}</h3>
               <LeadStatusBadge status={lead.status} />
             </div>
-            {lead.company && (
-              <p className="text-sm text-gray-300">{lead.company}</p>
-            )}
+            {lead.company && <p className="text-sm text-gray-300">{lead.company}</p>}
             <p className="text-xs text-gray-400 mt-1">Source: {lead.source}</p>
           </div>
           <PriorityIndicator priority={lead.priority} />
@@ -261,9 +269,11 @@ function OpportunityCard({ opportunity }: { opportunity: Opportunity }) {
           <div className="w-full bg-gray-700 rounded-full h-2">
             <div
               className={`h-2 rounded-full transition-all duration-300 ${
-                opportunity.stage === 'CLOSED_WON' ? 'bg-success-500' :
-                opportunity.stage === 'CLOSED_LOST' ? 'bg-danger-500' :
-                'bg-primary-500'
+                opportunity.stage === 'CLOSED_WON'
+                  ? 'bg-success-500'
+                  : opportunity.stage === 'CLOSED_LOST'
+                    ? 'bg-danger-500'
+                    : 'bg-primary-500'
               }`}
               style={{ width: `${opportunity.probability}%` }}
             />
@@ -273,9 +283,7 @@ function OpportunityCard({ opportunity }: { opportunity: Opportunity }) {
         <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
           <div className="bg-white/5 p-3 rounded-lg text-center">
             <p className="text-gray-400 text-xs mb-1">Amount</p>
-            <p className="text-lg font-bold text-white">
-              ${opportunity.amount.toLocaleString()}
-            </p>
+            <p className="text-lg font-bold text-white">${opportunity.amount.toLocaleString()}</p>
           </div>
           <div className="bg-white/5 p-3 rounded-lg text-center">
             <p className="text-gray-400 text-xs mb-1">Expected Close</p>
@@ -299,7 +307,8 @@ function OpportunityCard({ opportunity }: { opportunity: Opportunity }) {
 }
 
 function QuoteCard({ quote }: { quote: Quote }) {
-  const isExpiringSoon = new Date(quote.validUntil) < new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+  const isExpiringSoon =
+    new Date(quote.validUntil) < new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
   const isExpired = new Date(quote.validUntil) < new Date();
 
   return (
@@ -312,9 +321,7 @@ function QuoteCard({ quote }: { quote: Quote }) {
               <QuoteStatusBadge status={quote.status} />
             </div>
             <p className="text-sm text-gray-300">{quote.customerName}</p>
-            {isExpired && (
-              <p className="text-xs text-danger-400 mt-1">Expired</p>
-            )}
+            {isExpired && <p className="text-xs text-danger-400 mt-1">Expired</p>}
             {isExpiringSoon && !isExpired && (
               <p className="text-xs text-warning-400 mt-1">Expiring Soon</p>
             )}
@@ -331,7 +338,9 @@ function QuoteCard({ quote }: { quote: Quote }) {
         <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
           <div className="bg-white/5 p-3 rounded-lg text-center">
             <p className="text-gray-400 text-xs mb-1">Valid Until</p>
-            <p className={`text-sm ${isExpired ? 'text-danger-400' : isExpiringSoon ? 'text-warning-400' : 'text-white'}`}>
+            <p
+              className={`text-sm ${isExpired ? 'text-danger-400' : isExpiringSoon ? 'text-warning-400' : 'text-white'}`}
+            >
               {new Date(quote.validUntil).toLocaleDateString()}
             </p>
           </div>
@@ -386,7 +395,7 @@ function SalesPage() {
       contactName: 'John Smith',
       email: 'john@acme.com',
       status: 'ACTIVE',
-      accountBalance: 5430.50,
+      accountBalance: 5430.5,
     },
     {
       customerId: 'CUST-002',
@@ -395,7 +404,7 @@ function SalesPage() {
       contactName: 'Sarah Johnson',
       email: 'sarah@techsolutions.com',
       status: 'ACTIVE',
-      accountBalance: 12500.00,
+      accountBalance: 12500.0,
     },
     {
       customerId: 'CUST-003',
@@ -507,7 +516,9 @@ function SalesPage() {
         {/* Page Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-white tracking-tight">Sales & CRM</h1>
-          <p className="mt-2 text-gray-400">Customer relationships, leads, opportunities, and quotes</p>
+          <p className="mt-2 text-gray-400">
+            Customer relationships, leads, opportunities, and quotes
+          </p>
         </div>
 
         {/* Tab Navigation */}
@@ -518,7 +529,7 @@ function SalesPage() {
             { key: 'leads' as TabType, label: 'Leads', icon: SparklesIcon },
             { key: 'opportunities' as TabType, label: 'Opportunities', icon: TrophyIcon },
             { key: 'quotes' as TabType, label: 'Quotes', icon: DocumentTextIcon },
-          ].map((tab) => {
+          ].map(tab => {
             const Icon = tab.icon;
             const isActive = currentTab === tab.key;
             return (
@@ -565,7 +576,9 @@ function SalesPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-400">Open Opportunities</p>
-                    <p className="mt-2 text-3xl font-bold text-white">{dashboard.openOpportunities}</p>
+                    <p className="mt-2 text-3xl font-bold text-white">
+                      {dashboard.openOpportunities}
+                    </p>
                   </div>
                   <TrophyIcon className="h-8 w-8 text-orange-400" />
                 </div>
@@ -646,7 +659,9 @@ function SalesPage() {
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-2xl font-bold text-white">Customers</h2>
-                <p className="text-gray-400 text-sm mt-1">Manage customer accounts and relationships</p>
+                <p className="text-gray-400 text-sm mt-1">
+                  Manage customer accounts and relationships
+                </p>
               </div>
               <Button variant="primary" className="flex items-center gap-2">
                 <PlusIcon className="h-5 w-5" />
@@ -655,7 +670,7 @@ function SalesPage() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {customers.map((customer) => (
+              {customers.map(customer => (
                 <CustomerCard key={customer.customerId} customer={customer} />
               ))}
             </div>
@@ -677,7 +692,7 @@ function SalesPage() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {leads.map((lead) => (
+              {leads.map(lead => (
                 <LeadCard key={lead.leadId} lead={lead} />
               ))}
             </div>
@@ -690,7 +705,9 @@ function SalesPage() {
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-2xl font-bold text-white">Opportunities</h2>
-                <p className="text-gray-400 text-sm mt-1">Manage sales pipeline and opportunities</p>
+                <p className="text-gray-400 text-sm mt-1">
+                  Manage sales pipeline and opportunities
+                </p>
               </div>
               <Button variant="primary" className="flex items-center gap-2">
                 <PlusIcon className="h-5 w-5" />
@@ -699,7 +716,7 @@ function SalesPage() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {opportunities.map((opportunity) => (
+              {opportunities.map(opportunity => (
                 <OpportunityCard key={opportunity.opportunityId} opportunity={opportunity} />
               ))}
             </div>
@@ -721,7 +738,7 @@ function SalesPage() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {quotes.map((quote) => (
+              {quotes.map(quote => (
                 <QuoteCard key={quote.quoteId} quote={quote} />
               ))}
             </div>

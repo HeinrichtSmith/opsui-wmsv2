@@ -12,10 +12,10 @@ const pool = new Pool({
 
 async function applyFix() {
   const client = await pool.connect();
-  
+
   try {
     console.log('🔧 Fixing trigger recursion issue...\n');
-    
+
     // Drop old trigger and function
     await client.query(`DROP TRIGGER IF EXISTS trigger_update_order_progress ON order_items`);
     await client.query(`DROP FUNCTION IF EXISTS update_order_progress()`);
@@ -70,7 +70,6 @@ async function applyFix() {
     console.log('  - Item status is now handled by application layer\n');
     console.log('The trigger will no longer cause infinite recursion.');
     console.log('\n✨ Fix completed successfully!');
-    
   } catch (error) {
     console.error('❌ Error applying fix:', error.message);
     throw error;

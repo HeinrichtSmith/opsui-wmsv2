@@ -86,7 +86,7 @@ export const codeAnalysisTools: ToolMetadata[] = [
         });
 
         const lines = result.trim().split('\n').filter(Boolean);
-        const unusedExports = lines.map((line) => {
+        const unusedExports = lines.map(line => {
           const [file, exportName] = line.split(':');
           return { file, export: exportName };
         });
@@ -95,9 +95,10 @@ export const codeAnalysisTools: ToolMetadata[] = [
           success: true,
           unusedExports,
           count: unusedExports.length,
-          message: unusedExports.length > 0
-            ? `Found ${unusedExports.length} unused export(s)`
-            : 'No unused exports found',
+          message:
+            unusedExports.length > 0
+              ? `Found ${unusedExports.length} unused export(s)`
+              : 'No unused exports found',
         };
       } catch (error: any) {
         // ts-prune exits with code 1 when unused exports are found
@@ -215,7 +216,7 @@ export const codeAnalysisTools: ToolMetadata[] = [
       const minLines = (args.minLines as number) || 5;
 
       // Simple duplicate detection using string similarity
-      const targetPath = args.projectPath as string || context.workspaceRoot;
+      const targetPath = (args.projectPath as string) || context.workspaceRoot;
       const tsFiles = await findTypeScriptFiles(targetPath);
       const duplicates: Array<{
         files: string[];

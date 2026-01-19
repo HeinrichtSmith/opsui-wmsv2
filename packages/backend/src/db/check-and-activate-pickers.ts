@@ -40,16 +40,21 @@ async function checkAndActivatePickers(): Promise<void> {
       return;
     }
 
-    console.log(`\n⚠️  Found ${inactivePickers.length} inactive picker account(s). Activating...\n`);
+    console.log(
+      `\n⚠️  Found ${inactivePickers.length} inactive picker account(s). Activating...\n`
+    );
 
     // Activate all inactive pickers
     for (const picker of inactivePickers) {
-      await query(`
+      await query(
+        `
         UPDATE users
         SET is_active = true,
             updated_at = NOW()
         WHERE user_id = $1
-      `, [picker.userId]);
+      `,
+        [picker.userId]
+      );
 
       console.log(`✅ Activated: ${picker.name} (${picker.userId})`);
     }
@@ -66,7 +71,6 @@ async function checkAndActivatePickers(): Promise<void> {
 
     console.log('📊 Current picker status:');
     console.table(verifyResult.rows);
-
   } catch (error) {
     console.error('\n❌ Failed to activate pickers:', error);
     throw error;
@@ -82,7 +86,7 @@ if (require.main === module) {
       console.log('\n✅ Script completed successfully');
       process.exit(0);
     })
-    .catch((error) => {
+    .catch(error => {
       console.error('\n❌ Script failed:', error);
       process.exit(1);
     });

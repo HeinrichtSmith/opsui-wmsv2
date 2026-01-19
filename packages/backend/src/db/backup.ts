@@ -129,10 +129,7 @@ export async function restoreBackup(backupPath: string): Promise<void> {
 
       for (const row of rows) {
         const values = columns.map(col => row[col]);
-        await query(
-          `INSERT INTO ${table} (${columnsStr}) VALUES (${placeholders})`,
-          values
-        );
+        await query(`INSERT INTO ${table} (${columnsStr}) VALUES (${placeholders})`, values);
       }
 
       logger.info(`Restored ${table}: ${rows.length} rows`);

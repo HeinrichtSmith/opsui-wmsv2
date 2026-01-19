@@ -29,19 +29,18 @@ async function claimOrder(orderId: string, pickerId: string) {
 
 ```typescript
 async function claimOrder(orderId: string, pickerId: string): Promise<Order> {
-  return await db.transaction(async (trx) => {
+  return await db.transaction(async trx => {
     const order = await trx('orders')
       .where({ order_id: orderId })
       .update({ status: OrderStatus.PICKING })
       .returning('*')
       .first();
 
-    await trx('pick_tasks')
-      .insert({
-        order_id: orderId,
-        picker_id: pickerId,
-        status: TaskStatus.PENDING
-      });
+    await trx('pick_tasks').insert({
+      order_id: orderId,
+      picker_id: pickerId,
+      status: TaskStatus.PENDING,
+    });
 
     return order;
   });
@@ -152,21 +151,17 @@ async function transitionToPicking(orderId: string, pickerId: string) {
   const order = await getOrder(orderId);
 
   // Validate transition before making change
-  await validateTransition(
-    order.status,
-    OrderStatus.PICKING,
-    {
-      orderId,
-      pickerId,
-      orderItems: order.items,
-      maxOrdersPerPicker: PICKER_CONFIG.MAX_ORDERS_PER_PICKER,
-      getActiveOrderCount: (id) => getActiveOrderCount(id),
-      getAvailableInventory: (sku, bin) => getInventory(sku, bin),
-      getPicker: (id) => getUser(id),
-      getIncompletePickTasks: (id) => getPickTasks(id),
-      releaseReservedInventory: (id) => {}
-    }
-  );
+  await validateTransition(order.status, OrderStatus.PICKING, {
+    orderId,
+    pickerId,
+    orderItems: order.items,
+    maxOrdersPerPicker: PICKER_CONFIG.MAX_ORDERS_PER_PICKER,
+    getActiveOrderCount: id => getActiveOrderCount(id),
+    getAvailableInventory: (sku, bin) => getInventory(sku, bin),
+    getPicker: id => getUser(id),
+    getIncompletePickTasks: id => getPickTasks(id),
+    releaseReservedInventory: id => {},
+  });
 
   // Then make the change
   return await updateOrderStatus(orderId, OrderStatus.PICKING);
@@ -305,10 +300,14 @@ async function createOrder(items: OrderItem[]) {
 
 ```typescript
 async function createOrder(items: OrderItem[]) {
-  return await db.transaction(async (trx) => {
+  return await db.transaction(async trx => {
     // Check and reserve in same transaction
     for (const item of items) {
-      const available = await getAvailableInventory(trx, item.sku, item.binLocation);
+      const available = await getAvailableInventory(
+        trx,
+        item.sku,
+        item.binLocation
+      );
 
       if (available < item.quantity) {
         throw new InventoryError(`Insufficient inventory for ${item.sku}`);
@@ -321,10 +320,12 @@ async function createOrder(items: OrderItem[]) {
     }
 
     // Create order
-    const order = await trx('orders').insert({
-      items,
-      status: OrderStatus.PENDING
-    }).returning('*');
+    const order = await trx('orders')
+      .insert({
+        items,
+        status: OrderStatus.PENDING,
+      })
+      .returning('*');
 
     return order;
   });
@@ -367,7 +368,10 @@ router.post('/orders/:id/claim', async (req, res) => {
 // Controller - handles HTTP
 router.post('/orders/:id/claim', async (req, res, next) => {
   try {
-    const result = await orderService.claimOrder(req.params.id, req.body.pickerId);
+    const result = await orderService.claimOrder(
+      req.params.id,
+      req.body.pickerId
+    );
     res.json(result);
   } catch (error) {
     next(error);
@@ -390,7 +394,7 @@ async function claimOrder(orderId: string, pickerId: string) {
 
 // Repository - data access
 async function claimOrder(orderId: string, pickerId: string) {
-  return await db.transaction(async (trx) => {
+  return await db.transaction(async trx => {
     return await trx('orders')
       .where({ order_id: orderId })
       .update({ status: OrderStatus.PICKING, picker_id: pickerId })
@@ -414,9 +418,7 @@ async function claimOrder(orderId: string, pickerId: string) {
 
 ```typescript
 async function updateOrderStatus(orderId: string, status: OrderStatus) {
-  await db('orders')
-    .where({ order_id: orderId })
-    .update({ status });
+  await db('orders').where({ order_id: orderId }).update({ status });
 }
 ```
 
@@ -427,14 +429,13 @@ async function updateOrderStatus(orderId: string, status: OrderStatus) {
 ```typescript
 // Application code - clean and simple
 async function updateOrderStatus(orderId: string, status: OrderStatus) {
-  await db('orders')
-    .where({ order_id: orderId })
-    .update({ status });
+  await db('orders').where({ order_id: orderId }).update({ status });
   // Audit trail is automatic via database trigger!
 }
 ```
 
 **Database trigger handles audit**:
+
 ```sql
 CREATE TRIGGER log_order_state_change
 AFTER UPDATE ON orders
@@ -461,7 +462,9 @@ END;
 ```typescript
 async function claimOrder(orderId: string, pickerId: string) {
   // Claiming twice creates duplicate pick tasks
-  await db('orders').where({ order_id: orderId }).update({ picker_id: pickerId });
+  await db('orders')
+    .where({ order_id: orderId })
+    .update({ picker_id: pickerId });
   await db('pick_tasks').insert({ order_id: orderId, picker_id: pickerId });
 }
 ```
@@ -473,7 +476,7 @@ async function claimOrder(orderId: string, pickerId: string) {
 ```typescript
 async function claimOrder(orderId: string, pickerId: string) {
   const result = await db('orders')
-    .where({ order_id: orderId, picker_id: null })  // Only claim if unclaimed
+    .where({ order_id: orderId, picker_id: null }) // Only claim if unclaimed
     .update({ picker_id: pickerId });
 
   if (result === 0) {
@@ -484,7 +487,7 @@ async function claimOrder(orderId: string, pickerId: string) {
   await db('pick_tasks')
     .insert({ order_id: orderId, picker_id: pickerId })
     .onConflict('order_id, picker_id')
-    .ignore();  // Ignore if already exists
+    .ignore(); // Ignore if already exists
 }
 ```
 
@@ -506,7 +509,7 @@ async function claimOrder(orderId: string, pickerId: string) {
   await db('orders').insert({
     order_id: orderId,
     picker_id: pickerId,
-    status: OrderStatus.PICKING
+    status: OrderStatus.PICKING,
   });
 }
 ```
@@ -556,8 +559,8 @@ async function claimOrder(orderId: string, pickerId: string) {
 ```typescript
 async function getOrderPicker(orderId: string) {
   const order = await getOrder(orderId);
-  const picker = await getUser(order.pickerId);  // Could be undefined!
-  return picker.name;  // Crash if picker is undefined!
+  const picker = await getUser(order.pickerId); // Could be undefined!
+  return picker.name; // Crash if picker is undefined!
 }
 ```
 
@@ -615,7 +618,7 @@ async function getOrders(page: number = 1, limit: number = 50) {
       .limit(limit)
       .offset(offset)
       .orderBy('created_at', 'desc'),
-    db('orders').count('* as count').first()
+    db('orders').count('* as count').first(),
   ]);
 
   return {
@@ -624,8 +627,8 @@ async function getOrders(page: number = 1, limit: number = 50) {
       page,
       limit,
       total: totalCount.count,
-      totalPages: Math.ceil(totalCount.count / limit)
-    }
+      totalPages: Math.ceil(totalCount.count / limit),
+    },
   };
 }
 ```
@@ -737,6 +740,7 @@ showToast(<ActionComplete
 ### Undo Checklist
 
 Before implementing any feature, ensure:
+
 - [ ] Can user undo this action?
 - [ ] Can user correct wrong input?
 - [ ] Can user backtrack from state?
@@ -747,22 +751,22 @@ Before implementing any feature, ensure:
 
 ## Quick Reference
 
-| Pattern | When | Why |
-|---------|------|-----|
-| Service Transaction | Multi-step DB ops | Atomicity |
-| Enum Usage | Status/role refs | Type safety |
-| Invariant Validation | State/inventory changes | Data integrity |
-| State Transition | Order status changes | Valid transitions |
-| Error Handling | API endpoints | Clean errors |
-| Shared Types | Cross-module types | Consistency |
-| Inventory Reservation | Order creation | No overselling |
-| Layered Architecture | API requests | Separation |
-| Audit Logging | State changes | Compliance |
-| Idempotent Operations | Retry-prone ops | Safe to retry |
-| Validate Before DB | Business rules | Better errors |
-| Null Safety | Undefined values | No crashes |
-| Pagination | List queries | Performance |
-| **Undo/Revert** | **User actions** | **Recover from mistakes** |
+| Pattern               | When                    | Why                       |
+| --------------------- | ----------------------- | ------------------------- |
+| Service Transaction   | Multi-step DB ops       | Atomicity                 |
+| Enum Usage            | Status/role refs        | Type safety               |
+| Invariant Validation  | State/inventory changes | Data integrity            |
+| State Transition      | Order status changes    | Valid transitions         |
+| Error Handling        | API endpoints           | Clean errors              |
+| Shared Types          | Cross-module types      | Consistency               |
+| Inventory Reservation | Order creation          | No overselling            |
+| Layered Architecture  | API requests            | Separation                |
+| Audit Logging         | State changes           | Compliance                |
+| Idempotent Operations | Retry-prone ops         | Safe to retry             |
+| Validate Before DB    | Business rules          | Better errors             |
+| Null Safety           | Undefined values        | No crashes                |
+| Pagination            | List queries            | Performance               |
+| **Undo/Revert**       | **User actions**        | **Recover from mistakes** |
 
 ---
 

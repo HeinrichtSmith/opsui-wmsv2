@@ -18,7 +18,7 @@ import {
   WebhookEventType,
   WebhookEventStatus,
   CarrierAccount,
-  CarrierProvider
+  CarrierProvider,
 } from '@opsui/shared';
 
 // ============================================================================
@@ -39,10 +39,7 @@ export class IntegrationsService {
     this.validateConfiguration(integration.provider, integration.configuration);
 
     // For carrier integrations, require webhook settings for shipment updates
-    if (
-      integration.type === IntegrationType.CARRIER &&
-      !integration.webhookSettings
-    ) {
+    if (integration.type === IntegrationType.CARRIER && !integration.webhookSettings) {
       throw new Error('Carrier integrations require webhook settings for shipment updates');
     }
 
@@ -96,12 +93,12 @@ export class IntegrationsService {
       return {
         success: true,
         message: 'Connection successful',
-        latency
+        latency,
       };
     } catch (error: any) {
       return {
         success: false,
-        message: error.message || 'Connection failed'
+        message: error.message || 'Connection failed',
       };
     }
   }
@@ -128,11 +125,11 @@ export class IntegrationsService {
       integrationId,
       jobType,
       status: SyncJobStatus.PENDING,
-      triggeredBy
+      triggeredBy,
     });
 
     // Start the sync job asynchronously
-    this.executeSyncJob(job.jobId, integration).catch((error) => {
+    this.executeSyncJob(job.jobId, integration).catch(error => {
       console.error(`Failed to execute sync job ${job.jobId}:`, error);
     });
 
@@ -143,14 +140,14 @@ export class IntegrationsService {
     try {
       // Update status to running
       await this.repository.updateSyncJob(jobId, {
-        status: SyncJobStatus.RUNNING
+        status: SyncJobStatus.RUNNING,
       });
 
       await this.repository.createSyncJobLog({
         jobId,
         level: 'info',
         message: `Starting ${integration.type} sync job`,
-        details: { provider: integration.provider }
+        details: { provider: integration.provider },
       });
 
       // Execute sync based on integration type
@@ -162,40 +159,40 @@ export class IntegrationsService {
         recordsProcessed: result.totalProcessed,
         recordsSucceeded: result.succeeded,
         recordsFailed: result.failed,
-        completedAt: new Date()
+        completedAt: new Date(),
       });
 
       // Update integration last sync
       await this.repository.update(integration.integrationId, {
         lastSyncAt: new Date(),
-        lastSyncStatus: result.failed > 0 ? 'PARTIAL_FAILURE' : 'SUCCESS'
+        lastSyncStatus: result.failed > 0 ? 'PARTIAL_FAILURE' : 'SUCCESS',
       });
 
       await this.repository.createSyncJobLog({
         jobId,
         level: result.failed > 0 ? 'warn' : 'info',
         message: `Sync completed: ${result.succeeded} succeeded, ${result.failed} failed`,
-        details: result
+        details: result,
       });
     } catch (error: any) {
       // Update job with error
       await this.repository.updateSyncJob(jobId, {
         status: SyncJobStatus.FAILED,
         completedAt: new Date(),
-        errorMessage: error.message
+        errorMessage: error.message,
       });
 
       await this.repository.createSyncJobLog({
         jobId,
         level: 'error',
         message: 'Sync job failed',
-        details: { error: error.message }
+        details: { error: error.message },
       });
 
       // Update integration last sync status
       await this.repository.update(integration.integrationId, {
         lastSyncAt: new Date(),
-        lastSyncStatus: 'FAILED'
+        lastSyncStatus: 'FAILED',
       });
     }
   }
@@ -235,7 +232,7 @@ export class IntegrationsService {
       totalProcessed: 0,
       succeeded: 0,
       failed: 0,
-      details: { message: 'ERP sync not yet implemented' }
+      details: { message: 'ERP sync not yet implemented' },
     };
   }
 
@@ -246,7 +243,7 @@ export class IntegrationsService {
       totalProcessed: 0,
       succeeded: 0,
       failed: 0,
-      details: { message: 'E-commerce sync not yet implemented' }
+      details: { message: 'E-commerce sync not yet implemented' },
     };
   }
 
@@ -257,7 +254,7 @@ export class IntegrationsService {
       totalProcessed: 0,
       succeeded: 0,
       failed: 0,
-      details: { message: 'Carrier sync not yet implemented' }
+      details: { message: 'Carrier sync not yet implemented' },
     };
   }
 
@@ -281,11 +278,11 @@ export class IntegrationsService {
       eventType,
       payload,
       status: WebhookEventStatus.PENDING,
-      processingAttempts: 0
+      processingAttempts: 0,
     });
 
     // Process webhook asynchronously
-    this.processWebhookEvent(event.eventId, integration).catch((error) => {
+    this.processWebhookEvent(event.eventId, integration).catch(error => {
       console.error(`Failed to process webhook event ${event.eventId}:`, error);
     });
 
@@ -302,7 +299,7 @@ export class IntegrationsService {
       // Update status to processing
       await this.repository.updateWebhookEvent(eventId, {
         status: WebhookEventStatus.PROCESSING,
-        processingAttempts: (event.processingAttempts || 0) + 1
+        processingAttempts: (event.processingAttempts || 0) + 1,
       });
 
       // Process based on event type
@@ -311,7 +308,7 @@ export class IntegrationsService {
       // Mark as processed
       await this.repository.updateWebhookEvent(eventId, {
         status: WebhookEventStatus.PROCESSED,
-        processedAt: new Date()
+        processedAt: new Date(),
       });
     } catch (error: any) {
       // Check if we should retry
@@ -319,7 +316,7 @@ export class IntegrationsService {
       if (event && event.processingAttempts! < 3) {
         await this.repository.updateWebhookEvent(eventId, {
           status: WebhookEventStatus.PENDING,
-          errorMessage: error.message
+          errorMessage: error.message,
         });
 
         // Schedule retry with exponential backoff
@@ -331,7 +328,7 @@ export class IntegrationsService {
         // Max retries reached, mark as failed
         await this.repository.updateWebhookEvent(eventId, {
           status: WebhookEventStatus.FAILED,
-          errorMessage: `Max retries exceeded: ${error.message}`
+          errorMessage: `Max retries exceeded: ${error.message}`,
         });
       }
     }
@@ -394,7 +391,7 @@ export class IntegrationsService {
 
   private async findWebhookEvent(eventId: string): Promise<WebhookEvent | null> {
     const events = await this.repository.findWebhookEvents({}, 1);
-    return events.find((e) => e.eventId === eventId) || null;
+    return events.find(e => e.eventId === eventId) || null;
   }
 
   // ========================================================================
@@ -431,12 +428,9 @@ export class IntegrationsService {
   // PRIVATE HELPER METHODS
   // ========================================================================
 
-  private validateConfiguration(
-    provider: IntegrationProvider,
-    configuration: any
-  ): void {
+  private validateConfiguration(provider: IntegrationProvider, configuration: any): void {
     const requiredFields = this.getRequiredFieldsForProvider(provider);
-    const missingFields = requiredFields.filter((field) => !configuration[field]);
+    const missingFields = requiredFields.filter(field => !configuration[field]);
 
     if (missingFields.length > 0) {
       throw new Error(
@@ -470,9 +464,7 @@ export class IntegrationsService {
     }
   }
 
-  private async performProviderConnectionTest(
-    integration: Integration
-  ): Promise<void> {
+  private async performProviderConnectionTest(integration: Integration): Promise<void> {
     // Simulate connection test
     // In production, this would make actual API calls to verify credentials
     return new Promise((resolve, reject) => {

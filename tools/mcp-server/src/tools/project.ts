@@ -11,7 +11,8 @@ import type { ToolMetadata, ToolContext, ToolArgs } from '../types/index.js';
 export const projectTools: ToolMetadata[] = [
   {
     name: 'analyze_project_structure',
-    description: 'Analyze the project structure and identify the tech stack, architecture patterns, and potential issues',
+    description:
+      'Analyze the project structure and identify the tech stack, architecture patterns, and potential issues',
     inputSchema: {
       type: 'object',
       properties: {
@@ -115,7 +116,7 @@ export const projectTools: ToolMetadata[] = [
         validations.push(result);
       }
 
-      const allValid = validations.every((v) => v.valid);
+      const allValid = validations.every(v => v.valid);
       const totalIssues = validations.reduce((sum, v) => sum + v.issues.length, 0);
 
       return {
@@ -123,13 +124,13 @@ export const projectTools: ToolMetadata[] = [
         validations,
         summary: {
           totalValidations: validations.length,
-          passed: validations.filter((v) => v.valid).length,
-          failed: validations.filter((v) => !v.valid).length,
+          passed: validations.filter(v => v.valid).length,
+          failed: validations.filter(v => !v.valid).length,
           totalIssues,
         },
         message: allValid
           ? 'All validations passed'
-          : `Found ${totalIssues} issue(s) across ${validations.filter((v) => !v.valid).length} convention(s)`,
+          : `Found ${totalIssues} issue(s) across ${validations.filter(v => !v.valid).length} convention(s)`,
       };
     },
     options: {
@@ -369,7 +370,7 @@ async function analyzeDependencies(rootPath: string) {
     return {
       total: Object.keys(pkg.dependencies || {}).length,
       devTotal: Object.keys(pkg.devDependencies || {}).length,
-      hasTypeScript: !!(pkg.devDependencies?.typescript),
+      hasTypeScript: !!pkg.devDependencies?.typescript,
       hasTesting: !!(
         pkg.devDependencies?.jest ||
         pkg.devDependencies?.vitest ||
@@ -499,10 +500,7 @@ async function validateConvention(
 
       // Check for strict mode
       try {
-        const tsconfigContent = await fs.readFile(
-          path.join(rootPath, 'tsconfig.json'),
-          'utf-8'
-        );
+        const tsconfigContent = await fs.readFile(path.join(rootPath, 'tsconfig.json'), 'utf-8');
         if (!tsconfigContent.includes('"strict": true')) {
           issues.push('TypeScript strict mode not enabled');
         }

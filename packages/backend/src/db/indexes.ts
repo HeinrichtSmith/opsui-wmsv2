@@ -125,7 +125,7 @@ if (require.main === module) {
       console.log('✅ Indexes created successfully');
       process.exit(0);
     })
-    .catch((error) => {
+    .catch(error => {
       console.error('❌ Failed to create indexes:', error);
       process.exit(1);
     });
