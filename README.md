@@ -304,6 +304,10 @@ npm run test:e2e
 
 ---
 
+## Auto-Push Configuration
+
+This repository is configured to automatically push to GitHub after every commit. The post-commit hook in `.husky/post-commit` ensures all changes are synced to [https://github.com/HeinrichtSmith/opsui-wmsv2](https://github.com/HeinrichtSmith/opsui-wmsv2) whenever a commit is made by Cline, GLM, or Claude Code.
+
 ## License
 
 ISC
