@@ -12,6 +12,8 @@ A production-ready WMS built with clean architecture principles, featuring real-
 
 **Setting up AI development?** Read [AI_RULES.md](AI_RULES.md)
 
+**Setting up MCP servers?** See [MCP_SETUP.md](MCP_SETUP.md) for custom AI tools
+
 **Team collaboration?** See [TEAM_OPERATIONS.md](TEAM_OPERATIONS.md)
 
 **Advanced AI features?** See [ENHANCEMENTS_SUMMARY.md](ENHANCEMENTS_SUMMARY.md) 🚀
