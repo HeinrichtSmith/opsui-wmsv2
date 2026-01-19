@@ -1,0 +1,18 @@
+#!/usr/bin/env node
+/**
+ * Quick DB CLI
+ *
+ * Convenience wrapper for data-manager.js
+ * Usage: npm run db <command>
+ */
+
+const { spawn } = require('child_process');
+
+const command = process.argv[2] || 'help';
+
+const child = spawn('node', ['scripts/data-manager.js', command], {
+  stdio: 'inherit',
+  shell: true,
+});
+
+child.on('exit', (code) => process.exit(code || 0));

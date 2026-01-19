@@ -1,0 +1,25 @@
+# Dependencies
+node_modules
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# Build outputs
+dist
+build
+*.tsbuildinfo
+
+# Generated files
+coverage
+.next
+out
+.turbo
+
+# Logs
+*.log
+
+# Misc
+.DS_Store
+*.pem
+.env
+.env.local

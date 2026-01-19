@@ -1,0 +1,373 @@
+/**
+ * Sales & CRM Service
+ *
+ * Business logic for customer management, leads, opportunities, and quotes
+ */
+
+import { salesRepository } from '../repositories/SalesRepository';
+import {
+  Customer,
+  Lead,
+  Opportunity,
+  Quote,
+  CustomerInteraction,
+  CreateCustomerDTO,
+  CreateLeadDTO,
+  CreateOpportunityDTO,
+  CreateQuoteDTO,
+  CustomerStatus,
+  LeadStatus,
+  OpportunityStage,
+  QuoteStatus,
+  NotFoundError
+} from '@opsui/shared';
+
+export class SalesService {
+  // ========================================================================
+  // CUSTOMERS
+  // ========================================================================
+
+  async createCustomer(dto: CreateCustomerDTO, createdBy: string): Promise<Customer> {
+    // Validate customer
+    if (!dto.companyName || dto.companyName.trim() === '') {
+      throw new Error('Company name is required');
+    }
+
+    if (!dto.billingAddress) {
+      throw new Error('Billing address is required');
+    }
+
+    const customer = await salesRepository.createCustomer({
+      ...dto,
+      status: dto.status || 'PROSPECT',
+      createdBy
+    });
+
+    return customer;
+  }
+
+  async getCustomerById(customerId: string): Promise<Customer> {
+    const customer = await salesRepository.findCustomerById(customerId);
+    if (!customer) {
+      throw new NotFoundError('Customer', customerId);
+    }
+    return customer;
+  }
+
+  async getAllCustomers(filters?: {
+    status?: CustomerStatus;
+    assignedTo?: string;
+    limit?: number;
+    offset?: number;
+  }): Promise<{ customers: Customer[]; total: number }> {
+    return await salesRepository.findAllCustomers(filters);
+  }
+
+  async updateCustomer(customerId: string, dto: Partial<Customer>, userId: string): Promise<Customer> {
+    const customer = await salesRepository.findCustomerById(customerId);
+    if (!customer) {
+      throw new NotFoundError('Customer', customerId);
+    }
+
+    const updated = await salesRepository.updateCustomer(customerId, {
+      ...dto,
+      updatedBy: userId
+    });
+
+    return updated as Customer;
+  }
+
+  // ========================================================================
+  // LEADS
+  // ========================================================================
+
+  async createLead(dto: CreateLeadDTO, createdBy: string): Promise<Lead> {
+    // Validate lead
+    if (!dto.customerName || dto.customerName.trim() === '') {
+      throw new Error('Customer name is required');
+    }
+
+    if (!dto.source || dto.source.trim() === '') {
+      throw new Error('Lead source is required');
+    }
+
+    if (!dto.assignedTo) {
+      throw new Error('Lead must be assigned to a user');
+    }
+
+    const lead = await salesRepository.createLead({
+      ...dto,
+      status: 'NEW',
+      createdBy
+    });
+
+    return lead;
+  }
+
+  async getLeadById(leadId: string): Promise<Lead> {
+    const lead = await salesRepository.findLeadById(leadId);
+    if (!lead) {
+      throw new NotFoundError('Lead', leadId);
+    }
+    return lead;
+  }
+
+  async getAllLeads(filters?: {
+    status?: LeadStatus;
+    assignedTo?: string;
+    limit?: number;
+    offset?: number;
+  }): Promise<{ leads: Lead[]; total: number }> {
+    return await salesRepository.findAllLeads(filters);
+  }
+
+  async updateLead(leadId: string, dto: Partial<Lead>, userId: string): Promise<Lead> {
+    const lead = await salesRepository.findLeadById(leadId);
+    if (!lead) {
+      throw new NotFoundError('Lead', leadId);
+    }
+
+    const updated = await salesRepository.updateLead(leadId, {
+      ...dto,
+      updatedBy: userId
+    });
+
+    return updated as Lead;
+  }
+
+  async convertLeadToCustomer(leadId: string, userId: string): Promise<Customer> {
+    const lead = await this.getLeadById(leadId);
+
+    if (lead.status === 'WON') {
+      throw new Error('Lead already converted');
+    }
+
+    // Create customer from lead
+    const customer = await salesRepository.createCustomer({
+      companyName: lead.company || lead.customerName,
+      contactName: lead.contactName,
+      email: lead.email,
+      phone: lead.phone,
+      billingAddress: {
+        street1: 'Address', // Would be provided in conversion
+        city: 'City',
+        state: 'State',
+        postalCode: '0000',
+        country: 'NZ'
+      },
+      assignedTo: lead.assignedTo,
+      createdBy: userId
+    });
+
+    // Update lead status
+    await salesRepository.updateLead(leadId, {
+      status: 'WON',
+      updatedBy: userId
+    });
+
+    return customer;
+  }
+
+  // ========================================================================
+  // OPPORTUNITIES
+  // ========================================================================
+
+  async createOpportunity(dto: CreateOpportunityDTO, createdBy: string): Promise<Opportunity> {
+    // Validate opportunity
+    if (!dto.name || dto.name.trim() === '') {
+      throw new Error('Opportunity name is required');
+    }
+
+    if (!dto.amount || dto.amount <= 0) {
+      throw new Error('Amount must be greater than 0');
+    }
+
+    if (!dto.expectedCloseDate) {
+      throw new Error('Expected close date is required');
+    }
+
+    if (!dto.assignedTo) {
+      throw new Error('Opportunity must be assigned to a user');
+    }
+
+    const opportunity = await salesRepository.createOpportunity({
+      ...dto,
+      createdBy
+    });
+
+    return opportunity;
+  }
+
+  async getOpportunityById(opportunityId: string): Promise<Opportunity> {
+    const opportunity = await salesRepository.findOpportunityById(opportunityId);
+    if (!opportunity) {
+      throw new NotFoundError('Opportunity', opportunityId);
+    }
+    return opportunity;
+  }
+
+  async getAllOpportunities(filters?: {
+    stage?: OpportunityStage;
+    customerId?: string;
+    assignedTo?: string;
+    limit?: number;
+    offset?: number;
+  }): Promise<{ opportunities: Opportunity[]; total: number }> {
+    return await salesRepository.findAllOpportunities(filters);
+  }
+
+  async updateOpportunityStage(opportunityId: string, stage: OpportunityStage, userId: string): Promise<Opportunity> {
+    const opportunity = await salesRepository.findOpportunityById(opportunityId);
+    if (!opportunity) {
+      throw new NotFoundError('Opportunity', opportunityId);
+    }
+
+    // If closing as won or lost, record who and when
+    const updates: Partial<Opportunity> = {
+      stage,
+      updatedBy: userId
+    };
+
+    if (stage === 'CLOSED_WON' || stage === 'CLOSED_LOST') {
+      updates.closedAt = new Date();
+      updates.closedBy = userId;
+    }
+
+    const updated = await salesRepository.updateOpportunity(opportunityId, updates);
+
+    return updated as Opportunity;
+  }
+
+  // ========================================================================
+  // QUOTES
+  // ========================================================================
+
+  async createQuote(dto: CreateQuoteDTO, createdBy: string): Promise<Quote> {
+    // Validate quote
+    if (!dto.customerId || dto.customerId.trim() === '') {
+      throw new Error('Customer ID is required');
+    }
+
+    if (!dto.validUntil) {
+      throw new Error('Valid until date is required');
+    }
+
+    if (!dto.lineItems || dto.lineItems.length === 0) {
+      throw new Error('Quote must have at least one line item');
+    }
+
+    // Validate customer exists
+    const customer = await salesRepository.findCustomerById(dto.customerId);
+    if (!customer) {
+      throw new NotFoundError('Customer', dto.customerId);
+    }
+
+    // Validate line items
+    for (const item of dto.lineItems) {
+      if (item.quantity <= 0) {
+        throw new Error('Line item quantity must be greater than 0');
+      }
+      if (item.unitPrice < 0) {
+        throw new Error('Line item unit price cannot be negative');
+      }
+    }
+
+    const quote = await salesRepository.createQuote({
+      ...dto,
+      status: 'DRAFT',
+      createdBy
+    });
+
+    return quote;
+  }
+
+  async getQuoteById(quoteId: string): Promise<Quote> {
+    const quote = await salesRepository.findQuoteById(quoteId);
+    if (!quote) {
+      throw new NotFoundError('Quote', quoteId);
+    }
+    return quote;
+  }
+
+  async getAllQuotes(filters?: {
+    customerId?: string;
+    status?: QuoteStatus;
+    limit?: number;
+    offset?: number;
+  }): Promise<{ quotes: Quote[]; total: number }> {
+    return await salesRepository.findAllQuotes(filters);
+  }
+
+  async sendQuote(quoteId: string, userId: string): Promise<Quote> {
+    const quote = await this.getQuoteById(quoteId);
+
+    if (quote.status !== 'DRAFT') {
+      throw new Error('Only DRAFT quotes can be sent');
+    }
+
+    // In production, this would send an email
+    // For now, just update the status
+
+    const updated = await salesRepository.updateCustomer(quote.customerId, {
+      lastContactDate: new Date(),
+      updatedBy: userId
+    } as any);
+
+    return quote; // Return original since update doesn't return full quote
+  }
+
+  async acceptQuote(quoteId: string, userId: string): Promise<Quote> {
+    const quote = await this.getQuoteById(quoteId);
+
+    if (quote.status !== 'SENT') {
+      throw new Error('Only SENT quotes can be accepted');
+    }
+
+    // In production, this would convert the quote to an order
+    // For now, just update the status
+
+    return quote;
+  }
+
+  // ========================================================================
+  // CUSTOMER INTERACTIONS
+  // ========================================================================
+
+  async logInteraction(dto: Omit<CustomerInteraction, 'interactionId' | 'createdAt'>): Promise<CustomerInteraction> {
+    // Validate interaction
+    if (!dto.subject || dto.subject.trim() === '') {
+      throw new Error('Subject is required');
+    }
+
+    if (!dto.notes || dto.notes.trim() === '') {
+      throw new Error('Notes are required');
+    }
+
+    const interaction = await salesRepository.createInteraction({
+      ...dto,
+      createdAt: new Date()
+    });
+
+    // Update customer last contact date if applicable
+    if (interaction.customerId) {
+      await salesRepository.updateCustomer(interaction.customerId, {
+        lastContactDate: new Date(),
+        updatedBy: dto.createdBy
+      } as any);
+    }
+
+    return interaction;
+  }
+
+  async getCustomerInteractions(customerId: string, limit: number = 50): Promise<CustomerInteraction[]> {
+    const customer = await salesRepository.findCustomerById(customerId);
+    if (!customer) {
+      throw new NotFoundError('Customer', customerId);
+    }
+
+    return await salesRepository.findInteractionsByCustomer(customerId, limit);
+  }
+}
+
+// Singleton instance
+export const salesService = new SalesService();

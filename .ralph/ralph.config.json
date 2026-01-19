@@ -1,0 +1,34 @@
+{
+  "version": "1.0",
+  "description": "Ralph skills for WMS project with Cline + GLM 4.7 + MCP integration",
+  "skillsDirectory": "./.ralph/skills",
+  "mcpServers": {
+    "wms-dev-accelerator": {
+      "enabled": true,
+      "priority": 1
+    }
+  },
+  "workflows": {
+    "quick-entity": "wms-entity-generator",
+    "prisma-workflow": "wms-prisma-workflow",
+    "api-contract": "wms-api-contract-validator",
+    "warehouse-opt": "wms-warehouse-optimizer",
+    "quality-check": "wms-code-quality-check",
+    "full-feature": "wms-full-feature-workflow"
+  },
+  "integrations": {
+    "cline": {
+      "enabled": true,
+      "autoApprove": [
+        "analyze_typescript_errors",
+        "analyze_project_structure",
+        "validate_project_structure"
+      ]
+    },
+    "glm": {
+      "enabled": true,
+      "model": "glm-4.7",
+      "temperature": 0.3
+    }
+  }
+}

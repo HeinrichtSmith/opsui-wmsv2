@@ -1,0 +1,149 @@
+{
+  "meta": {
+    "version": "1.0.0",
+    "lastUpdated": "2025-01-19",
+    "purpose": "Fast project navigation and context loading for GLM 4.7"
+  },
+  "project": {
+    "name": "Warehouse Management System",
+    "type": "monorepo",
+    "domain": "Order fulfillment workflow"
+  },
+  "architecture": {
+    "overview": "docs/ARCHITECTURE.md",
+    "patterns": "patterns/APPROVED_PATTERNS.md",
+    "organization": "docs/CODE_ORGANIZATION.md"
+  },
+  "rules": {
+    "primary": ".clinerules.md",
+    "ai_rules": "AI_RULES.md",
+    "context_header": "prompts/CONTEXT_HEADER.md",
+    "security": "docs/SECURITY_RULES.md",
+    "team_ops": "docs/TEAM_OPERATIONS.md"
+  },
+  "domains": {
+    "orders": {
+      "service": "packages/backend/src/services/OrderService.ts",
+      "routes": "packages/backend/src/routes/orders.ts",
+      "repository": "packages/backend/src/repositories/OrderRepository.ts",
+      "types": "packages/shared/src/types/order.ts",
+      "description": "Order lifecycle management: PENDING → PICKING → PACKING → SHIPPED"
+    },
+    "inventory": {
+      "service": "packages/backend/src/services/InventoryService.ts",
+      "routes": "packages/backend/src/routes/inventory.ts",
+      "repository": "packages/backend/src/repositories/InventoryRepository.ts",
+      "types": "packages/shared/src/types/inventory.ts",
+      "description": "Inventory tracking, reservations, and transactions"
+    },
+    "auth": {
+      "service": "packages/backend/src/services/AuthService.ts",
+      "routes": "packages/backend/src/routes/auth.ts",
+      "middleware": "packages/backend/src/middleware/auth.ts",
+      "types": "packages/shared/src/types/auth.ts",
+      "description": "Authentication, authorization, and session management"
+    },
+    "users": {
+      "service": "packages/backend/src/services/UserService.ts",
+      "routes": "packages/backend/src/routes/users.ts",
+      "repository": "packages/backend/src/repositories/UserRepository.ts",
+      "types": "packages/shared/src/types/user.ts",
+      "description": "User management with role-based access control"
+    },
+    "metrics": {
+      "service": "packages/backend/src/services/MetricsService.ts",
+      "routes": "packages/backend/src/routes/metrics.ts",
+      "description": "Dashboard metrics and performance analytics"
+    },
+    "picking": {
+      "frontend": "packages/frontend/src/pages/picking/",
+      "backend": "packages/backend/src/services/PickingService.ts",
+      "description": "Picker interface for order fulfillment"
+    },
+    "packing": {
+      "frontend": "packages/frontend/src/pages/packing/",
+      "backend": "packages/backend/src/services/PackingService.ts",
+      "description": "Packer interface for shipment preparation"
+    }
+  },
+  "state_machine": {
+    "definition": "packages/shared/src/types/workflow.ts",
+    "transitions": "packages/backend/src/services/OrderService.ts",
+    "states": {
+      "PENDING": "Initial state, awaiting assignment",
+      "PICKING": "Picker actively picking items",
+      "PICKED": "All items picked, awaiting packing",
+      "PACKING": "Packer preparing shipment",
+      "PACKED": "Shipment prepared, awaiting shipping",
+      "SHIPPED": "Order completed and shipped",
+      "CANCELLED": "Order cancelled (terminal)",
+      "BACKORDER": "Awaiting inventory restock"
+    }
+  },
+  "database": {
+    "schema": "packages/backend/src/db/schema.sql",
+    "migrations": "packages/backend/src/db/migrations/",
+    "client": "packages/backend/src/db/client.ts",
+    "seed": "packages/backend/src/db/seed.ts"
+  },
+  "testing": {
+    "backend": {
+      "unit": "packages/backend/src/**/*.test.ts",
+      "integration": "packages/backend/src/**/*.integration.test.ts",
+      "config": "packages/backend/jest.config.js"
+    },
+    "frontend": {
+      "unit": "packages/frontend/src/**/*.test.ts",
+      "integration": "packages/frontend/src/test/integration/",
+      "config": "packages/frontend/vitest.config.ts"
+    }
+  },
+  "critical_paths": [
+    "Order claiming with inventory reservation",
+    "Barcode scanning for picking accuracy",
+    "Inventory deduction on shipping",
+    "User authentication and authorization",
+    "State transition validation"
+  ],
+  "invariants": [
+    "Inventory can never be negative",
+    "Reserved quantity cannot exceed total quantity",
+    "State transitions must be valid",
+    "Audit trails cannot be deleted",
+    "All multi-step operations must use transactions"
+  ],
+  "common_commands": {
+    "start": "npm run dev:restart",
+    "test": "npm test",
+    "test_all": "npm run test:all",
+    "build": "npm run build",
+    "lint": "npm run lint:fix",
+    "typecheck": "npm run type-check",
+    "db_migrate": "npm run db:migrate",
+    "db_seed": "npm run db seed",
+    "db_status": "npm run db status",
+    "db_reset": "npm run db reset",
+    "format": "npm run format"
+  },
+  "documentation": {
+    "quickstart": "QUICKSTART.md",
+    "development": "DEVELOPMENT.md",
+    "security": "docs/SECURITY_RULES.md",
+    "undo_principles": "docs/UNDO_REVERT_PRINCIPLES.md",
+    "ai_enhancements": "AI_ENHANCEMENTS.md"
+  },
+  "tools": {
+    "data_manager": "scripts/data-manager.js",
+    "pattern_cli": "scripts/pattern-cli.ts",
+    "code_analyzer": "scripts/code-analyzer.js",
+    "dev_helper": "scripts/dev-helper.js"
+  },
+  "configuration": {
+    "root": "package.json",
+    "backend": "packages/backend/package.json",
+    "frontend": "packages/frontend/package.json",
+    "shared": "packages/shared/package.json",
+    "tsconfig": "tsconfig.json",
+    "eslint": ".eslintrc.js"
+  }
+}

@@ -1,0 +1,496 @@
+/**
+ * RMA (Return Merchandise Authorization) page
+ *
+ * Handles customer returns, warranty claims, and refurbishments
+ * - Unique design: Returns pipeline layout with stage-based navigation
+ */
+
+import { useSearchParams } from 'react-router-dom';
+import { Card, CardHeader, CardTitle, CardContent, Header, Button } from '@/components/shared';
+import {
+  ArrowPathIcon,
+  ClockIcon,
+  CheckCircleIcon,
+  ExclamationTriangleIcon,
+  PlusIcon,
+  TruckIcon,
+  CubeIcon,
+  } from '@heroicons/react/24/outline';
+
+// ============================================================================
+// TYPES
+// ============================================================================
+
+type TabType = 'dashboard' | 'requests' | 'processing' | 'completed';
+
+interface RMARequest {
+  rmaId: string;
+  customerName: string;
+  orderId: string;
+  sku: string;
+  productName: string;
+  quantity: number;
+  reason: 'DEFECTIVE' | 'DAMAGED_SHIPPING' | 'WRONG_ITEM' | 'NO_LONGER_NEEDED' | 'WARRANTY' | 'OTHER';
+  status: 'PENDING' | 'APPROVED' | 'RECEIVED' | 'INSPECTING' | 'REFUNDED' | 'REPLACED' | 'REJECTED' | 'CLOSED';
+  priority: 'LOW' | 'NORMAL' | 'HIGH' | 'URGENT';
+  createdAt: string;
+  resolvedAt?: string;
+  notes?: string;
+}
+
+// ============================================================================
+// SUBCOMPONENTS
+// ============================================================================
+
+// Returns Pipeline Stage - vertical timeline style
+function ReturnsPipelineStage({
+  step,
+  label,
+  count,
+  isActive,
+  onClick,
+}: {
+  step: number;
+  label: string;
+  count: number;
+  isActive: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`relative flex items-center gap-4 p-4 rounded-xl transition-all duration-300 ${
+        isActive
+          ? 'bg-primary-500/20 border-2 border-primary-500 shadow-lg shadow-primary-500/20'
+          : 'bg-gray-800/50 border border-gray-700 hover:border-gray-600'
+      }`}
+    >
+      {/* Step number circle */}
+      <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg ${
+        isActive ? 'bg-primary-500 text-white' : 'bg-gray-700 text-gray-400'
+      }`}>
+        {step}
+      </div>
+
+      {/* Content */}
+      <div className="flex-1 text-left">
+        <p className={`font-semibold ${
+          isActive ? 'text-white' : 'text-gray-300'
+        }`}>
+          {label}
+        </p>
+        <p className={`text-sm ${isActive ? 'text-primary-400' : 'text-gray-500'}`}>
+          {count} {count === 1 ? 'item' : 'items'}
+        </p>
+      </div>
+
+      {/* Arrow for non-last items */}
+      <div className="absolute -right-3 top-1/2 -translate-y-1/2 z-10 text-gray-700">
+        <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+        </svg>
+      </div>
+    </button>
+  );
+}
+
+function StatusBadge({ status }: { status: string }) {
+  const styles: Record<string, string> = {
+    PENDING: 'bg-gray-500/20 text-gray-300 border border-gray-500/30',
+    APPROVED: 'bg-blue-500/20 text-blue-300 border border-blue-500/30',
+    RECEIVED: 'bg-purple-500/20 text-purple-300 border border-purple-500/30',
+    INSPECTING: 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30',
+    REFUNDED: 'bg-green-500/20 text-green-300 border border-green-500/30',
+    REPLACED: 'bg-green-500/20 text-green-300 border border-green-500/30',
+    REJECTED: 'bg-red-500/20 text-red-300 border border-red-500/30',
+    CLOSED: 'bg-gray-500/20 text-gray-400 border border-gray-500/30',
+  };
+
+  const labels: Record<string, string> = {
+    PENDING: 'Pending',
+    APPROVED: 'Approved',
+    RECEIVED: 'Received',
+    INSPECTING: 'Inspecting',
+    REFUNDED: 'Refunded',
+    REPLACED: 'Replaced',
+    REJECTED: 'Rejected',
+    CLOSED: 'Closed',
+  };
+
+  return (
+    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${styles[status] || styles.PENDING}`}>
+      {labels[status] || status}
+    </span>
+  );
+}
+
+function ReasonBadge({ reason }: { reason: string }) {
+  const styles: Record<string, string> = {
+    DEFECTIVE: 'bg-orange-500/10 text-orange-400',
+    DAMAGED_SHIPPING: 'bg-red-500/10 text-red-400',
+    WRONG_ITEM: 'bg-purple-500/10 text-purple-400',
+    NO_LONGER_NEEDED: 'bg-gray-500/10 text-gray-400',
+    WARRANTY: 'bg-blue-500/10 text-blue-400',
+    OTHER: 'bg-gray-500/10 text-gray-400',
+  };
+
+  const labels: Record<string, string> = {
+    DEFECTIVE: 'Defective',
+    DAMAGED_SHIPPING: 'Damaged in Shipping',
+    WRONG_ITEM: 'Wrong Item',
+    NO_LONGER_NEEDED: 'No Longer Needed',
+    WARRANTY: 'Warranty Claim',
+    OTHER: 'Other',
+  };
+
+  return (
+    <span className={`px-2 py-1 rounded text-xs font-medium ${styles[reason] || styles.OTHER}`}>
+      {labels[reason] || reason}
+    </span>
+  );
+}
+
+function RMARequestCard({ request }: { request: RMARequest }) {
+  const resolutionActions: Record<string, JSX.Element[]> = {
+    PENDING: [
+      <Button variant="secondary" size="sm" className="flex-1" key="details">View Details</Button>,
+      <Button variant="success" size="sm" className="flex-1" key="approve">Approve</Button>,
+      <Button variant="danger" size="sm" className="flex-1" key="reject">Reject</Button>,
+    ],
+    APPROVED: [
+      <Button variant="primary" size="sm" className="flex-1" key="receive">Mark Received</Button>,
+    ],
+    RECEIVED: [
+      <Button variant="primary" size="sm" className="flex-1" key="inspect">Start Inspection</Button>,
+    ],
+    INSPECTING: [
+      <Button variant="secondary" size="sm" className="flex-1" key="refund">Issue Refund</Button>,
+      <Button variant="secondary" size="sm" className="flex-1" key="replace">Send Replacement</Button>,
+    ],
+    REFUNDED: [
+      <Button variant="secondary" size="sm" className="w-full" key="details">View Details</Button>,
+    ],
+    REPLACED: [
+      <Button variant="secondary" size="sm" className="w-full" key="details">View Details</Button>,
+    ],
+    REJECTED: [
+      <Button variant="secondary" size="sm" className="w-full" key="details">View Details</Button>,
+    ],
+    CLOSED: [
+      <Button variant="secondary" size="sm" className="w-full" key="details">View Details</Button>,
+    ],
+  };
+
+  return (
+    <Card variant="glass" className="card-hover overflow-hidden">
+      {/* Top status bar */}
+      <div className={`h-1 ${
+        request.status === 'REFUNDED' || request.status === 'REPLACED' || request.status === 'CLOSED' ? 'bg-success-500' :
+        request.status === 'PENDING' ? 'bg-gray-500' :
+        request.status === 'APPROVED' || request.status === 'RECEIVED' ? 'bg-blue-500' :
+        request.status === 'INSPECTING' ? 'bg-yellow-500' :
+        request.status === 'REJECTED' ? 'bg-red-500' : 'bg-gray-500'
+      }`} />
+
+      <CardContent className="p-5">
+        <div className="flex items-start justify-between mb-4">
+          <div className="flex-1">
+            <div className="flex items-center gap-3 mb-2">
+              <h3 className="text-lg font-semibold text-white">{request.rmaId}</h3>
+              <StatusBadge status={request.status} />
+              <ReasonBadge reason={request.reason} />
+            </div>
+            <p className="text-gray-300 font-medium">{request.productName}</p>
+            <p className="text-sm text-gray-400 mt-1">SKU: {request.sku} | Qty: {request.quantity}</p>
+          </div>
+        </div>
+
+        {/* Customer and Order Info */}
+        <div className="grid grid-cols-2 gap-3 mb-4 text-sm bg-white/5 p-3 rounded-lg">
+          <div>
+            <p className="text-gray-400 text-xs">Customer</p>
+            <p className="text-white font-medium">{request.customerName}</p>
+          </div>
+          <div>
+            <p className="text-gray-400 text-xs">Order ID</p>
+            <p className="text-white font-medium">{request.orderId}</p>
+          </div>
+        </div>
+
+        {/* Dates */}
+        <div className="grid grid-cols-2 gap-3 mb-4 text-sm">
+          <div className="bg-white/5 p-2 rounded-lg">
+            <p className="text-gray-400 text-xs">Created</p>
+            <p className="text-white">{new Date(request.createdAt).toLocaleDateString()}</p>
+          </div>
+          {request.resolvedAt && (
+            <div className="bg-white/5 p-2 rounded-lg">
+              <p className="text-gray-400 text-xs">Resolved</p>
+              <p className="text-success-400">{new Date(request.resolvedAt).toLocaleDateString()}</p>
+            </div>
+          )}
+        </div>
+
+        {/* Action buttons */}
+        <div className="flex gap-2">
+          {resolutionActions[request.status] || resolutionActions.PENDING}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// ============================================================================
+// MAIN PAGE
+// ============================================================================
+
+function RMAPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const currentTab = (searchParams.get('tab') as TabType) || 'dashboard';
+
+  // Mock data for demonstration
+  const dashboard = {
+    pendingRequests: 5,
+    inProgress: 3,
+    completedToday: 8,
+    urgent: 2,
+  };
+
+  const requests: RMARequest[] = [
+    {
+      rmaId: 'RMA-001',
+      customerName: 'John Smith',
+      orderId: 'ORD-20260114-6060',
+      sku: 'WMS-001',
+      productName: 'Widget A',
+      quantity: 1,
+      reason: 'DEFECTIVE',
+      status: 'PENDING',
+      priority: 'HIGH',
+      createdAt: '2026-01-19',
+    },
+    {
+      rmaId: 'RMA-002',
+      customerName: 'Jane Doe',
+      orderId: 'ORD-20260114-6061',
+      sku: 'WMS-002',
+      productName: 'Widget B',
+      quantity: 2,
+      reason: 'DAMAGED_SHIPPING',
+      status: 'APPROVED',
+      priority: 'URGENT',
+      createdAt: '2026-01-18',
+    },
+    {
+      rmaId: 'RMA-003',
+      customerName: 'Bob Johnson',
+      orderId: 'ORD-20260114-6055',
+      sku: 'WMS-003',
+      productName: 'Widget C',
+      quantity: 1,
+      reason: 'WRONG_ITEM',
+      status: 'INSPECTING',
+      priority: 'NORMAL',
+      createdAt: '2026-01-17',
+    },
+    {
+      rmaId: 'RMA-004',
+      customerName: 'Alice Williams',
+      orderId: 'ORD-20260114-6050',
+      sku: 'WMS-001',
+      productName: 'Widget A',
+      quantity: 1,
+      reason: 'WARRANTY',
+      status: 'REFUNDED',
+      priority: 'NORMAL',
+      createdAt: '2026-01-15',
+      resolvedAt: '2026-01-19',
+    },
+  ];
+
+  const setTab = (tab: TabType) => {
+    setSearchParams({ tab });
+  };
+
+  // Returns pipeline stages
+  const pipelineStages = [
+    { step: 1, label: 'Requests', count: dashboard.pendingRequests, tab: 'requests' as TabType },
+    { step: 2, label: 'Approved', count: dashboard.inProgress, tab: 'processing' as TabType },
+    { step: 3, label: 'Processing', count: dashboard.inProgress, tab: 'processing' as TabType },
+    { step: 4, label: 'Completed', count: dashboard.completedToday, tab: 'completed' as TabType },
+  ];
+
+  return (
+    <div className="min-h-screen">
+      <Header />
+
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Page Header */}
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-white tracking-tight flex items-center gap-3">
+              <ArrowPathIcon className="h-8 w-8 text-primary-400" />
+              Returns & RMA
+            </h1>
+            <p className="mt-2 text-gray-400">Customer returns, warranty claims, and refurbishments</p>
+          </div>
+          <Button variant="primary" className="flex items-center gap-2">
+            <PlusIcon className="h-5 w-5" />
+            New RMA
+          </Button>
+        </div>
+
+        {/* Dashboard Tab */}
+        {currentTab === 'dashboard' && (
+          <div className="space-y-8">
+            {/* Returns Pipeline */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              {pipelineStages.map((stage) => (
+                <div key={stage.step} className="relative">
+                  <ReturnsPipelineStage
+                    step={stage.step}
+                    label={stage.label}
+                    count={stage.count}
+                    isActive={false}
+                    onClick={() => setTab(stage.tab)}
+                  />
+                </div>
+              ))}
+            </div>
+
+            {/* Stats Row */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <Card variant="glass" className="p-6 border-t-4 border-t-warning-500">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-400">Pending Review</p>
+                    <p className="mt-2 text-3xl font-bold text-white">{dashboard.pendingRequests}</p>
+                  </div>
+                  <ClockIcon className="h-8 w-8 text-warning-400" />
+                </div>
+              </Card>
+              <Card variant="glass" className="p-6 border-t-4 border-t-primary-500">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-400">In Progress</p>
+                    <p className="mt-2 text-3xl font-bold text-white">{dashboard.inProgress}</p>
+                  </div>
+                  <CubeIcon className="h-8 w-8 text-primary-400" />
+                </div>
+              </Card>
+              <Card variant="glass" className="p-6 border-t-4 border-t-success-500">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-400">Completed Today</p>
+                    <p className="mt-2 text-3xl font-bold text-white">{dashboard.completedToday}</p>
+                  </div>
+                  <CheckCircleIcon className="h-8 w-8 text-success-400" />
+                </div>
+              </Card>
+              <Card variant="glass" className="p-6 border-t-4 border-t-error-500">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-400">Urgent</p>
+                    <p className="mt-2 text-3xl font-bold text-white">{dashboard.urgent}</p>
+                  </div>
+                  <ExclamationTriangleIcon className="h-8 w-8 text-error-400 animate-pulse" />
+                </div>
+              </Card>
+            </div>
+
+            {/* Quick Actions */}
+            <Card variant="glass">
+              <CardHeader>
+                <CardTitle>Returns Actions</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <Button
+                    variant="primary"
+                    size="lg"
+                    className="flex items-center justify-center gap-2"
+                  >
+                    <PlusIcon className="h-5 w-5" />
+                    <span>New RMA Request</span>
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="lg"
+                    className="flex items-center justify-center gap-2"
+                    onClick={() => setTab('processing')}
+                  >
+                    <CubeIcon className="h-5 w-5" />
+                    <span>View Processing</span>
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="lg"
+                    className="flex items-center justify-center gap-2"
+                    onClick={() => setTab('requests')}
+                  >
+                    <TruckIcon className="h-5 w-5" />
+                    <span>Track Returns</span>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* Requests Tab */}
+        {currentTab === 'requests' && (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-bold text-white">RMA Requests</h2>
+                <p className="text-gray-400 text-sm mt-1">Pending return requests awaiting review</p>
+              </div>
+              <Button variant="primary" className="flex items-center gap-2">
+                <PlusIcon className="h-5 w-5" />
+                New Request
+              </Button>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {requests.filter(r => r.status === 'PENDING').map((request) => (
+                <RMARequestCard key={request.rmaId} request={request} />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Processing Tab */}
+        {currentTab === 'processing' && (
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-2xl font-bold text-white">Returns Processing</h2>
+              <p className="text-gray-400 text-sm mt-1">Approved returns being inspected and processed</p>
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {requests.filter(r => ['APPROVED', 'RECEIVED', 'INSPECTING'].includes(r.status)).map((request) => (
+                <RMARequestCard key={request.rmaId} request={request} />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Completed Tab */}
+        {currentTab === 'completed' && (
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-2xl font-bold text-white">Completed Returns</h2>
+              <p className="text-gray-400 text-sm mt-1">History of all resolved RMA requests</p>
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {requests.filter(r => ['REFUNDED', 'REPLACED', 'REJECTED', 'CLOSED'].includes(r.status)).map((request) => (
+                <RMARequestCard key={request.rmaId} request={request} />
+              ))}
+            </div>
+          </div>
+        )}
+      </main>
+    </div>
+  );
+}
+
+export default RMAPage;

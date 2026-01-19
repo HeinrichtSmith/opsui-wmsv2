@@ -1,0 +1,52 @@
+{
+  "watch": [
+    "src"
+  ],
+  "ignore": [
+    "node_modules",
+    "dist",
+    ".git",
+    "*.test.ts",
+    "*.spec.ts",
+    "src/**/*.test.ts",
+    "src/**/*.spec.ts",
+    "tests",
+    "coverage",
+    "*.log",
+    ".env.*",
+    "src/config/**/*.example.ts"
+  ],
+  "ext": "ts,js,json",
+  "exec": "tsx src/index.ts",
+  "delay": "2000",
+  "legacyWatch": false,
+  "verbose": true,
+  "env": {
+    "NODE_ENV": "development"
+  },
+  "nodeArgs": [],
+  "signal": "SIGTERM",
+  "killDelay": 5000,
+  "colours": true,
+  "tasks": {
+    "tsx-build": "echo 'TypeScript compilation - skipping for dev mode'"
+  },
+  "rules": {
+    "ignore": [
+      {
+        "regex": ".*\\.test\\.ts$",
+        "message": "Ignoring test files"
+      },
+      {
+        "regex": ".*\\.spec\\.ts$",
+        "message": "Ignoring spec files"
+      },
+      {
+        "regex": "src/config/.*\\.example\\.ts$",
+        "message": "Ignoring example config files"
+      }
+    ]
+  },
+  "stdout": true,
+  "stderr": true
+}

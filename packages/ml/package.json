@@ -1,0 +1,57 @@
+{
+  "name": "@wms/ml",
+  "version": "1.0.0",
+  "description": "Machine Learning Pipeline for Warehouse Management System",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "train": "python scripts/train.py",
+    "train:duration": "python scripts/models/train_duration_model.py",
+    "train:demand": "python scripts/models/train_demand_model.py",
+    "train:routes": "python scripts/models/train_route_optimization.py",
+    "predict": "python scripts/predict.py",
+    "extract-features": "python scripts/data/extract_features.py",
+    "evaluate": "python scripts/evaluate.py",
+    "test": "pytest tests/",
+    "lint": "eslint src --ext .ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "machine-learning",
+    "ml",
+    "warehouse",
+    "prediction",
+    "optimization"
+  ],
+  "author": "WMS Team",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "pg": "^8.11.3",
+    "redis": "^4.6.10",
+    "dotenv": "^16.3.1",
+    "winston": "^3.11.0",
+    "joi": "^17.11.0",
+    "axios": "^1.6.2",
+    "uuid": "^9.0.1",
+    "date-fns": "^3.0.6"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.10.5",
+    "@types/pg": "^8.10.9",
+    "@types/uuid": "^9.0.7",
+    "@typescript-eslint/eslint-plugin": "^6.15.0",
+    "@typescript-eslint/parser": "^6.15.0",
+    "eslint": "^8.56.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "python": ">=3.10"
+  }
+}

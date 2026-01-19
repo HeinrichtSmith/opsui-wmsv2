@@ -1,0 +1,203 @@
+/**
+ * Production Management Module Types
+ *
+ * Basic manufacturing and production workflow functionality
+ */
+
+// ============================================================================
+// ENUMS
+// ============================================================================
+
+export enum ProductionOrderStatus {
+  DRAFT = 'DRAFT',
+  PLANNED = 'PLANNED',
+  RELEASED = 'RELEASED',
+  IN_PROGRESS = 'IN_PROGRESS',
+  COMPLETED = 'COMPLETED',
+  CANCELLED = 'CANCELLED'
+}
+
+export enum ProductionOrderPriority {
+  LOW = 'LOW',
+  MEDIUM = 'MEDIUM',
+  HIGH = 'HIGH',
+  URGENT = 'URGENT'
+}
+
+export enum BillOfMaterialStatus {
+  DRAFT = 'DRAFT',
+  ACTIVE = 'ACTIVE',
+  ARCHIVED = 'ARCHIVED'
+}
+
+// ============================================================================
+// INTERFACES
+// ============================================================================
+
+/**
+ * Bill of Materials (BOM) - Defines what goes into making a product
+ */
+export interface BillOfMaterial {
+  bomId: string;
+  name: string;
+  description?: string;
+  productId: string; // The finished product SKU
+  version: string;
+  status: BillOfMaterialStatus;
+  components: BOMComponent[];
+  totalQuantity: number; // Total quantity of finished product this BOM produces
+  unitOfMeasure: string;
+  estimatedCost?: number;
+  createdBy: string;
+  createdAt: Date;
+  updatedBy?: string;
+  updatedAt?: Date;
+  effectiveDate?: Date;
+  expiryDate?: Date;
+}
+
+/**
+ * Individual component in a BOM
+ */
+export interface BOMComponent {
+  componentId: string;
+  bomId: string;
+  sku: string; // Component SKU
+  quantity: number;
+  unitOfMeasure: string;
+  isOptional: boolean;
+  substituteSkus?: string[]; // Alternative SKUs that can be used
+  notes?: string;
+}
+
+/**
+ * Production Order - Manufacturing job to produce a product
+ */
+export interface ProductionOrder {
+  orderId: string;
+  orderNumber: string; // Human-readable PO-XXXXX
+  productId: string;
+  productName: string;
+  bomId: string;
+  status: ProductionOrderStatus;
+  priority: ProductionOrderPriority;
+  quantityToProduce: number;
+  quantityCompleted: number;
+  quantityRejected: number;
+  unitOfMeasure: string;
+  scheduledStartDate: Date;
+  scheduledEndDate: Date;
+  actualStartDate?: Date;
+  actualEndDate?: Date;
+  assignedTo?: string; // User ID or team ID
+  workCenter?: string; // Production line or workstation
+  notes?: string;
+  materialsReserved: boolean;
+  components: ProductionOrderComponent[];
+  createdAt: Date;
+  createdBy: string;
+  updatedAt?: Date;
+  updatedBy?: string;
+}
+
+/**
+ * Component usage in a production order
+ */
+export interface ProductionOrderComponent {
+  componentId: string;
+  orderId: string;
+  sku: string;
+  description?: string;
+  quantityRequired: number;
+  quantityIssued: number;
+  quantityReturned: number;
+  unitOfMeasure: string;
+  binLocation?: string;
+  lotNumber?: string;
+}
+
+/**
+ * Production output tracking
+ */
+export interface ProductionOutput {
+  outputId: string;
+  orderId: string;
+  productId: string;
+  quantity: number;
+  quantityRejected: number;
+  lotNumber?: string;
+  producedAt: Date;
+  producedBy: string;
+  inspectedBy?: string;
+  inspectionDate?: Date;
+  notes?: string;
+  binLocation?: string;
+}
+
+/**
+ * Production journal entry for tracking time and progress
+ */
+export interface ProductionJournal {
+  journalId: string;
+  orderId: string;
+  entryType: 'START' | 'PROGRESS' | 'COMPLETE' | 'ISSUE' | 'NOTE';
+  enteredAt: Date;
+  enteredBy: string;
+  quantity?: number;
+  notes?: string;
+  durationMinutes?: number;
+}
+
+// ============================================================================
+// REQUEST/RESPONSE TYPES
+// ============================================================================
+
+export interface CreateProductionOrderDTO {
+  productId: string;
+  bomId: string;
+  quantityToProduce: number;
+  scheduledStartDate: Date;
+  scheduledEndDate: Date;
+  priority?: ProductionOrderPriority;
+  assignedTo?: string;
+  workCenter?: string;
+  notes?: string;
+}
+
+export interface UpdateProductionOrderDTO {
+  status?: ProductionOrderStatus;
+  priority?: ProductionOrderPriority;
+  quantityToProduce?: number;
+  scheduledStartDate?: Date;
+  scheduledEndDate?: Date;
+  assignedTo?: string;
+  workCenter?: string;
+  notes?: string;
+}
+
+export interface RecordProductionOutputDTO {
+  orderId: string;
+  quantity: number;
+  quantityRejected: number;
+  lotNumber?: string;
+  binLocation?: string;
+  notes?: string;
+}
+
+export interface IssueMaterialDTO {
+  orderId: string;
+  componentId: string;
+  quantity: number;
+  binLocation?: string;
+  lotNumber?: string;
+}
+
+export interface CreateBOMDTO {
+  name: string;
+  description?: string;
+  productId: string;
+  components: Omit<BOMComponent, 'componentId' | 'bomId'>[];
+  totalQuantity: number;
+  unitOfMeasure: string;
+  effectiveDate?: Date;
+}

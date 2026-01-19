@@ -1,0 +1,50 @@
+# Dependencies
+node_modules
+dist
+build
+
+# Tests
+*.test.ts
+*.spec.ts
+tests
+test
+coverage
+*.test.ts.snap
+
+# Config
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+logs
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git
+.gitignore
+
+# Cache
+.cache
+.tsbuildinfo
+*.tsbuildinfo
+
+# Documentation
+*.md
+!README.md
+
+# Misc
+*.lock
+package-lock.json
+yarn.lock

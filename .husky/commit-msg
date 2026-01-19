@@ -1,0 +1,48 @@
+#!/bin/bash
+# Commit message hook to enforce conventional commits
+
+COMMIT_MSG_FILE=$1
+COMMIT_MSG=$(cat "$COMMIT_MSG_FILE")
+
+# Conventional commit pattern
+PATTERN="^(feat|fix|docs|style|refactor|test|chore|build|ci|perf|revert)(\(.+\))?\!?: .{1,50}"
+
+# Check if commit message matches pattern
+if ! echo "$COMMIT_MSG" | grep -qE "$PATTERN"; then
+  echo "❌ Invalid commit message format!"
+  echo ""
+  echo "Commit messages must follow the Conventional Commits format:"
+  echo ""
+  echo "  <type>(<scope>): <description>"
+  echo ""
+  echo "Types:"
+  echo "  feat     - A new feature"
+  echo "  fix      - A bug fix"
+  echo "  docs     - Documentation only changes"
+  echo "  style    - Code style changes (formatting, etc.)"
+  echo "  refactor - Code refactoring"
+  echo "  test     - Adding or updating tests"
+  echo "  chore    - Maintenance tasks"
+  echo "  build    - Build system changes"
+  echo "  ci       - CI/CD changes"
+  echo "  perf     - Performance improvements"
+  echo "  revert   - Revert a previous commit"
+  echo ""
+  echo "Examples:"
+  echo "  feat(picking): add batch pick task claiming"
+  echo "  fix(inventory): prevent negative inventory"
+  echo "  docs: update API documentation"
+  echo "  chore: upgrade dependencies"
+  echo ""
+  echo "See: https://www.conventionalcommits.org/"
+  exit 1
+fi
+
+# Check line length
+LONG_LINES=$(echo "$COMMIT_MSG" | grep -E ".{73,}" || true)
+if [ -n "$LONG_LINES" ]; then
+  echo "❌ Commit message lines should be <= 72 characters"
+  exit 1
+fi
+
+exit 0

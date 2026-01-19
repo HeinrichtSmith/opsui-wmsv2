@@ -1,0 +1,7 @@
+{
+  "port": 3001,
+  "pid": 347792,
+  "host": "0.0.0.0",
+  "acquiredAt": "2026-01-19T07:12:06.143Z",
+  "serviceName": "wms-backend-api"
+}

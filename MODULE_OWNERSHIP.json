@@ -1,0 +1,247 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": "2025-01-12",
+  "team": {
+    "members": {
+      "you": {
+        "name": "You (Admin Dashboard)",
+        "role": "Admin Dashboard Owner",
+        "email": "your-email@example.com",
+        "timezone": "America/New_York"
+      },
+      "friend1": {
+        "name": "Friend 1 (Picking)",
+        "role": "Picking Module Owner",
+        "email": "friend1@example.com",
+        "timezone": "America/New_York"
+      },
+      "friend2": {
+        "name": "Friend 2 (Packing)",
+        "role": "Packing Module Owner",
+        "email": "friend2@example.com",
+        "timezone": "America/New_York"
+      }
+    }
+  },
+  "modules": {
+    "picking": {
+      "owner": "friend1",
+      "name": "Picking Module",
+      "description": "Picker workflow, pick task management, bin location validation",
+      "ownedPaths": [
+        "packages/frontend/src/pages/picking/",
+        "packages/frontend/src/components/PickTaskList*",
+        "packages/frontend/src/components/BinScanner*",
+        "packages/frontend/src/components/PickTaskDetail*",
+        "packages/backend/src/services/picking*",
+        "packages/backend/src/controllers/picking*",
+        "packages/backend/src/repositories/picking*",
+        "packages/backend/src/routes/picking*"
+      ],
+      "sharedDependencies": [
+        "packages/shared/src/types/index.ts",
+        "packages/backend/src/services/order.ts",
+        "packages/backend/src/models/order.ts"
+      ],
+      "apiContracts": [
+        "PickTaskDTO",
+        "ClaimPickTaskRequest",
+        "BinLocation"
+      ]
+    },
+    "packing": {
+      "owner": "friend2",
+      "name": "Packing Module",
+      "description": "Packer workflow, shipment preparation, packaging verification",
+      "ownedPaths": [
+        "packages/frontend/src/pages/packing/",
+        "packages/frontend/src/components/PackingList*",
+        "packages/frontend/src/components/LabelPrinter*",
+        "packages/frontend/src/components/PackingDetail*",
+        "packages/backend/src/services/packing*",
+        "packages/backend/src/controllers/packing*",
+        "packages/backend/src/repositories/packing*",
+        "packages/backend/src/routes/packing*"
+      ],
+      "sharedDependencies": [
+        "packages/shared/src/types/index.ts",
+        "packages/backend/src/services/order.ts",
+        "packages/backend/src/models/order.ts"
+      ],
+      "apiContracts": [
+        "ShipmentDTO",
+        "PackOrderRequest",
+        "ShippingLabel"
+      ]
+    },
+    "admin": {
+      "owner": "you",
+      "name": "Admin Dashboard",
+      "description": "User management, reports, settings, supervision",
+      "ownedPaths": [
+        "packages/frontend/src/pages/admin/",
+        "packages/frontend/src/components/Analytics*",
+        "packages/frontend/src/components/UserManagement*",
+        "packages/frontend/src/components/Settings*",
+        "packages/backend/src/services/analytics*",
+        "packages/backend/src/services/user*",
+        "packages/backend/src/controllers/admin*",
+        "packages/backend/src/repositories/user*",
+        "packages/backend/src/routes/admin*"
+      ],
+      "sharedDependencies": [
+        "packages/shared/src/types/index.ts",
+        "packages/backend/src/services/auth.ts"
+      ],
+      "apiContracts": [
+        "UserDTO",
+        "AnalyticsReport",
+        "Settings"
+      ]
+    }
+  },
+  "shared": {
+    "description": "Code owned by all team members - requires coordination",
+    "paths": [
+      "packages/shared/src/types/",
+      "packages/shared/src/constants/",
+      "packages/shared/src/utils/",
+      "packages/backend/src/db/",
+      "packages/backend/src/models/",
+      "packages/backend/src/middleware/",
+      "packages/ml/"
+    ],
+    "approvalRequired": true,
+    "minApprovers": 2
+  },
+  "rules": {
+    "ownership": {
+      "canModifyOwnModule": true,
+      "canModifySharedWithApproval": true,
+      "canModifyOtherModule": false,
+      "canCreateFilesInOwnModule": true,
+      "canCreateFilesInShared": false
+    },
+    "coordination": {
+      "beforeChangingShared": "Post in team chat and wait for approval",
+      "beforeChangingDependency": "Notify dependent module owners",
+      "mergeConflictInOwnModule": "Resolve yourself",
+      "mergeConflictInShared": "Discuss with team",
+      "mergeConflictInOtherModule": "Ask module owner to resolve"
+    },
+    "branches": {
+      "main": "Production-ready code",
+      "picking": "friend1's working branch",
+      "packing": "friend2's working branch",
+      "admin": "your working branch",
+      "namingPattern": "{owner}/{short-description}"
+    }
+  },
+  "integration": {
+    "moduleApis": {
+      "pickingToPacking": {
+        "description": "Picking module transitions orders to PACKED state, Packing module takes over",
+        "contracts": [
+          "Order.status transition: PICKED → PACKING",
+          "Order.pickerId must be set before handoff",
+          "All items must be fully picked"
+        ]
+      },
+      "pickingToAdmin": {
+        "description": "Admin monitors picking performance, manages picker assignments",
+        "contracts": [
+          "Picker productivity metrics API",
+          "Pick task completion events",
+          "User CRUD operations"
+        ]
+      },
+      "packingToAdmin": {
+        "description": "Admin monitors packing performance, manages packer assignments",
+        "contracts": [
+          "Packer productivity metrics API",
+          "Shipment completion events",
+          "Carrier management API"
+        ]
+      }
+    }
+  },
+  "testing": {
+    "moduleTests": {
+      "picking": [
+        "packages/frontend/src/pages/picking/**/*.test.ts",
+        "packages/backend/src/services/picking/**/*.test.ts"
+      ],
+      "packing": [
+        "packages/frontend/src/pages/packing/**/*.test.ts",
+        "packages/backend/src/services/packing/**/*.test.ts"
+      ],
+      "admin": [
+        "packages/frontend/src/pages/admin/**/*.test.ts",
+        "packages/backend/src/services/admin/**/*.test.ts"
+      ]
+    },
+    "sharedTests": [
+      "packages/shared/**/*.test.ts",
+      "packages/backend/src/models/**/*.test.ts"
+    ],
+    "beforeMerge": "npm test",
+    "afterMerge": "All team members run npm test"
+  },
+  "communication": {
+    "channels": {
+      "general": "Team chat for general discussion",
+      "coordination": "For coordinating shared code changes",
+      "alerts": "For production issues and blockers",
+      "prs": "For pull request reviews"
+    },
+    "dailySync": {
+      "format": "Async posts acceptable",
+      "fields": [
+        "Working on",
+        "Files affected",
+        "Shared code dependencies",
+        "Blockers"
+      ]
+    },
+    "endOfDay": {
+      "format": "Async posts acceptable",
+      "fields": [
+        "Completed",
+        "WIP",
+        "Tomorrow's plan",
+        "Issues encountered"
+      ]
+    }
+  },
+  "metrics": {
+    "trackWeekly": [
+      {
+        "name": "Merge conflicts",
+        "target": "< 2 per week",
+        "source": "Git logs"
+      },
+      {
+        "name": "Test failures",
+        "target": "< 5% of commits",
+        "source": "CI/CD logs"
+      },
+      {
+        "name": "Shared code changes",
+        "target": "< 10 per week",
+        "source": "Git diff stats"
+      },
+      {
+        "name": "Time to merge",
+        "target": "< 1 day",
+        "source": "PR cycle time"
+      },
+      {
+        "name": "Bugs per module",
+        "target": "< 3 per week",
+        "source": "Issue tracker"
+      }
+    ],
+    "reviewDay": "Friday afternoon",
+    "reviewDuration": "30 minutes"
+  }
+}
